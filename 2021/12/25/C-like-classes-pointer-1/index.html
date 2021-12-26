@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    
+    <title>C++ like classes pointer (1) | blog of vino</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+<link rel="stylesheet" href="/dist/build.css?v=1637200696663.css">
+
+
+    
+<link rel="stylesheet" href="/dist/custom.css?v=1637200696663.css">
+
+
+    <script>
+        window.isPost = true
+        window.aomori = {
+            
+            
+            
+        }
+        window.aomori_logo_typed_animated = false
+        window.aomori_search_algolia = false
+
+    </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div class="container">
+    <header class="header">
+        <div class="header-type">
+            
+            <div class="header-type-inner">
+                
+                    <a class="header-type-title" href="/">blog of vino</a>
+                
+    
+                
+            </div>
+        </div>
+        <div class="header-menu">
+            <div class="header-menu-inner">
+                
+            </div>
+            <div class="header-menu-social">
+                
+            </div>
+        </div>
+
+        <div class="header-menu-mobile">
+            <div class="header-menu-mobile-inner" id="mobile-menu-open">
+                <i class="icon icon-menu"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="header-menu-mobile-menu">
+        <div class="header-menu-mobile-menu-bg"></div>
+        <div class="header-menu-mobile-menu-wrap">
+            <div class="header-menu-mobile-menu-inner">
+                <div class="header-menu-mobile-menu-close" id="mobile-menu-close">
+                    <i class="icon icon-cross"></i>
+                </div>
+                <div class="header-menu-mobile-menu-list">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    <div class="container">
+        <div class="main">
+            <section class="inner">
+                <section class="inner-main">
+                    <div class="post">
+    <article id="post-ckxndqkx70000lywx4fmyfi6i" class="article article-type-post" itemscope
+    itemprop="blogPost">
+
+    <div class="article-inner">
+
+        
+          
+        
+        
+        
+
+        
+        <header class="article-header">
+            
+  
+    <h1 class="article-title" itemprop="name">
+      C++ like classes pointer (1)
+    </h1>
+  
+
+        </header>
+        
+
+        <div class="article-more-info article-more-info-post hairline">
+
+            <div class="article-date">
+  <time datetime="2021-12-25T08:27:32.000Z" itemprop="datePublished">2021-12-25</time>
+</div>
+
+            
+
+            
+            <div class="article-tag">
+                <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/" rel="tag">C++</a></li></ul>
+            </div>
+            
+
+            
+
+        </div>
+
+        <div class="article-entry post-inner-html hairline" itemprop="articleBody">
+            <h1 id="Like-classes-pointer"><a href="#Like-classes-pointer" class="headerlink" title="Like classes pointer"></a>Like classes pointer</h1><p><strong>智能指针</strong> shared_ptr, unique_ptr</p>
+<h3 id="1-为什么要有智能指针？"><a href="#1-为什么要有智能指针？" class="headerlink" title="1.为什么要有智能指针？"></a>1.为什么要有智能指针？</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">remodel</span><span class="params">(std::string &amp; str)</span></span>&#123;</span><br><span class="line">		std::string * ps = <span class="keyword">new</span> std::<span class="built_in">string</span>(str);</span><br><span class="line">		...</span><br><span class="line">		str = * ps;</span><br><span class="line">		delte ps;<span class="comment">//如果忘记了写delete，就会造成内存泄漏。</span></span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果ps有一个析构函数，该析构函数在它过期时释放它占据的内存，就完美了。可是ps是一个常规指针，不是一个对象，所以解决办法是创造一个like classes pointer。</p>
+<h3 id="2-如何创造一个like-classes-pinter？类似标准库的源代码"><a href="#2-如何创造一个like-classes-pinter？类似标准库的源代码" class="headerlink" title="2.如何创造一个like classes pinter？类似标准库的源代码"></a>2.如何创造一个like classes pinter？类似标准库的源代码</h3><p>我们的目标就是创造一个对象，但是具有指针所有的功能；</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">shared_ptr</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  T* px;</span><br><span class="line">  <span class="keyword">long</span>* pn;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">shared_ptr</span> (T* p):<span class="built_in">px</span>(p);</span><br><span class="line">  T&amp; <span class="keyword">operator</span>*() <span class="keyword">const</span>&#123;</span><br><span class="line">     <span class="keyword">return</span> *px;</span><br><span class="line">  &#125;</span><br><span class="line">  T* <span class="keyword">operator</span>-&gt;() <span class="keyword">const</span>&#123;</span><br><span class="line">     <span class="keyword">return</span> px;</span><br><span class="line">  &#125;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-如何使用智能指针？"><a href="#3-如何使用智能指针？" class="headerlink" title="3.如何使用智能指针？"></a>3.如何使用智能指针？</h3><p>以remodel函数为例,智能指针模板位于std名称空间。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;memory&gt;</span> <span class="comment">//必须包含的头文件</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">remodel</span><span class="params">(std::string &amp; str)</span></span>&#123;</span><br><span class="line">    <span class="function">std::shared_ptr&lt;std::string&gt; <span class="title">ps</span> <span class="params">(<span class="keyword">new</span> std::string(str))</span></span>;<span class="comment">//将指向string的指针替换为指向string的智能指针对象；</span></span><br><span class="line">    ....</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">weird_thing</span>())</span><br><span class="line">      <span class="keyword">throw</span> <span class="built_in">exception</span>();</span><br><span class="line">    str = * ps;</span><br><span class="line">    <span class="comment">//no delete,and no longer needed</span></span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-tips"><a href="#4-tips" class="headerlink" title="4.tips"></a>4.tips</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">string <span class="title">vacation</span><span class="params">(<span class="string">&quot;i wandered lonely as a cloud&quot;</span>)</span></span>;</span><br><span class="line"><span class="function">shared_ptr&lt;string&gt; <span class="title">pvac</span><span class="params">(&amp;vacation)</span></span>; <span class="comment">//no allow</span></span><br></pre></td></tr></table></figure>
+
+<p>pvac过期时，delete运算符会作用于非堆内存。vacation对象是存储在栈里面，而delete只作用于栈内存。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">auto_ptr&lt;string&gt; <span class="title">ps</span> <span class="params">(<span class="keyword">new</span> string(<span class="string">&quot;vacation&quot;</span>))</span></span>;</span><br><span class="line">auto_ptr&lt;string&gt; vacation;</span><br><span class="line">vacation = ps;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果vacation和ps是常规指针，则两个指针指向同一个string对象，这是不允许的，因为程序将试图删除一个对象两次，一次是ps过期时，一次是vacation过期时。如何避免？</p>
+<ul>
+<li>定义赋值运算符；执行深复制。</li>
+<li>建立所有权概念，对于特定的对象，只有一个智能指针拥有它，这样只有拥有对象的智能指针的构造函数可以删除它，然后让赋值操作转换所有权。这是auto_ptr和unique_ptr的策略。</li>
+<li>创造更高智能的指针，跟踪特定对象的智能指针数（引用计数），赋值时，计数加1，过期时计数减1，仅当最后一个指针过期时，才调用delete。这是shared_ptr的策略。</li>
+</ul>
+<h3 id="5-如何选择智能指针？"><a href="#5-如何选择智能指针？" class="headerlink" title="5.如何选择智能指针？"></a>5.如何选择智能指针？</h3><p>如果程序需要多个指向同一对象的指针，应选择shared_ptr；</p>
+<p>否则考虑使用unique_ptr;</p>
+<p>如果函数使用new分配内存，并返回指向该内存的指针，将其返回类型生命为unique_ptr是一个不错的选择。</p>
+
+        </div>
+
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+<nav class="article-nav">
+  
+    <a href="/2021/12/26/C-%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8%EF%BC%881%EF%BC%89/" id="article-nav-newer" class="article-nav-link-wrap">
+      <div class="article-nav-caption">下一篇</div>
+      <div class="article-nav-title">
+        
+          C++顺序容器（1）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/12/25/LTR/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-caption">上一篇</div>
+      <div class="article-nav-title">LTR</div>
+    </a>
+  
+</nav>
+
+
+    <section class="share">
+        <div class="share-title">分享</div>
+        <a class="share-item" target="_blank"
+            href="https://twitter.com/share?text=C++ like classes pointer (1) - blog of vino&url=http://example.com/2021/12/25/C-like-classes-pointer-1/">
+            <box-icon type='logo' name='twitter'></box-icon>
+        </a>
+        <a class="share-item" target="_blank"
+            href="https://www.facebook.com/sharer.php?title=C++ like classes pointer (1) - blog of vino&u=http://example.com/2021/12/25/C-like-classes-pointer-1/">
+            <box-icon name='facebook-square' type='logo' ></box-icon>
+        </a>
+        <!-- <a class="share-item" target="_blank"
+            href="https://service.weibo.com/share/share.php?title=C++ like classes pointer (1) - blog of vino&url=http://example.com/2021/12/25/C-like-classes-pointer-1/&pic=">
+            <div class="n-icon n-icon-weibo"></div>
+        </a> -->
+    </section>
+
+</article>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+                </section>
+            </section>
+
+            
+            <aside class="sidebar ">
+                
+
+
+<div class="widget" id="widget">
+    
+      
+  <div class="widget-wrap">
+    <div class="widget-inner">
+      <div class="toc post-toc-html"></div>
+    </div>
+  </div>
+
+    
+      
+
+    
+      
+  <div class="widget-wrap widget-tags">
+    <div class="widget-title"><span>Tags</span></div>
+    <div class="widget-inner">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%90%9C%E7%B4%A2%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">搜索排序算法</a></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap widget-recent-posts">
+    <div class="widget-title"><span>Recent Posts</span></div>
+    <div class="widget-inner">
+      <ul>
+        
+          <li>
+            <a href="/2021/12/26/hello-word/">hello-word</a>
+          </li>
+        
+          <li>
+            <a href="/2021/12/26/C-%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8%EF%BC%881%EF%BC%89/">C++顺序容器（1）</a>
+          </li>
+        
+          <li>
+            <a href="/2021/12/25/C-like-classes-pointer-1/">C++ like classes pointer (1)</a>
+          </li>
+        
+          <li>
+            <a href="/2021/12/25/LTR/">LTR</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget-wrap widget-archive">
+    <div class="widget-title"><span>Archive</span></div>
+    <div class="widget-inner">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/">2021</a></li></ul>
+    </div>
+  </div>
+
+
+    
+</div>
+
+<div id="backtop"><i class="icon icon-arrow-up"></i></div>
+            </aside>
+            
+        </div>
+    </div>
+
+    <footer class="footer">
+    <div class="footer-wave">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#3c4859" fill-opacity="1" d="M0,160L60,181.3C120,203,240,245,360,240C480,235,600,181,720,186.7C840,192,960,256,1080,261.3C1200,267,1320,213,1380,186.7L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>
+    </div>
+
+    <div class="footer-wrap">
+        <div class="footer-inner"> 
+            blog of vino &copy; 2021<br>
+            Powered By Hexo · Theme By <a href="https://github.com/lh1me/hexo-theme-aomori" target="_blank">Aomori</a>
+        </div>
+    </div>
+
+</footer>
+
+
+
+
+
+
+<script src="/dist/build.js?1637200696663.js"></script>
+
+
+<script src="/dist/custom.js?1637200696663.js"></script>
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>

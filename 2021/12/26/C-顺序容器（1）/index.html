@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    
+    <title>C++顺序容器（1） | blog of vino</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+<link rel="stylesheet" href="/dist/build.css?v=1637200696663.css">
+
+
+    
+<link rel="stylesheet" href="/dist/custom.css?v=1637200696663.css">
+
+
+    <script>
+        window.isPost = true
+        window.aomori = {
+            
+            
+            
+        }
+        window.aomori_logo_typed_animated = false
+        window.aomori_search_algolia = false
+
+    </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div class="container">
+    <header class="header">
+        <div class="header-type">
+            
+            <div class="header-type-inner">
+                
+                    <a class="header-type-title" href="/">blog of vino</a>
+                
+    
+                
+            </div>
+        </div>
+        <div class="header-menu">
+            <div class="header-menu-inner">
+                
+            </div>
+            <div class="header-menu-social">
+                
+            </div>
+        </div>
+
+        <div class="header-menu-mobile">
+            <div class="header-menu-mobile-inner" id="mobile-menu-open">
+                <i class="icon icon-menu"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="header-menu-mobile-menu">
+        <div class="header-menu-mobile-menu-bg"></div>
+        <div class="header-menu-mobile-menu-wrap">
+            <div class="header-menu-mobile-menu-inner">
+                <div class="header-menu-mobile-menu-close" id="mobile-menu-close">
+                    <i class="icon icon-cross"></i>
+                </div>
+                <div class="header-menu-mobile-menu-list">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    <div class="container">
+        <div class="main">
+            <section class="inner">
+                <section class="inner-main">
+                    <div class="post">
+    <article id="post-ckxndqkx90001lywxf3vl4534" class="article article-type-post" itemscope
+    itemprop="blogPost">
+
+    <div class="article-inner">
+
+        
+          
+        
+        
+        
+
+        
+        <header class="article-header">
+            
+  
+    <h1 class="article-title" itemprop="name">
+      C++顺序容器（1）
+    </h1>
+  
+
+        </header>
+        
+
+        <div class="article-more-info article-more-info-post hairline">
+
+            <div class="article-date">
+  <time datetime="2021-12-26T07:58:07.000Z" itemprop="datePublished">2021-12-26</time>
+</div>
+
+            
+
+            
+            <div class="article-tag">
+                <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/" rel="tag">C++</a></li></ul>
+            </div>
+            
+
+            
+
+        </div>
+
+        <div class="article-entry post-inner-html hairline" itemprop="articleBody">
+            <p>定义：它将单一元素聚集起来成为容器，然后根据位置来存储和访问这些元素。</p>
+<p>标准库定义了三种顺序容器类型：vector、list和deque；标准库还提供了三种容器适配器：stack、queue和priority_queue</p>
+<h2 id="1-顺序容器的定义"><a href="#1-顺序容器的定义" class="headerlink" title="1 顺序容器的定义"></a>1 顺序容器的定义</h2><h3 id="1-1-容器元素初始化的方法"><a href="#1-1-容器元素初始化的方法" class="headerlink" title="1,1 容器元素初始化的方法"></a>1,1 容器元素初始化的方法</h3><ul>
+<li>为了定义一个容器对象，必须包含相关的头文件。eg：include <vector>；</li>
+<li>所有的容器都是类模板；</li>
+<li>所有的容器都定义了默认的构造函数；</li>
+<li>容器元素初始化的方法：</li>
+</ul>
+<p>（1）<strong>将一个容器初始化为另一个容器的副本</strong>；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vector&lt;int&gt; ivec;</span><br><span class="line">vector&lt;int&gt; ivec2(ivec);</span><br></pre></td></tr></table></figure>
+
+<p><font color=red>将一个容器复制给另一个容器时，类型必须匹配，容器类型和元素类型都必须相同</font></p>
+<p>（2）<strong>初始化为一段元素的副本</strong>；</p>
+<p>（3）<strong>分配和初始化指定数目的元素</strong>；</p>
+<p><font color=red>接受容器大小做形参的构造函数只适用于顺序容器</font></p>
+<h3 id="1-2-容器内元素的类型约束"><a href="#1-2-容器内元素的类型约束" class="headerlink" title="1,2 容器内元素的类型约束"></a>1,2 容器内元素的类型约束</h3><p>两个约束：</p>
+<ul>
+<li>元素对象必须支持赋值运算；</li>
+<li>元素类型的对象必须可以复制；</li>
+</ul>
+<h2 id="2-迭代器和迭代器范围"><a href="#2-迭代器和迭代器范围" class="headerlink" title="2 迭代器和迭代器范围"></a>2 迭代器和迭代器范围</h2><p>常用迭代器运算</p>
+<table>
+<thead>
+<tr>
+<th align="center">常用迭代器运算</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">*iter    返回迭代器iter所指向的元素的引用</td>
+</tr>
+<tr>
+<td align="center">iter-&gt;mem  对iter进行解引用，获取指定元素中名为men的成员</td>
+</tr>
+<tr>
+<td align="center">++iter</td>
+</tr>
+<tr>
+<td align="center">iter++</td>
+</tr>
+<tr>
+<td align="center">iter–</td>
+</tr>
+<tr>
+<td align="center">–iter</td>
+</tr>
+<tr>
+<td align="center">==</td>
+</tr>
+<tr>
+<td align="center">!=</td>
+</tr>
+</tbody></table>
+<p>![截屏2021-12-26 下午4.31.50](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-12-26 下午4.31.50.png)</p>
+<p>C++语言使用一堆迭代器标记迭代器范围：分别指向同一个容器中的第一个元素和超出末端的下一位置；左闭合区间。</p>
+<ul>
+<li>当first和last相等时，迭代器范围为空；</li>
+<li>不相等时，迭代器范围至少有一个元素；</li>
+</ul>
+
+        </div>
+
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+<nav class="article-nav">
+  
+    <a href="/2021/12/26/hello-word/" id="article-nav-newer" class="article-nav-link-wrap">
+      <div class="article-nav-caption">下一篇</div>
+      <div class="article-nav-title">
+        
+          hello-word
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/12/25/C-like-classes-pointer-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-caption">上一篇</div>
+      <div class="article-nav-title">C++ like classes pointer (1)</div>
+    </a>
+  
+</nav>
+
+
+    <section class="share">
+        <div class="share-title">分享</div>
+        <a class="share-item" target="_blank"
+            href="https://twitter.com/share?text=C++顺序容器（1） - blog of vino&url=http://example.com/2021/12/26/C-%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8%EF%BC%881%EF%BC%89/">
+            <box-icon type='logo' name='twitter'></box-icon>
+        </a>
+        <a class="share-item" target="_blank"
+            href="https://www.facebook.com/sharer.php?title=C++顺序容器（1） - blog of vino&u=http://example.com/2021/12/26/C-%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8%EF%BC%881%EF%BC%89/">
+            <box-icon name='facebook-square' type='logo' ></box-icon>
+        </a>
+        <!-- <a class="share-item" target="_blank"
+            href="https://service.weibo.com/share/share.php?title=C++顺序容器（1） - blog of vino&url=http://example.com/2021/12/26/C-%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8%EF%BC%881%EF%BC%89/&pic=">
+            <div class="n-icon n-icon-weibo"></div>
+        </a> -->
+    </section>
+
+</article>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+                </section>
+            </section>
+
+            
+            <aside class="sidebar ">
+                
+
+
+<div class="widget" id="widget">
+    
+      
+  <div class="widget-wrap">
+    <div class="widget-inner">
+      <div class="toc post-toc-html"></div>
+    </div>
+  </div>
+
+    
+      
+
+    
+      
+  <div class="widget-wrap widget-tags">
+    <div class="widget-title"><span>Tags</span></div>
+    <div class="widget-inner">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%90%9C%E7%B4%A2%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">搜索排序算法</a></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap widget-recent-posts">
+    <div class="widget-title"><span>Recent Posts</span></div>
+    <div class="widget-inner">
+      <ul>
+        
+          <li>
+            <a href="/2021/12/26/hello-word/">hello-word</a>
+          </li>
+        
+          <li>
+            <a href="/2021/12/26/C-%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8%EF%BC%881%EF%BC%89/">C++顺序容器（1）</a>
+          </li>
+        
+          <li>
+            <a href="/2021/12/25/C-like-classes-pointer-1/">C++ like classes pointer (1)</a>
+          </li>
+        
+          <li>
+            <a href="/2021/12/25/LTR/">LTR</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget-wrap widget-archive">
+    <div class="widget-title"><span>Archive</span></div>
+    <div class="widget-inner">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/">2021</a></li></ul>
+    </div>
+  </div>
+
+
+    
+</div>
+
+<div id="backtop"><i class="icon icon-arrow-up"></i></div>
+            </aside>
+            
+        </div>
+    </div>
+
+    <footer class="footer">
+    <div class="footer-wave">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#3c4859" fill-opacity="1" d="M0,160L60,181.3C120,203,240,245,360,240C480,235,600,181,720,186.7C840,192,960,256,1080,261.3C1200,267,1320,213,1380,186.7L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>
+    </div>
+
+    <div class="footer-wrap">
+        <div class="footer-inner"> 
+            blog of vino &copy; 2021<br>
+            Powered By Hexo · Theme By <a href="https://github.com/lh1me/hexo-theme-aomori" target="_blank">Aomori</a>
+        </div>
+    </div>
+
+</footer>
+
+
+
+
+
+
+<script src="/dist/build.js?1637200696663.js"></script>
+
+
+<script src="/dist/custom.js?1637200696663.js"></script>
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>

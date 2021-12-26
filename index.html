@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    
+    <title>blog of vino</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+<link rel="stylesheet" href="/dist/build.css?v=1637200696663.css">
+
+
+    
+<link rel="stylesheet" href="/dist/custom.css?v=1637200696663.css">
+
+
+    <script>
+        window.isPost = false
+        window.aomori = {
+            
+            
+            
+        }
+        window.aomori_logo_typed_animated = false
+        window.aomori_search_algolia = false
+
+    </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div class="container">
+    <header class="header">
+        <div class="header-type">
+            
+            <div class="header-type-inner">
+                
+                    <a class="header-type-title" href="/">blog of vino</a>
+                
+    
+                
+            </div>
+        </div>
+        <div class="header-menu">
+            <div class="header-menu-inner">
+                
+            </div>
+            <div class="header-menu-social">
+                
+            </div>
+        </div>
+
+        <div class="header-menu-mobile">
+            <div class="header-menu-mobile-inner" id="mobile-menu-open">
+                <i class="icon icon-menu"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="header-menu-mobile-menu">
+        <div class="header-menu-mobile-menu-bg"></div>
+        <div class="header-menu-mobile-menu-wrap">
+            <div class="header-menu-mobile-menu-inner">
+                <div class="header-menu-mobile-menu-close" id="mobile-menu-close">
+                    <i class="icon icon-cross"></i>
+                </div>
+                <div class="header-menu-mobile-menu-list">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    <div class="container">
+        <div class="main">
+            <section class="inner">
+                <section class="inner-main">
+                    <div class="index">
+  
+    
+      <article
+id="post-hello-word"
+class="article article-type-post"
+>
+
+
+
+<div class="article-inner">
+    
+
+    <div class="article-body">
+    <header class="article-title">
+        <a href="/2021/12/26/hello-word/">hello-word</a>
+    </header>
+    <div class="article-entry post-inner-html">
+        
+        
+        
+    </div>
+    </div>
+
+    <div class="article-badge">
+        
+        
+    </div>
+
+</div>
+
+<footer class="article-footer">
+    <div class="article-more-info">
+    <div class="article-date">
+  <time datetime="2021-12-26T14:59:36.000Z" itemprop="datePublished">2021-12-26</time>
+</div>
+    
+    
+    </div>
+</footer>
+
+</article>
+
+    
+  
+    
+      <article
+id="post-C-顺序容器（1）"
+class="article article-type-post"
+>
+
+
+
+<div class="article-inner">
+    
+
+    <div class="article-body">
+    <header class="article-title">
+        <a href="/2021/12/26/C-%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8%EF%BC%881%EF%BC%89/">C++顺序容器（1）</a>
+    </header>
+    <div class="article-entry post-inner-html">
+        
+        <p>定义：它将单一元素聚集起来成为容器，然后根据位置来存储和访问这些元素。</p>
+<p>标准库定义了三种顺序容器类型：vector、list和deque；标准库还提供了三种容器适配器：stack、queue和priority_queue</p>
+<h2 id="1-顺序容器的定义"><a href="#1-顺序容器的定义" class="headerlink" title="1 顺序容器的定义"></a>1 顺序容器的定义</h2><h3 id="1-1-容器元素初始化的方法"><a href="#1-1-容器元素初始化的方法" class="headerlink" title="1,1 容器元素初始化的方法"></a>1,1 容器元素初始化的方法</h3><ul>
+<li>为了定义一个容器对象，必须包含相关的头文件。eg：include <vector>；</li>
+<li>所有的容器都是类模板；</li>
+<li>所有的容器都定义了默认的构造函数；</li>
+<li>容器元素初始化的方法：</li>
+</ul>
+<p>（1）<strong>将一个容器初始化为另一个容器的副本</strong>；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vector&lt;int&gt; ivec;</span><br><span class="line">vector&lt;int&gt; ivec2(ivec);</span><br></pre></td></tr></table></figure>
+
+<p><font color=red>将一个容器复制给另一个容器时，类型必须匹配，容器类型和元素类型都必须相同</font></p>
+<p>（2）<strong>初始化为一段元素的副本</strong>；</p>
+<p>（3）<strong>分配和初始化指定数目的元素</strong>；</p>
+<p><font color=red>接受容器大小做形参的构造函数只适用于顺序容器</font></p>
+<h3 id="1-2-容器内元素的类型约束"><a href="#1-2-容器内元素的类型约束" class="headerlink" title="1,2 容器内元素的类型约束"></a>1,2 容器内元素的类型约束</h3><p>两个约束：</p>
+<ul>
+<li>元素对象必须支持赋值运算；</li>
+<li>元素类型的对象必须可以复制；</li>
+</ul>
+<h2 id="2-迭代器和迭代器范围"><a href="#2-迭代器和迭代器范围" class="headerlink" title="2 迭代器和迭代器范围"></a>2 迭代器和迭代器范围</h2><p>常用迭代器运算</p>
+<table>
+<thead>
+<tr>
+<th align="center">常用迭代器运算</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">*iter    返回迭代器iter所指向的元素的引用</td>
+</tr>
+<tr>
+<td align="center">iter-&gt;mem  对iter进行解引用，获取指定元素中名为men的成员</td>
+</tr>
+<tr>
+<td align="center">++iter</td>
+</tr>
+<tr>
+<td align="center">iter++</td>
+</tr>
+<tr>
+<td align="center">iter–</td>
+</tr>
+<tr>
+<td align="center">–iter</td>
+</tr>
+<tr>
+<td align="center">==</td>
+</tr>
+<tr>
+<td align="center">!=</td>
+</tr>
+</tbody></table>
+<p>![截屏2021-12-26 下午4.31.50](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-12-26 下午4.31.50.png)</p>
+<p>C++语言使用一堆迭代器标记迭代器范围：分别指向同一个容器中的第一个元素和超出末端的下一位置；左闭合区间。</p>
+<ul>
+<li>当first和last相等时，迭代器范围为空；</li>
+<li>不相等时，迭代器范围至少有一个元素；</li>
+</ul>
+
+        
+    </div>
+    </div>
+
+    <div class="article-badge">
+        
+        
+    </div>
+
+</div>
+
+<footer class="article-footer">
+    <div class="article-more-info">
+    <div class="article-date">
+  <time datetime="2021-12-26T07:58:07.000Z" itemprop="datePublished">2021-12-26</time>
+</div>
+    
+    
+        <div class="article-tag">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/" rel="tag">C++</a></li></ul>
+        </div>
+    
+    </div>
+</footer>
+
+</article>
+
+    
+  
+    
+      <article
+id="post-C-like-classes-pointer-1"
+class="article article-type-post"
+>
+
+
+
+<div class="article-inner">
+    
+
+    <div class="article-body">
+    <header class="article-title">
+        <a href="/2021/12/25/C-like-classes-pointer-1/">C++ like classes pointer (1)</a>
+    </header>
+    <div class="article-entry post-inner-html">
+        
+        <h1 id="Like-classes-pointer"><a href="#Like-classes-pointer" class="headerlink" title="Like classes pointer"></a>Like classes pointer</h1><p><strong>智能指针</strong> shared_ptr, unique_ptr</p>
+<h3 id="1-为什么要有智能指针？"><a href="#1-为什么要有智能指针？" class="headerlink" title="1.为什么要有智能指针？"></a>1.为什么要有智能指针？</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">remodel</span><span class="params">(std::string &amp; str)</span></span>&#123;</span><br><span class="line">		std::string * ps = <span class="keyword">new</span> std::<span class="built_in">string</span>(str);</span><br><span class="line">		...</span><br><span class="line">		str = * ps;</span><br><span class="line">		delte ps;<span class="comment">//如果忘记了写delete，就会造成内存泄漏。</span></span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果ps有一个析构函数，该析构函数在它过期时释放它占据的内存，就完美了。可是ps是一个常规指针，不是一个对象，所以解决办法是创造一个like classes pointer。</p>
+<h3 id="2-如何创造一个like-classes-pinter？类似标准库的源代码"><a href="#2-如何创造一个like-classes-pinter？类似标准库的源代码" class="headerlink" title="2.如何创造一个like classes pinter？类似标准库的源代码"></a>2.如何创造一个like classes pinter？类似标准库的源代码</h3><p>我们的目标就是创造一个对象，但是具有指针所有的功能；</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">shared_ptr</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  T* px;</span><br><span class="line">  <span class="keyword">long</span>* pn;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">shared_ptr</span> (T* p):<span class="built_in">px</span>(p);</span><br><span class="line">  T&amp; <span class="keyword">operator</span>*() <span class="keyword">const</span>&#123;</span><br><span class="line">     <span class="keyword">return</span> *px;</span><br><span class="line">  &#125;</span><br><span class="line">  T* <span class="keyword">operator</span>-&gt;() <span class="keyword">const</span>&#123;</span><br><span class="line">     <span class="keyword">return</span> px;</span><br><span class="line">  &#125;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-如何使用智能指针？"><a href="#3-如何使用智能指针？" class="headerlink" title="3.如何使用智能指针？"></a>3.如何使用智能指针？</h3><p>以remodel函数为例,智能指针模板位于std名称空间。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;memory&gt;</span> <span class="comment">//必须包含的头文件</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">remodel</span><span class="params">(std::string &amp; str)</span></span>&#123;</span><br><span class="line">    <span class="function">std::shared_ptr&lt;std::string&gt; <span class="title">ps</span> <span class="params">(<span class="keyword">new</span> std::string(str))</span></span>;<span class="comment">//将指向string的指针替换为指向string的智能指针对象；</span></span><br><span class="line">    ....</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">weird_thing</span>())</span><br><span class="line">      <span class="keyword">throw</span> <span class="built_in">exception</span>();</span><br><span class="line">    str = * ps;</span><br><span class="line">    <span class="comment">//no delete,and no longer needed</span></span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-tips"><a href="#4-tips" class="headerlink" title="4.tips"></a>4.tips</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">string <span class="title">vacation</span><span class="params">(<span class="string">&quot;i wandered lonely as a cloud&quot;</span>)</span></span>;</span><br><span class="line"><span class="function">shared_ptr&lt;string&gt; <span class="title">pvac</span><span class="params">(&amp;vacation)</span></span>; <span class="comment">//no allow</span></span><br></pre></td></tr></table></figure>
+
+<p>pvac过期时，delete运算符会作用于非堆内存。vacation对象是存储在栈里面，而delete只作用于栈内存。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">auto_ptr&lt;string&gt; <span class="title">ps</span> <span class="params">(<span class="keyword">new</span> string(<span class="string">&quot;vacation&quot;</span>))</span></span>;</span><br><span class="line">auto_ptr&lt;string&gt; vacation;</span><br><span class="line">vacation = ps;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果vacation和ps是常规指针，则两个指针指向同一个string对象，这是不允许的，因为程序将试图删除一个对象两次，一次是ps过期时，一次是vacation过期时。如何避免？</p>
+<ul>
+<li>定义赋值运算符；执行深复制。</li>
+<li>建立所有权概念，对于特定的对象，只有一个智能指针拥有它，这样只有拥有对象的智能指针的构造函数可以删除它，然后让赋值操作转换所有权。这是auto_ptr和unique_ptr的策略。</li>
+<li>创造更高智能的指针，跟踪特定对象的智能指针数（引用计数），赋值时，计数加1，过期时计数减1，仅当最后一个指针过期时，才调用delete。这是shared_ptr的策略。</li>
+</ul>
+<h3 id="5-如何选择智能指针？"><a href="#5-如何选择智能指针？" class="headerlink" title="5.如何选择智能指针？"></a>5.如何选择智能指针？</h3><p>如果程序需要多个指向同一对象的指针，应选择shared_ptr；</p>
+<p>否则考虑使用unique_ptr;</p>
+<p>如果函数使用new分配内存，并返回指向该内存的指针，将其返回类型生命为unique_ptr是一个不错的选择。</p>
+
+        
+    </div>
+    </div>
+
+    <div class="article-badge">
+        
+        
+    </div>
+
+</div>
+
+<footer class="article-footer">
+    <div class="article-more-info">
+    <div class="article-date">
+  <time datetime="2021-12-25T08:27:32.000Z" itemprop="datePublished">2021-12-25</time>
+</div>
+    
+    
+        <div class="article-tag">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/" rel="tag">C++</a></li></ul>
+        </div>
+    
+    </div>
+</footer>
+
+</article>
+
+    
+  
+    
+      <article
+id="post-LTR"
+class="article article-type-post"
+>
+
+
+
+<div class="article-inner">
+    
+
+    <div class="article-body">
+    <header class="article-title">
+        <a href="/2021/12/25/LTR/">LTR</a>
+    </header>
+    <div class="article-entry post-inner-html">
+        
+        <h1 id="LTR"><a href="#LTR" class="headerlink" title="LTR"></a>LTR</h1><h2 id="Learning-to-ranks算法：RankNet，LambdaRank，LambdaMart"><a href="#Learning-to-ranks算法：RankNet，LambdaRank，LambdaMart" class="headerlink" title="Learning to ranks算法：RankNet，LambdaRank，LambdaMart"></a>Learning to ranks算法：RankNet，LambdaRank，LambdaMart</h2><blockquote>
+<p>a. Burges, Chris, Tal Shaked, Erin Renshaw, Ari Lazier, Matt Deeds, Nicole Hamilton, and Greg Hullender. “Learning to Rank Using Gradient Descent.” 2005.<br>b. Burges, Chris, Robert Ragno, and Quoc Le. “Learning to Rank with Nonsmooth Cost Functions.” Proceedings of the Advances in Neural Information Processing Systems 19 (2007): 193–200.<br>c. Wu, Qiang, Christopher J. C. Burges, Krysta M. Svore, and Jianfeng Gao. “Adapting Boosting for Information Retrieval Measures.” 2009<br>d. Burges, Christopher JC. “From Ranknet to LambdaRank to LambdaMART: An Overview.” Microsoft Research Technical Report 11 (2010): 23–581.<br>e. Tsai, M.-F., Liu, T.-Y., Qin, T., Chen, H.-H., Ma, W.-Y.: Frank: a ranking method with fidelity loss. SIGIR 2007<br>f. Wang, Xuanhui, Cheng Li, Nadav Golbandi, Michael Bendersky, and Marc Najork. “The LambdaLoss Framework for Ranking Metric Optimization.” CIKM ’18. 20181.RankNet</p>
+</blockquote>
+<p>RankNet[a]的核心是<font color=red>提出了一种概率损失函数来学习Ranking Function</font>,并应用程序Ranking Function对文档进行排序。Ranking Function 可以是任意对参数可微的模型，并不依赖于特定的机器学习模型。RankNet是基于神经网络实现的，除此之外GBDT也可以应用于此框架。</p>
+<h4 id="1-1-相关性概率"><a href="#1-1-相关性概率" class="headerlink" title="1.1 相关性概率"></a>1.1 相关性概率</h4><p>给定任意一个query及文档对$(U_i,U_j)$ </p>
+<p>（1）预测相关性概率</p>
+<p>对于任一文档对$(U_i,U_j)$ ，模型输出的score分别为$s_i$,$s_j$,$s_i=f(U_i)$根据模型的预测，$U_i$比$U_j$排名更靠前或者说与query更相关的概率为：</p>
+<p>​                            $$P_{ij}=P(U_i&gt;U_j)=\frac{1}{1+e^-\delta(s_i-s_j)}$$</p>
+<p> 参数$\delta$决定sigmoid函数的形状，对最终结果影响不大，一般取1。</p>
+<p>（2）真实相关性概率</p>
+<p>对于训练数据中的$U_i$和$U_j$，它们都包含有一个与Query相关性的真实label，比如$U_i$与Query的相关性label为good，$U_j$与Query的相关性label为bad，那么显然$U_i$比$U_j$更相关。我们定义$U_i$比$U_j$更相关的真实概率为：</p>
+<p>$$\overline{P_ij}=\frac{1}{2}(1+S_{ij})$$</p>
+<p>如果$U_i$比$U_j$更相关，那么$S_{ij}$=1；如果$U_i$不如$U_j$相关，那么$S_{ij}$=−1；如果$U_i$、$U_j$与Query的相关程度相同，那么$S_{ij}$=0。通常，两个doc的relative relevance judgment可由人工标注或者从搜索日志中获取得到。</p>
+<h4 id="1-2-损失函数"><a href="#1-2-损失函数" class="headerlink" title="1.2 损失函数"></a>1.2 损失函数</h4><p>对于一个排序来说，RankNet是从各个doc之间的相对关系来衡量排序结果的好坏，排序的效果越好，那么意味着<font color=red>错误的相对关系的文档对就越少（模型将$U_i$排在$U_j$之前，但是真实label，$U_j$比$U_i$与Query更相关）</font>。RankNet本质上就是以<font color=red>更少的错误的pair为优化目标</font>。实际上，RankNet通过引入概率的思想：不是直接判断$U_i$排在$U_j$之前，而是说$U_i$以一定的概率排在$U_j$之前，即以最小化预测概率与真实概率之间的差距作为优化目标。很自然地，我们有了预测概率和真实概率，就可以使用交叉熵作为损失函数来衡量$P_{ij}$与$\overline{P_{ij}}$之间的差异。</p>
+<p>所以模型的损失函数为：</p>
+<p>$$C=-\overline{P_{ij}}logP_{ij}-(1-\overline{P_{ij}})log(1-p_{ij}))$$</p>
+<p>化简之后有：</p>
+<p>$$\begin{aligned} C_{ij}&amp;=-(\frac{1}{2}+S_{ij})log\frac{1}{1+e^-\delta(s_i-s_j)}-\frac{1}{2}(1-S_{ij})log\frac{e^-\delta(s_i-s_j)}{1+e^-\delta(s_i-s_j)} \ &amp;=-\frac{1}{2}(1+S_{ij})log\frac{1}{1+e^-\delta(s_i-s_j)}-\frac{1}{2}(1-S_ij)[-\delta(s_i-s_j)+log\frac{1}{1+e^-\delta(s_i-s_j)}]\ &amp;=\frac{1}{2}(1-S_{ij})\delta(s_i-s_j)+log(1+e^-\delta(s_i-s_j))\end{aligned}$$ </p>
+<p>当$S_{ij}=1$时有：</p>
+<p>$C=log(1+e^{-\delta(s_i-s_j)})$</p>
+<p>当$S_{ij}=-1$时有：</p>
+<p>$C=log(1+e^{-\delta(s_j-s_i)})$</p>
+<p>![截屏2021-07-13 下午11.50.20](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-07-13 下午11.50.20.png)</p>
+<p>由上图可以看出，（1）当p=0.0或者p=1.0即$S_{ij}=\pm1$,如果模型对两个doc的预测值相同，即$s_i-s_j=0$,此时$C_ij=log2$,损失函数的值仍大于0，此时模型还是会对这对doc pair做惩罚，迫使两个doc相互分离。（2）损失函数是一个类线性函数，可以有效减少异常样本数据对模型的影响，因此具有鲁棒性。</p>
+<p>RankNet损失函数同样存在一个问题，即当$S_{ij}=0$即当两个doc的label相同时，损失函数的值无法为0，这些样本会成为困难样本影响模型优化，[f]中提出了新的损失函数解决这一问题[e]。或者只考虑label不同的样本之间的关系。</p>
+<h4 id="1-3-合并概率"><a href="#1-3-合并概率" class="headerlink" title="1.3 合并概率"></a>1.3 合并概率</h4><p>上述的模型$P_{ij}$需要保持一致性，即如果$U_i$的相关性大于$U_j$,$U_j$的相关性大于$U_k$,则$U_i$的相关性也一定要大于$U_k$。</p>
+<h4 id="1-4-梯度下降"><a href="#1-4-梯度下降" class="headerlink" title="1.4 梯度下降"></a>1.4 梯度下降</h4><p>我们得到了一个可微的损失函数，就可以用随机梯度下降法更新模型的参数$\omega_k$，即</p>
+<p>$$\omega_k \rightarrow \omega_k-\eta\frac{\partial C}{\partial \omega_k}$$</p>
+<p>![截屏2021-07-14 上午12.19.25](/Users/chujie/Desktop/截屏2021-07-14 上午12.19.25.png)</p>
+<p>其中，$$\lambda_{ij}=\frac{\partial C(s_i-s_j)}{\partial s_i}=\sigma(\frac{1}{2}(1-S_{ij})-\frac{1}{1+e^{\sigma(s_i-s_j)}})$$</p>
+<h4 id="1-5-加速RankNet训练过程"><a href="#1-5-加速RankNet训练过程" class="headerlink" title="1.5 加速RankNet训练过程"></a>1.5 加速RankNet训练过程</h4><p>上面的每一对pair都会进行一次权重的更新，其实是可以对同一query下的所有文档pair全部带入神经网络进行前想预测，然后计算总差分并进行误差后向反馈，这样讲大大减少误差反向传播的次数。</p>
+<p>即，我们可以转而利用批梯度下降法：</p>
+<p>$$\frac{\partial C}{\partial \omega_k}=\sum_{(i,j)\in I}(\frac {\partial C_{ij}}{\partial s_i} \frac{\partial s_i}{\partial \omega_k}+\frac {\partial C_{ij}}{\partial s_j} \frac{\partial s_j}{\partial \omega_k})$$</p>
+<p>其中，$$\frac {\partial C_{ij}}{\partial s_i}=\frac{\partial C(s_i-s_j)}{\partial s_i}=\sigma(\frac{1}{2}(1-S_{ij})-\frac{1}{1+e^{\sigma(s_i-s_j)}})$$</p>
+<p>令$$\lambda_{ij}=\frac{\partial C_{ij}}{\partial s_i}$$,可以得到</p>
+<p>$$\frac {\partial C}{\omega_l}=\sum_{(i,j)\in I}\lambda_{ij}(\frac{\partial s_i}{\omega_k}-\frac{\partial s_j}{\omega_k}) \=\sum_{i}\lambda_i\frac{\partial s_i}{\omega_k}$$</p>
+<p>此时，$$\lambda_i=\sum_{j:(i,j)\in I}\lambda_{ij}-\sum_{k:(k,i)\in I}\lambda_{ki}$$</p>
+<p><font color=green>这里发生了从$\lambda_{ij}$到$\lambda_i$的变化，按照之前模型的定义，$\lambda_{ij}$与$U_i$,$U_j$两个文档的预测分数有关，而$\lambda_i$将$lambda_ij$与$\lambda_{ji}$相结合，反映的是单个文档的性质，$\lambda_i$决定了文档$U_i$在迭代中的移动方向和幅度，真实的排在$U_i$之前的文档越少，排在$U_i$之后的文档越多，那么文档$U_i$向前移动的幅度就越大。这表明每个f下次调序的方向和强度取决于同一Query下可以与其组成relative relevance judgment的“pair对”的其他不同label的文档。</font></p>
+<p>最初的RankNet使用随机梯度下降法，在doc-pair上进行迭代优化，而通过这种分解的方式可以针对单个文档计算参数更新值，大大加快训练速度，同时这种分解的方式也是lambdaRank和lambdaMart的基础。</p>
+<h3 id="2-lambdaRank"><a href="#2-lambdaRank" class="headerlink" title="2. lambdaRank"></a>2. lambdaRank</h3><p>RanKNet以错误pair最少为优化目标，考虑了doc-pair的顺序关系，但是为doc的未知却没有考虑，这种仅以错误pair数来评价排序的好坏是不够的，像NDCG或者ERR等评价指标就只关注top k个结果的排序，当我们采用RankNet算法时，往往无法以这些指标为优化目标进行迭代，所以RankNet的优化目标和IR评价指标之间还是存在gap。</p>
+<p>lambdaRank在pairwise损失函数的基础上定义了position-based weight，把交换两个文档引起的评价指标的变化作为其中的一个因子。</p>
+<p>改进后的$\lambda_{ij}$为：</p>
+<p>$$\lambda_{ij}=\frac{\partial C(s_i-s_j)}{\partial s_i}=\frac{-\sigma}{1+e^{\sigma(s_i-sj)}}|\Delta NDCG|$$</p>
+<p><font color=red>损失函数的梯度代表了文档下一次迭代优化的方向和强度，由于引入了IR评价指标，Lambda梯度更关注位置靠前的优质文档的排序位置的提升。有效的避免了下调位置靠前优质文档的位置这种情况的发生。LambdaRank相比RankNet的优势在于分解因式后训练速度变快，同时考虑了评价指标，直接对问题求解，效果更明显。</font></p>
+<h3 id="3-lambdaMart"><a href="#3-lambdaMart" class="headerlink" title="3. lambdaMart"></a>3. lambdaMart</h3><p>Mart定义了一个框架，lambdaRank重新定义了梯度，所以mart和lambda相结合就成了lambdaMart</p>
+<p>Mart的原理是在函数空间对函数进行求解，模型结果由多颗回归树组成，每棵树的拟合目标就是损失函数的梯度也就是lambda。</p>
+<p>![截屏2021-07-15 上午11.30.20](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-07-15 上午11.30.20.png)</p>
+<h3 id="4-相关论文"><a href="#4-相关论文" class="headerlink" title="4.相关论文"></a>4.相关论文</h3><blockquote>
+<p>Unbiased LambdaMART: An Unbiased Pairwise Learning-to-Rank Algorithm</p>
+</blockquote>
+<p>论文提出了一个pairwise的LTR方法，并提出了一个框架可以同时进行点击数据的去偏和使用成对损失函数的排序模型的训练。最后将其应用到LambdaMart算法，提出无偏的LambdaMart算法。</p>
+<blockquote>
+<p>The LambdaLoss Framework for Ranking Metric Optimization</p>
+</blockquote>
+<p>论文首先定义了一个通用的损失函数：</p>
+<p>$$L(\phi)=\frac {1}{|T|}\sum_{(x,y)\in T}\iota(y,\phi(x))$$</p>
+<p>LTR问题就是找到能够最小化损失函数的参数。</p>
+<p>RankNet和lambdaRank都可以看作是以上框架的一个实例。</p>
+<p>1.以概率的视角构建loss fuction</p>
+<p>给定一个文档list, <img src="https://www.zhihu.com/equation?tex=y" alt="[公式]"> 表示每个文档在一次排序中的相关分数(可以理解为label), <img src="https://www.zhihu.com/equation?tex=s" alt="[公式]"> 表示每个文档的预估分数， <img src="https://www.zhihu.com/equation?tex=%5Cpi" alt="[公式]"> 表示在给定预估分数 <img src="https://www.zhihu.com/equation?tex=s" alt="[公式]"> 的情况下，预估排序一种分布，loss function定义为在给定 <img src="https://www.zhihu.com/equation?tex=s" alt="[公式]"> 的情况下相关性分数 <img src="https://www.zhihu.com/equation?tex=y" alt="[公式]"> 的似然函数：</p>
+<p>$$\iota(y,s)=-log_2P(y|s)=-log_2\sum_{\pi \in \prod}P(y|s,\pi)P(\pi|s)$$</p>
+<p>因为<img src="https://www.zhihu.com/equation?tex=P(%5Cpi%7Cs)" alt="[公式]">是未知的，可以使用EM算法迭代求解，<strong>E步：在现有参数下根据<img src="https://www.zhihu.com/equation?tex=P(%5Cpi%7Cs)" alt="[公式]">计算 <img src="https://www.zhihu.com/equation?tex=%5Cpi" alt="[公式]"> ，M步：根据E步的假设，优化loss计算参数更新并更新该分布参数</strong>。</p>
+<p>2.在这个框架下看lambdaRank</p>
+
+        
+    </div>
+    </div>
+
+    <div class="article-badge">
+        
+        
+    </div>
+
+</div>
+
+<footer class="article-footer">
+    <div class="article-more-info">
+    <div class="article-date">
+  <time datetime="2021-12-25T08:27:32.000Z" itemprop="datePublished">2021-12-25</time>
+</div>
+    
+    
+        <div class="article-tag">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%90%9C%E7%B4%A2%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">搜索排序算法</a></li></ul>
+        </div>
+    
+    </div>
+</footer>
+
+</article>
+
+    
+  
+
+  
+</div>
+
+                </section>
+            </section>
+
+            
+            <aside class="sidebar ">
+                
+
+
+<div class="widget" id="widget">
+    
+      
+    
+      
+
+    
+      
+  <div class="widget-wrap widget-tags">
+    <div class="widget-title"><span>Tags</span></div>
+    <div class="widget-inner">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%90%9C%E7%B4%A2%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">搜索排序算法</a></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap widget-recent-posts">
+    <div class="widget-title"><span>Recent Posts</span></div>
+    <div class="widget-inner">
+      <ul>
+        
+          <li>
+            <a href="/2021/12/26/hello-word/">hello-word</a>
+          </li>
+        
+          <li>
+            <a href="/2021/12/26/C-%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8%EF%BC%881%EF%BC%89/">C++顺序容器（1）</a>
+          </li>
+        
+          <li>
+            <a href="/2021/12/25/C-like-classes-pointer-1/">C++ like classes pointer (1)</a>
+          </li>
+        
+          <li>
+            <a href="/2021/12/25/LTR/">LTR</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget-wrap widget-archive">
+    <div class="widget-title"><span>Archive</span></div>
+    <div class="widget-inner">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/">2021</a></li></ul>
+    </div>
+  </div>
+
+
+    
+</div>
+
+<div id="backtop"><i class="icon icon-arrow-up"></i></div>
+            </aside>
+            
+        </div>
+    </div>
+
+    <footer class="footer">
+    <div class="footer-wave">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#3c4859" fill-opacity="1" d="M0,160L60,181.3C120,203,240,245,360,240C480,235,600,181,720,186.7C840,192,960,256,1080,261.3C1200,267,1320,213,1380,186.7L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>
+    </div>
+
+    <div class="footer-wrap">
+        <div class="footer-inner"> 
+            blog of vino &copy; 2021<br>
+            Powered By Hexo · Theme By <a href="https://github.com/lh1me/hexo-theme-aomori" target="_blank">Aomori</a>
+        </div>
+    </div>
+
+</footer>
+
+
+
+
+
+
+<script src="/dist/build.js?1637200696663.js"></script>
+
+
+<script src="/dist/custom.js?1637200696663.js"></script>
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>
