@@ -22,7 +22,7 @@
 
   
 
-  <title>fristPage.md | blog of vino</title>
+  <title>搜索引擎索引 | blog of vino</title>
 
   
 
@@ -96,16 +96,18 @@
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">fristPage.md</h1>
+          <h1 class="title-wrap">搜索引擎索引</h1>
           <h2 class="title-sub-wrap">
             <strong>vino</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2021-11-02T15:08:26.000Z" itemprop="datePublished">2021-11-02</time>
+            <time  class="article-date" datetime="2021-11-14T11:45:23.000Z" itemprop="datePublished">2021-11-14</time>
           </h2>
           <ul class="wrap-list dark">
   
 </ul>
           <ul class="wrap-list dark">
+  
+    <li><a href="/tags/%E6%90%9C%E7%B4%A2/">🏷️ 搜索</a></li>
   
 </ul>
         </div>
@@ -129,7 +131,38 @@
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        
+        <h1 id="搜索引擎索引"><a href="#搜索引擎索引" class="headerlink" title="搜索引擎索引"></a>搜索引擎索引</h1><h2 id="1-索引基础"><a href="#1-索引基础" class="headerlink" title="1 索引基础"></a>1 索引基础</h2><p><strong>单词——文档矩阵</strong>：表达两者之间所具有的一种包含关系的概念模型。</p>
+<p><img src="http://maofg.site/images/201703/word-doc.jpg"></p>
+<p>搜索引擎的索引其实就是实现单词—文档矩阵的具体数据结构。可以有不同的方式实现上述的概念模型。但是各项试验数据表明，倒排索引是单词到文档映射关系的最佳实现方式。</p>
+<p><strong>倒排索引的基本概念</strong></p>
+<p>文档、文档集合、文档编号、单词编号、倒排索引、单词词典、倒排列表、倒排文件。</p>
+<h2 id="2-单词词典"><a href="#2-单词词典" class="headerlink" title="2 单词词典"></a>2 单词词典</h2><p>单词词典用来维护文档集合中出现过的所有单词的相关信息，同时记录某个单词对应的倒排列表在倒排列表中的位置信息。</p>
+<p>对于一个规模很大的文档集合来说，如何快速定位某个单词，直接影响到搜索速度，所以需要高效的数据结构来对单词词典进行构建和查找，常用的数据结构包括哈希加链表结构和树形词典结构。</p>
+<p><strong>哈希加链表</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/280b3aaadeead9e2c75435bd1a3dae8c.png" alt="256颜色表的索引表_搜索引擎单词词典和倒排列表_那些年灬的羁绊的博客-CSDN博客"></p>
+<p><strong>树形结构</strong></p>
+<p>B树</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/6925065-a6a08a980b506300?imageMogr2/auto-orient/strip%7CimageView2/2/w/800/format/webp" alt="img"></p>
+<h3 id="3-倒排列表"><a href="#3-倒排列表" class="headerlink" title="3 倒排列表"></a>3 倒排列表</h3><p>倒排列表用来记录哪些文档包含了某个单词。一般在文档集合中会有很多文档包含某个单词，每个文档会记录文档编号（DocID），单词在这个文档中出现的次数（TF）及单词在文档中哪些闻之出现过等信息，这样与一个文档相关的信息被称为倒排索引项（posting），包含这个单词的一系列倒排索引项形成了列表结构，这就是牧歌单词对应的倒排列表。</p>
+<h4 id="4-建立索引"><a href="#4-建立索引" class="headerlink" title="4 建立索引"></a>4 建立索引</h4><h3 id="4-1-两遍文档遍历法"><a href="#4-1-两遍文档遍历法" class="headerlink" title="4.1 两遍文档遍历法"></a>4.1 两遍文档遍历法</h3><p>顾名思义，此方法需要对文档集合进行两遍扫描，并且此方法完全是在内存中完成索引的创建过程。</p>
+<p>第一遍扫描的主要目的是：获得一些统计信息，并根据这些统计信息分配内存等资源，同时建立好单词相对应的倒排列表在内存中的位置，即主要做些资源准备工作。</p>
+<p>第二遍扫描，开始真正建立每个单词的倒排列表信息。</p>
+<p>此方法完全是在内存中构建，对内存的消耗要求过高，且需要进行两遍扫描，速度不足。</p>
+<h3 id="4-2-排序法"><a href="#4-2-排序法" class="headerlink" title="4.2 排序法"></a>4.2 排序法</h3><p>该方法在建立索引的过程中，始终在内存中分配固定大小空间，用于存放中间结果和词典信息。</p>
+<p><strong>中间结果内存排序</strong>：</p>
+<p>1、读入文档后，对文档进行编号，赋予文档唯一的ID，并对文档内容进行解析，同时建立单词词典、三元组（单词ID，文档ID，单词频率）</p>
+<p>2、分配的内存被占满后，对三元组中间结果排序：首先单词ID大小排序，其次是文档ID。</p>
+<p>3、将排序好的三元组写入磁盘临时文件。</p>
+<p>4、所有文档处理完之后，对所有中间结果进行合并：合并过程中，将不同中间结果的同一个单词ID的三元组进行合并。</p>
+<h3 id="4-3-归并法"><a href="#4-3-归并法" class="headerlink" title="4.3 归并法"></a>4.3 归并法</h3><p>排序法分配固定大小的内存，但是在分配的内存定额被消耗完之后，排序法只是将中间结果写入磁盘，而词典信息一直在内存中进行维护，随着处理的文档越来越多，后期中间结果可用内存越来越少。</p>
+<p>归并法整体流程与排序法大致相同，具体实现方式中有较大差异。</p>
+<p>归并法在内存中建立一个完整的索引结构，将中间结果写入磁盘文件时会将内存中的倒排索引写入临时文件，合并时针对每个单词的倒排列表进行合并。</p>
+<h2 id="5-动态索引"><a href="#5-动态索引" class="headerlink" title="5 动态索引"></a>5 动态索引</h2><p>场景：建好初始的索引之后，后续不断有新文档进入系统，同时原先的文档集合内有可能被删除或者内容更改。</p>
+<p>结构：倒排索引，临时索引和已删除文档列表。</p>
+<p>用户输入查询请求，搜索引擎同时从倒排索引和临时索引中读取用户查询单词列表（临时索引是在内存中实时建立的倒排索引，其结构和倒排索引一样），找到包含用户查询的文档集合，并对两个结果合并，之后利用已删除的文档列表进行过滤。</p>
+<h2 id="6-索引更新策略"><a href="#6-索引更新策略" class="headerlink" title="6 索引更新策略"></a>6 索引更新策略</h2><p>考虑将临时索引的内容更新到磁盘索引中，以释放内存空间来容纳后续进来的新进文档，此时要考虑合理有效的索引更新策略。</p>
+<h3 id="6-1-完全重建策略"><a href="#6-1-完全重建策略" class="headerlink" title="6.1 完全重建策略"></a>6.1 完全重建策略</h3><p>即当新增文档达到一定的数量的，将新增文档和原来的老文档进行合并，然后利用前章节提到的建立索引的方法，对所有的文档重新建立索引。</p>
+<h3 id="6-2再合并策略"><a href="#6-2再合并策略" class="headerlink" title="6.2再合并策略"></a>6.2再合并策略</h3>
       </section>
 
       
@@ -141,8 +174,8 @@
     
     <div class="card-text">
       
-        <a href="/2021/11/14/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E7%B4%A2%E5%BC%95/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">搜索引擎索引</h2>
+        <a href="/2021/12/25/C-like-classes-pointer-1/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">C++ like classes pointer (1)</h2>
         </a>
       
       <div class="card-text--row">Newer</div>
@@ -156,8 +189,8 @@
     
     <div class="card-text">
       
-        <a href="/2021/11/02/hello-world/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">Hello World</h2>
+        <a href="/2021/11/02/fristPage-md/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">fristPage.md</h2>
         </a>
       
       <div class="card-text--row">Older</div>

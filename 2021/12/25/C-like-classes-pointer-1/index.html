@@ -22,7 +22,7 @@
 
   
 
-  <title>fristPage.md | blog of vino</title>
+  <title>C++ like classes pointer (1) | blog of vino</title>
 
   
 
@@ -96,16 +96,18 @@
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">fristPage.md</h1>
+          <h1 class="title-wrap">C++ like classes pointer (1)</h1>
           <h2 class="title-sub-wrap">
             <strong>vino</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2021-11-02T15:08:26.000Z" itemprop="datePublished">2021-11-02</time>
+            <time  class="article-date" datetime="2021-12-25T08:27:32.000Z" itemprop="datePublished">2021-12-25</time>
           </h2>
           <ul class="wrap-list dark">
   
 </ul>
           <ul class="wrap-list dark">
+  
+    <li><a href="/tags/C/">🏷️ C++</a></li>
   
 </ul>
         </div>
@@ -129,7 +131,31 @@
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        
+        <h1 id="Like-classes-pointer"><a href="#Like-classes-pointer" class="headerlink" title="Like classes pointer"></a>Like classes pointer</h1><p><strong>智能指针</strong> shared_ptr, unique_ptr</p>
+<h3 id="1-为什么要有智能指针？"><a href="#1-为什么要有智能指针？" class="headerlink" title="1.为什么要有智能指针？"></a>1.为什么要有智能指针？</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">remodel</span><span class="params">(std::string &amp; str)</span></span>&#123;</span><br><span class="line">		std::string * ps = <span class="keyword">new</span> std::<span class="built_in">string</span>(str);</span><br><span class="line">		...</span><br><span class="line">		str = * ps;</span><br><span class="line">		delte ps;<span class="comment">//如果忘记了写delete，就会造成内存泄漏。</span></span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果ps有一个析构函数，该析构函数在它过期时释放它占据的内存，就完美了。可是ps是一个常规指针，不是一个对象，所以解决办法是创造一个like classes pointer。</p>
+<h3 id="2-如何创造一个like-classes-pinter？类似标准库的源代码"><a href="#2-如何创造一个like-classes-pinter？类似标准库的源代码" class="headerlink" title="2.如何创造一个like classes pinter？类似标准库的源代码"></a>2.如何创造一个like classes pinter？类似标准库的源代码</h3><p>我们的目标就是创造一个对象，但是具有指针所有的功能；</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">shared_ptr</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  T* px;</span><br><span class="line">  <span class="keyword">long</span>* pn;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">shared_ptr</span> (T* p):<span class="built_in">px</span>(p);</span><br><span class="line">  T&amp; <span class="keyword">operator</span>*() <span class="keyword">const</span>&#123;</span><br><span class="line">     <span class="keyword">return</span> *px;</span><br><span class="line">  &#125;</span><br><span class="line">  T* <span class="keyword">operator</span>-&gt;() <span class="keyword">const</span>&#123;</span><br><span class="line">     <span class="keyword">return</span> px;</span><br><span class="line">  &#125;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-如何使用智能指针？"><a href="#3-如何使用智能指针？" class="headerlink" title="3.如何使用智能指针？"></a>3.如何使用智能指针？</h3><p>以remodel函数为例,智能指针模板位于std名称空间。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;memory&gt;</span> <span class="comment">//必须包含的头文件</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">remodel</span><span class="params">(std::string &amp; str)</span></span>&#123;</span><br><span class="line">    <span class="function">std::shared_ptr&lt;std::string&gt; <span class="title">ps</span> <span class="params">(<span class="keyword">new</span> std::string(str))</span></span>;<span class="comment">//将指向string的指针替换为指向string的智能指针对象；</span></span><br><span class="line">    ....</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">weird_thing</span>())</span><br><span class="line">      <span class="keyword">throw</span> <span class="built_in">exception</span>();</span><br><span class="line">    str = * ps;</span><br><span class="line">    <span class="comment">//no delete,and no longer needed</span></span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-tips"><a href="#4-tips" class="headerlink" title="4.tips"></a>4.tips</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">string <span class="title">vacation</span><span class="params">(<span class="string">&quot;i wandered lonely as a cloud&quot;</span>)</span></span>;</span><br><span class="line"><span class="function">shared_ptr&lt;string&gt; <span class="title">pvac</span><span class="params">(&amp;vacation)</span></span>; <span class="comment">//no allow</span></span><br></pre></td></tr></table></figure>
+
+<p>pvac过期时，delete运算符会作用于非堆内存。vacation对象是存储在栈里面，而delete只作用于栈内存。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">auto_ptr&lt;string&gt; <span class="title">ps</span> <span class="params">(<span class="keyword">new</span> string(<span class="string">&quot;vacation&quot;</span>))</span></span>;</span><br><span class="line">auto_ptr&lt;string&gt; vacation;</span><br><span class="line">vacation = ps;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果vacation和ps是常规指针，则两个指针指向同一个string对象，这是不允许的，因为程序将试图删除一个对象两次，一次是ps过期时，一次是vacation过期时。如何避免？</p>
+<ul>
+<li>定义赋值运算符；执行深复制。</li>
+<li>建立所有权概念，对于特定的对象，只有一个智能指针拥有它，这样只有拥有对象的智能指针的构造函数可以删除它，然后让赋值操作转换所有权。这是auto_ptr和unique_ptr的策略。</li>
+<li>创造更高智能的指针，跟踪特定对象的智能指针数（引用计数），赋值时，计数加1，过期时计数减1，仅当最后一个指针过期时，才调用delete。这是shared_ptr的策略。</li>
+</ul>
+<h3 id="5-如何选择智能指针？"><a href="#5-如何选择智能指针？" class="headerlink" title="5.如何选择智能指针？"></a>5.如何选择智能指针？</h3><p>如果程序需要多个指向同一对象的指针，应选择shared_ptr；</p>
+<p>否则考虑使用unique_ptr;</p>
+<p>如果函数使用new分配内存，并返回指向该内存的指针，将其返回类型生命为unique_ptr是一个不错的选择。</p>
+
       </section>
 
       
@@ -141,8 +167,8 @@
     
     <div class="card-text">
       
-        <a href="/2021/11/14/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E7%B4%A2%E5%BC%95/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">搜索引擎索引</h2>
+        <a href="/2021/12/25/LTR/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">LTR</h2>
         </a>
       
       <div class="card-text--row">Newer</div>
@@ -156,8 +182,8 @@
     
     <div class="card-text">
       
-        <a href="/2021/11/02/hello-world/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">Hello World</h2>
+        <a href="/2021/11/14/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E7%B4%A2%E5%BC%95/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">搜索引擎索引</h2>
         </a>
       
       <div class="card-text--row">Older</div>

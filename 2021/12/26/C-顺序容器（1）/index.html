@@ -22,7 +22,7 @@
 
   
 
-  <title>fristPage.md | blog of vino</title>
+  <title>C++顺序容器（1） | blog of vino</title>
 
   
 
@@ -96,16 +96,18 @@
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">fristPage.md</h1>
+          <h1 class="title-wrap">C++顺序容器（1）</h1>
           <h2 class="title-sub-wrap">
             <strong>vino</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2021-11-02T15:08:26.000Z" itemprop="datePublished">2021-11-02</time>
+            <time  class="article-date" datetime="2021-12-26T07:58:07.000Z" itemprop="datePublished">2021-12-26</time>
           </h2>
           <ul class="wrap-list dark">
   
 </ul>
           <ul class="wrap-list dark">
+  
+    <li><a href="/tags/C/">🏷️ C++</a></li>
   
 </ul>
         </div>
@@ -129,35 +131,79 @@
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        
+        <p>定义：它将单一元素聚集起来成为容器，然后根据位置来存储和访问这些元素。</p>
+<p>标准库定义了三种顺序容器类型：vector、list和deque；标准库还提供了三种容器适配器：stack、queue和priority_queue</p>
+<h2 id="1-顺序容器的定义"><a href="#1-顺序容器的定义" class="headerlink" title="1 顺序容器的定义"></a>1 顺序容器的定义</h2><h3 id="1-1-容器元素初始化的方法"><a href="#1-1-容器元素初始化的方法" class="headerlink" title="1,1 容器元素初始化的方法"></a>1,1 容器元素初始化的方法</h3><ul>
+<li>为了定义一个容器对象，必须包含相关的头文件。eg：include <vector>；</li>
+<li>所有的容器都是类模板；</li>
+<li>所有的容器都定义了默认的构造函数；</li>
+<li>容器元素初始化的方法：</li>
+</ul>
+<p>（1）<strong>将一个容器初始化为另一个容器的副本</strong>；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vector&lt;int&gt; ivec;</span><br><span class="line">vector&lt;int&gt; ivec2(ivec);</span><br></pre></td></tr></table></figure>
+
+<p><font color=red>将一个容器复制给另一个容器时，类型必须匹配，容器类型和元素类型都必须相同</font></p>
+<p>（2）<strong>初始化为一段元素的副本</strong>；</p>
+<p>（3）<strong>分配和初始化指定数目的元素</strong>；</p>
+<p><font color=red>接受容器大小做形参的构造函数只适用于顺序容器</font></p>
+<h3 id="1-2-容器内元素的类型约束"><a href="#1-2-容器内元素的类型约束" class="headerlink" title="1,2 容器内元素的类型约束"></a>1,2 容器内元素的类型约束</h3><p>两个约束：</p>
+<ul>
+<li>元素对象必须支持赋值运算；</li>
+<li>元素类型的对象必须可以复制；</li>
+</ul>
+<h2 id="2-迭代器和迭代器范围"><a href="#2-迭代器和迭代器范围" class="headerlink" title="2 迭代器和迭代器范围"></a>2 迭代器和迭代器范围</h2><p>常用迭代器运算</p>
+<table>
+<thead>
+<tr>
+<th align="center">常用迭代器运算</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">*iter    返回迭代器iter所指向的元素的引用</td>
+</tr>
+<tr>
+<td align="center">iter-&gt;mem  对iter进行解引用，获取指定元素中名为men的成员</td>
+</tr>
+<tr>
+<td align="center">++iter</td>
+</tr>
+<tr>
+<td align="center">iter++</td>
+</tr>
+<tr>
+<td align="center">iter–</td>
+</tr>
+<tr>
+<td align="center">–iter</td>
+</tr>
+<tr>
+<td align="center">==</td>
+</tr>
+<tr>
+<td align="center">!=</td>
+</tr>
+</tbody></table>
+<p>![截屏2021-12-26 下午4.31.50](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-12-26 下午4.31.50.png)</p>
+<p>C++语言使用一堆迭代器标记迭代器范围：分别指向同一个容器中的第一个元素和超出末端的下一位置；左闭合区间。</p>
+<ul>
+<li>当first和last相等时，迭代器范围为空；</li>
+<li>不相等时，迭代器范围至少有一个元素；</li>
+</ul>
+
       </section>
 
       
       
         <nav class="article-nav">
           
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-    <div class="card-text">
-      
-        <a href="/2021/11/14/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E7%B4%A2%E5%BC%95/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">搜索引擎索引</h2>
-        </a>
-      
-      <div class="card-text--row">Newer</div>
-    </div>
-  </article>
-</div>
-          
           
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
     
     <div class="card-text">
       
-        <a href="/2021/11/02/hello-world/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">Hello World</h2>
+        <a href="/2021/12/25/LTR/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">LTR</h2>
         </a>
       
       <div class="card-text--row">Older</div>
