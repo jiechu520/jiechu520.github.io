@@ -1,347 +1,851 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cn">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="theme-color" content="#3367D6"/>
-  <link rel="apple-touch-icon" href="/icons-192.png">
-  <link rel="manifest" href="/manifest.json">
-  
-  <meta name="generator" content="Hexo 5.4.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-  
+<link rel="stylesheet" href="/css/main.css">
 
-  
 
-  
-    <meta name="author" content="vino">
-  
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-  
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
-  
+  <meta property="og:type" content="website">
+<meta property="og:title" content="blog of vino">
+<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:site_name" content="blog of vino">
+<meta property="og:locale">
+<meta property="article:author" content="vino">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'cn'
+  };
+</script>
 
   <title>blog of vino</title>
-
   
 
-  
-    <link rel="shortcut icon" href="/favicon.ico">
-  
 
-  
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@1.1.3/index.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlightjs@9.16.2/styles/monokai.css">
-  
 
-  
-<link rel="stylesheet" href="/css/style.css">
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
-<body>
-  <div class="root-container">
-    
-<!-- header container -->
-<header class="header-container">
-  
-    <div class="post-image" style="background-image: url(https://qiniu.sukoshi.xyz/src/images/68686407_p0.jpg)"></div>
-  
 
-  <!-- navbar -->
-<nav class="navbar">
-  <div class="navbar-content">
-    <!-- logo -->
-    <div class="navbar-logo">
-      <a href="/">
-        
-          blog of vino
-        
-      </a>
-    </div>
-    <!-- link -->
-    <div class="navbar-link">
-      <div class="navbar-btn">
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-      <ul class="navbar-list">
-        
-          <li class="navbar-list-item"><a href="/">首页</a></li>
-        
-          <li class="navbar-list-item"><a href="/links">友链</a></li>
-        
-          <li class="navbar-list-item"><a href="/about">关于</a></li>
-        
-      </ul>
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
   </div>
-</nav>
 
-  
-  
-    <div class="header-content">
-      <div class="post-text layout-block layout-padding">
-        <h1 class="title-wrap">blog of vino</h1>
-        
-          <h2 class="title-sub-wrap">好好生活，慢慢相遇</h2>
-        
-      </div>
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">blog of vino</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">好好生活，慢慢相遇</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
     </div>
-  
-
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-  
-</header>
-
-    <!-- 首页 -->
-
-<!-- post list container -->
-<div class="body-container">
-  <div class="content-container layout-block article-list">
-    
-      <div class="article-item layout-padding">
-        <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
-          
-
-          <div class="card-text">
-            
-              <a href="/2021/12/26/C-%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8%EF%BC%881%EF%BC%89/" itemprop="url">
-                <h2 class="card-text--title">C++顺序容器（1）</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="" datetime="2021-12-26T07:58:07.000Z" itemprop="datePublished">2021-12-26</time>
-            </div>
-            <ul class="wrap-list light">
-  
-</ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/C/">🏷️ C++</a></li>
-  
-</ul>
-          </div>
-        </article>
-      </div>
-    
-      <div class="article-item layout-padding">
-        <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
-          
-
-          <div class="card-text">
-            
-              <a href="/2021/12/25/LTR/" itemprop="url">
-                <h2 class="card-text--title">LTR</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="" datetime="2021-12-25T08:27:32.000Z" itemprop="datePublished">2021-12-25</time>
-            </div>
-            <ul class="wrap-list light">
-  
-</ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/%E6%90%9C%E7%B4%A2%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">🏷️ 搜索排序算法</a></li>
-  
-</ul>
-          </div>
-        </article>
-      </div>
-    
-      <div class="article-item layout-padding">
-        <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
-          
-
-          <div class="card-text">
-            
-              <a href="/2021/12/25/C-like-classes-pointer-1/" itemprop="url">
-                <h2 class="card-text--title">C++ like classes pointer (1)</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="" datetime="2021-12-25T08:27:32.000Z" itemprop="datePublished">2021-12-25</time>
-            </div>
-            <ul class="wrap-list light">
-  
-</ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/C/">🏷️ C++</a></li>
-  
-</ul>
-          </div>
-        </article>
-      </div>
-    
-      <div class="article-item layout-padding">
-        <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
-          
-
-          <div class="card-text">
-            
-              <a href="/2021/11/14/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E7%B4%A2%E5%BC%95/" itemprop="url">
-                <h2 class="card-text--title">搜索引擎索引</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="" datetime="2021-11-14T11:45:23.000Z" itemprop="datePublished">2021-11-14</time>
-            </div>
-            <ul class="wrap-list light">
-  
-</ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/%E6%90%9C%E7%B4%A2/">🏷️ 搜索</a></li>
-  
-</ul>
-          </div>
-        </article>
-      </div>
-    
-      <div class="article-item layout-padding">
-        <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
-          
-
-          <div class="card-text">
-            
-              <a href="/2021/11/02/fristPage-md/" itemprop="url">
-                <h2 class="card-text--title">fristPage.md</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="" datetime="2021-11-02T15:08:26.000Z" itemprop="datePublished">2021-11-02</time>
-            </div>
-            <ul class="wrap-list light">
-  
-</ul>
-            <ul class="wrap-list light">
-  
-</ul>
-          </div>
-        </article>
-      </div>
-    
-      <div class="article-item layout-padding">
-        <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
-          
-
-          <div class="card-text">
-            
-              <a href="/2021/11/02/hello-world/" itemprop="url">
-                <h2 class="card-text--title">Hello World</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="" datetime="2021-11-02T07:02:00.216Z" itemprop="datePublished">2021-11-02</time>
-            </div>
-            <ul class="wrap-list light">
-  
-</ul>
-            <ul class="wrap-list light">
-  
-</ul>
-          </div>
-        </article>
-      </div>
-    
   </div>
 </div>
 
-<!-- page container -->
 
 
 
-    <!-- footer container -->
-<footer id="footer" class="footer">
-  <div class="footer-container">
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
     
-    <div class="social-icons">
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content index posts-expand">
+            
       
-        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/26/C-%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8%EF%BC%881%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="vino">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog of vino">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/26/C-%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8%EF%BC%881%EF%BC%89/" class="post-title-link" itemprop="url">C++顺序容器（1）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-12-26 15:58:07 / Modified: 16:40:09" itemprop="dateCreated datePublished" datetime="2021-12-26T15:58:07+08:00">2021-12-26</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
-        
-      
-        
-      
-        
-          <a href="https://github.com/jiechu520/" class="soft-size--primary soft-style--box" target="_blank" rel="noopener noreferrer">
-            <svg class="icon icon-github" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M64.6 512c0 195.6 125.4 361.9 300.1 422.9 23.5 5.9 19.9-10.8 19.9-22.2v-77.6c-135.8 15.9-141.3-74-150.5-89-18.5-31.5-61.9-39.5-49-54.5 31-15.9 62.5 4 98.9 58 26.4 39.1 77.9 32.5 104.1 26 5.7-23.5 17.9-44.5 34.7-60.9-140.7-25.2-199.4-111.1-199.4-213.3 0-49.5 16.4-95.1 48.4-131.8-20.4-60.6 1.9-112.4 4.9-120.1 58.2-5.2 118.5 41.6 123.3 45.3 33.1-8.9 70.8-13.7 112.9-13.7 42.4 0 80.3 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.4-43.9 2.9 7.7 24.7 58.3 5.5 118.1 32.5 36.8 49 82.8 49 132.4 0 102.3-59 188.3-200.2 213.2 23.5 23.3 38.1 55.5 38.1 91.1v112.7c0.8 9 0 17.9 15.1 17.9C832.7 877 960.4 709.4 960.4 512.1c0-247.5-200.6-447.9-447.9-447.9C265 64.1 64.6 264.5 64.6 512z"></path>
-</svg>
-          </a>
-        
+          <p>定义：它将单一元素聚集起来成为容器，然后根据位置来存储和访问这些元素。</p>
+<p>标准库定义了三种顺序容器类型：vector、list和deque；标准库还提供了三种容器适配器：stack、queue和priority_queue</p>
+<h2 id="1-顺序容器的定义"><a href="#1-顺序容器的定义" class="headerlink" title="1 顺序容器的定义"></a>1 顺序容器的定义</h2><h3 id="1-1-容器元素初始化的方法"><a href="#1-1-容器元素初始化的方法" class="headerlink" title="1,1 容器元素初始化的方法"></a>1,1 容器元素初始化的方法</h3><ul>
+<li>为了定义一个容器对象，必须包含相关的头文件。eg：include <vector>；</li>
+<li>所有的容器都是类模板；</li>
+<li>所有的容器都定义了默认的构造函数；</li>
+<li>容器元素初始化的方法：</li>
+</ul>
+<p>（1）<strong>将一个容器初始化为另一个容器的副本</strong>；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vector&lt;int&gt; ivec;</span><br><span class="line">vector&lt;int&gt; ivec2(ivec);</span><br></pre></td></tr></table></figure>
+
+<p><font color=red>将一个容器复制给另一个容器时，类型必须匹配，容器类型和元素类型都必须相同</font></p>
+<p>（2）<strong>初始化为一段元素的副本</strong>；</p>
+<p>（3）<strong>分配和初始化指定数目的元素</strong>；</p>
+<p><font color=red>接受容器大小做形参的构造函数只适用于顺序容器</font></p>
+<h3 id="1-2-容器内元素的类型约束"><a href="#1-2-容器内元素的类型约束" class="headerlink" title="1,2 容器内元素的类型约束"></a>1,2 容器内元素的类型约束</h3><p>两个约束：</p>
+<ul>
+<li>元素对象必须支持赋值运算；</li>
+<li>元素类型的对象必须可以复制；</li>
+</ul>
+<h2 id="2-迭代器和迭代器范围"><a href="#2-迭代器和迭代器范围" class="headerlink" title="2 迭代器和迭代器范围"></a>2 迭代器和迭代器范围</h2><p>常用迭代器运算</p>
+<table>
+<thead>
+<tr>
+<th align="center">常用迭代器运算</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">*iter    返回迭代器iter所指向的元素的引用</td>
+</tr>
+<tr>
+<td align="center">iter-&gt;mem  对iter进行解引用，获取指定元素中名为men的成员</td>
+</tr>
+<tr>
+<td align="center">++iter</td>
+</tr>
+<tr>
+<td align="center">iter++</td>
+</tr>
+<tr>
+<td align="center">iter–</td>
+</tr>
+<tr>
+<td align="center">–iter</td>
+</tr>
+<tr>
+<td align="center">==</td>
+</tr>
+<tr>
+<td align="center">!=</td>
+</tr>
+</tbody></table>
+<p>![截屏2021-12-26 下午4.31.50](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-12-26 下午4.31.50.png)</p>
+<p>C++语言使用一堆迭代器标记迭代器范围：分别指向同一个容器中的第一个元素和超出末端的下一位置；左闭合区间。</p>
+<ul>
+<li>当first和last相等时，迭代器范围为空；</li>
+<li>不相等时，迭代器范围至少有一个元素；</li>
+</ul>
+
       
     </div>
-     
-    <p>&copy; 2021 <a href="/" target="_blank">vino</a></p>
 
     
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
 
-    <p>Powered by <a href="https://hexo.io" target="_blank" rel="noopener noreferrer">Hexo</a> Theme - <a href="https://github.com/miiiku/flex-block" target="_blank" rel="noopener noreferrer author">flex-block</a></p>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/25/LTR/">
 
-    <p>
-      <a href="javascript:;" id="theme-light">🌞 浅色</a>
-      <a href="javascript:;" id="theme-dark">🌛 深色</a>
-      <a href="javascript:;" id="theme-auto">🤖️ 自动</a>
-    </p>
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="vino">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog of vino">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/25/LTR/" class="post-title-link" itemprop="url">LTR</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-12-25 16:27:32" itemprop="dateCreated datePublished" datetime="2021-12-25T16:27:32+08:00">2021-12-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-12-26 21:13:49" itemprop="dateModified" datetime="2021-12-26T21:13:49+08:00">2021-12-26</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="LTR"><a href="#LTR" class="headerlink" title="LTR"></a>LTR</h1><h2 id="Learning-to-ranks算法：RankNet，LambdaRank，LambdaMart"><a href="#Learning-to-ranks算法：RankNet，LambdaRank，LambdaMart" class="headerlink" title="Learning to ranks算法：RankNet，LambdaRank，LambdaMart"></a>Learning to ranks算法：RankNet，LambdaRank，LambdaMart</h2><blockquote>
+<p>a. Burges, Chris, Tal Shaked, Erin Renshaw, Ari Lazier, Matt Deeds, Nicole Hamilton, and Greg Hullender. “Learning to Rank Using Gradient Descent.” 2005.<br>b. Burges, Chris, Robert Ragno, and Quoc Le. “Learning to Rank with Nonsmooth Cost Functions.” Proceedings of the Advances in Neural Information Processing Systems 19 (2007): 193–200.<br>c. Wu, Qiang, Christopher J. C. Burges, Krysta M. Svore, and Jianfeng Gao. “Adapting Boosting for Information Retrieval Measures.” 2009<br>d. Burges, Christopher JC. “From Ranknet to LambdaRank to LambdaMART: An Overview.” Microsoft Research Technical Report 11 (2010): 23–581.<br>e. Tsai, M.-F., Liu, T.-Y., Qin, T., Chen, H.-H., Ma, W.-Y.: Frank: a ranking method with fidelity loss. SIGIR 2007<br>f. Wang, Xuanhui, Cheng Li, Nadav Golbandi, Michael Bendersky, and Marc Najork. “The LambdaLoss Framework for Ranking Metric Optimization.” CIKM ’18. 20181.RankNet</p>
+</blockquote>
+<p>RankNet[a]的核心是<font color=red>提出了一种概率损失函数来学习Ranking Function</font>,并应用程序Ranking Function对文档进行排序。Ranking Function 可以是任意对参数可微的模型，并不依赖于特定的机器学习模型。RankNet是基于神经网络实现的，除此之外GBDT也可以应用于此框架。</p>
+<h4 id="1-1-相关性概率"><a href="#1-1-相关性概率" class="headerlink" title="1.1 相关性概率"></a>1.1 相关性概率</h4><p>给定任意一个query及文档对$(U_i,U_j)$ </p>
+<p>（1）预测相关性概率</p>
+<p>对于任一文档对$(U_i,U_j)$ ，模型输出的score分别为$s_i$,$s_j$,$s_i=f(U_i)$根据模型的预测，$U_i$比$U_j$排名更靠前或者说与query更相关的概率为：</p>
+<p>​                            $$P_{ij}=P(U_i&gt;U_j)=\frac{1}{1+e^-\delta(s_i-s_j)}$$</p>
+<p> 参数$\delta$决定sigmoid函数的形状，对最终结果影响不大，一般取1。</p>
+<p>（2）真实相关性概率</p>
+<p>对于训练数据中的$U_i$和$U_j$，它们都包含有一个与Query相关性的真实label，比如$U_i$与Query的相关性label为good，$U_j$与Query的相关性label为bad，那么显然$U_i$比$U_j$更相关。我们定义$U_i$比$U_j$更相关的真实概率为：</p>
+<p>$$\overline{P_ij}=\frac{1}{2}(1+S_{ij})$$</p>
+<p>如果$U_i$比$U_j$更相关，那么$S_{ij}$=1；如果$U_i$不如$U_j$相关，那么$S_{ij}$=−1；如果$U_i$、$U_j$与Query的相关程度相同，那么$S_{ij}$=0。通常，两个doc的relative relevance judgment可由人工标注或者从搜索日志中获取得到。</p>
+<h4 id="1-2-损失函数"><a href="#1-2-损失函数" class="headerlink" title="1.2 损失函数"></a>1.2 损失函数</h4><p>对于一个排序来说，RankNet是从各个doc之间的相对关系来衡量排序结果的好坏，排序的效果越好，那么意味着<font color=red>错误的相对关系的文档对就越少（模型将$U_i$排在$U_j$之前，但是真实label，$U_j$比$U_i$与Query更相关）</font>。RankNet本质上就是以<font color=red>更少的错误的pair为优化目标</font>。实际上，RankNet通过引入概率的思想：不是直接判断$U_i$排在$U_j$之前，而是说$U_i$以一定的概率排在$U_j$之前，即以最小化预测概率与真实概率之间的差距作为优化目标。很自然地，我们有了预测概率和真实概率，就可以使用交叉熵作为损失函数来衡量$P_{ij}$与$\overline{P_{ij}}$之间的差异。</p>
+<p>所以模型的损失函数为：</p>
+<p>$$C=-\overline{P_{ij}}logP_{ij}-(1-\overline{P_{ij}})log(1-p_{ij}))$$</p>
+<p>化简之后有：</p>
+<p>$$\begin{aligned} C_{ij}&amp;=-(\frac{1}{2}+S_{ij})log\frac{1}{1+e^-\delta(s_i-s_j)}-\frac{1}{2}(1-S_{ij})log\frac{e^-\delta(s_i-s_j)}{1+e^-\delta(s_i-s_j)} \ &amp;=-\frac{1}{2}(1+S_{ij})log\frac{1}{1+e^-\delta(s_i-s_j)}-\frac{1}{2}(1-S_ij)[-\delta(s_i-s_j)+log\frac{1}{1+e^-\delta(s_i-s_j)}]\ &amp;=\frac{1}{2}(1-S_{ij})\delta(s_i-s_j)+log(1+e^-\delta(s_i-s_j))\end{aligned}$$ </p>
+<p>当$S_{ij}=1$时有：</p>
+<p>$C=log(1+e^{-\delta(s_i-s_j)})$</p>
+<p>当$S_{ij}=-1$时有：</p>
+<p>$C=log(1+e^{-\delta(s_j-s_i)})$</p>
+<p>![截屏2021-07-13 下午11.50.20](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-07-13 下午11.50.20.png)</p>
+<p>由上图可以看出，（1）当p=0.0或者p=1.0即$S_{ij}=\pm1$,如果模型对两个doc的预测值相同，即$s_i-s_j=0$,此时$C_ij=log2$,损失函数的值仍大于0，此时模型还是会对这对doc pair做惩罚，迫使两个doc相互分离。（2）损失函数是一个类线性函数，可以有效减少异常样本数据对模型的影响，因此具有鲁棒性。</p>
+<p>RankNet损失函数同样存在一个问题，即当$S_{ij}=0$即当两个doc的label相同时，损失函数的值无法为0，这些样本会成为困难样本影响模型优化，[f]中提出了新的损失函数解决这一问题[e]。或者只考虑label不同的样本之间的关系。</p>
+<h4 id="1-3-合并概率"><a href="#1-3-合并概率" class="headerlink" title="1.3 合并概率"></a>1.3 合并概率</h4><p>上述的模型$P_{ij}$需要保持一致性，即如果$U_i$的相关性大于$U_j$,$U_j$的相关性大于$U_k$,则$U_i$的相关性也一定要大于$U_k$。</p>
+<h4 id="1-4-梯度下降"><a href="#1-4-梯度下降" class="headerlink" title="1.4 梯度下降"></a>1.4 梯度下降</h4><p>我们得到了一个可微的损失函数，就可以用随机梯度下降法更新模型的参数$\omega_k$，即</p>
+<p>$$\omega_k \rightarrow \omega_k-\eta\frac{\partial C}{\partial \omega_k}$$</p>
+<p>![截屏2021-07-14 上午12.19.25](/Users/chujie/Desktop/截屏2021-07-14 上午12.19.25.png)</p>
+<p>其中，$$\lambda_{ij}=\frac{\partial C(s_i-s_j)}{\partial s_i}=\sigma(\frac{1}{2}(1-S_{ij})-\frac{1}{1+e^{\sigma(s_i-s_j)}})$$</p>
+<h4 id="1-5-加速RankNet训练过程"><a href="#1-5-加速RankNet训练过程" class="headerlink" title="1.5 加速RankNet训练过程"></a>1.5 加速RankNet训练过程</h4><p>上面的每一对pair都会进行一次权重的更新，其实是可以对同一query下的所有文档pair全部带入神经网络进行前想预测，然后计算总差分并进行误差后向反馈，这样讲大大减少误差反向传播的次数。</p>
+<p>即，我们可以转而利用批梯度下降法：</p>
+<p>$$\frac{\partial C}{\partial \omega_k}=\sum_{(i,j)\in I}(\frac {\partial C_{ij}}{\partial s_i} \frac{\partial s_i}{\partial \omega_k}+\frac {\partial C_{ij}}{\partial s_j} \frac{\partial s_j}{\partial \omega_k})$$</p>
+<p>其中，$$\frac {\partial C_{ij}}{\partial s_i}=\frac{\partial C(s_i-s_j)}{\partial s_i}=\sigma(\frac{1}{2}(1-S_{ij})-\frac{1}{1+e^{\sigma(s_i-s_j)}})$$</p>
+<p>令$$\lambda_{ij}=\frac{\partial C_{ij}}{\partial s_i}$$,可以得到</p>
+<p>$$\frac {\partial C}{\omega_l}=\sum_{(i,j)\in I}\lambda_{ij}(\frac{\partial s_i}{\omega_k}-\frac{\partial s_j}{\omega_k}) \=\sum_{i}\lambda_i\frac{\partial s_i}{\omega_k}$$</p>
+<p>此时，$$\lambda_i=\sum_{j:(i,j)\in I}\lambda_{ij}-\sum_{k:(k,i)\in I}\lambda_{ki}$$</p>
+<p><font color=green>这里发生了从$\lambda_{ij}$到$\lambda_i$的变化，按照之前模型的定义，$\lambda_{ij}$与$U_i$,$U_j$两个文档的预测分数有关，而$\lambda_i$将$lambda_ij$与$\lambda_{ji}$相结合，反映的是单个文档的性质，$\lambda_i$决定了文档$U_i$在迭代中的移动方向和幅度，真实的排在$U_i$之前的文档越少，排在$U_i$之后的文档越多，那么文档$U_i$向前移动的幅度就越大。这表明每个f下次调序的方向和强度取决于同一Query下可以与其组成relative relevance judgment的“pair对”的其他不同label的文档。</font></p>
+<p>最初的RankNet使用随机梯度下降法，在doc-pair上进行迭代优化，而通过这种分解的方式可以针对单个文档计算参数更新值，大大加快训练速度，同时这种分解的方式也是lambdaRank和lambdaMart的基础。</p>
+<h3 id="2-lambdaRank"><a href="#2-lambdaRank" class="headerlink" title="2. lambdaRank"></a>2. lambdaRank</h3><p>RanKNet以错误pair最少为优化目标，考虑了doc-pair的顺序关系，但是为doc的未知却没有考虑，这种仅以错误pair数来评价排序的好坏是不够的，像NDCG或者ERR等评价指标就只关注top k个结果的排序，当我们采用RankNet算法时，往往无法以这些指标为优化目标进行迭代，所以RankNet的优化目标和IR评价指标之间还是存在gap。</p>
+<p>lambdaRank在pairwise损失函数的基础上定义了position-based weight，把交换两个文档引起的评价指标的变化作为其中的一个因子。</p>
+<p>改进后的$\lambda_{ij}$为：</p>
+<p>$$\lambda_{ij}=\frac{\partial C(s_i-s_j)}{\partial s_i}=\frac{-\sigma}{1+e^{\sigma(s_i-sj)}}|\Delta NDCG|$$</p>
+<p><font color=red>损失函数的梯度代表了文档下一次迭代优化的方向和强度，由于引入了IR评价指标，Lambda梯度更关注位置靠前的优质文档的排序位置的提升。有效的避免了下调位置靠前优质文档的位置这种情况的发生。LambdaRank相比RankNet的优势在于分解因式后训练速度变快，同时考虑了评价指标，直接对问题求解，效果更明显。</font></p>
+<h3 id="3-lambdaMart"><a href="#3-lambdaMart" class="headerlink" title="3. lambdaMart"></a>3. lambdaMart</h3><p>Mart定义了一个框架，lambdaRank重新定义了梯度，所以mart和lambda相结合就成了lambdaMart</p>
+<p>Mart的原理是在函数空间对函数进行求解，模型结果由多颗回归树组成，每棵树的拟合目标就是损失函数的梯度也就是lambda。</p>
+<p>![截屏2021-07-15 上午11.30.20](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-07-15 上午11.30.20.png)</p>
+<h3 id="4-相关论文"><a href="#4-相关论文" class="headerlink" title="4.相关论文"></a>4.相关论文</h3><blockquote>
+<p>Unbiased LambdaMART: An Unbiased Pairwise Learning-to-Rank Algorithm</p>
+</blockquote>
+<p>论文提出了一个pairwise的LTR方法，并提出了一个框架可以同时进行点击数据的去偏和使用成对损失函数的排序模型的训练。最后将其应用到LambdaMart算法，提出无偏的LambdaMart算法。</p>
+<blockquote>
+<p>The LambdaLoss Framework for Ranking Metric Optimization</p>
+</blockquote>
+<p>论文首先定义了一个通用的损失函数：</p>
+<p>$$L(\phi)=\frac {1}{|T|}\sum_{(x,y)\in T}\iota(y,\phi(x))$$</p>
+<p>LTR问题就是找到能够最小化损失函数的参数。</p>
+<p>RankNet和lambdaRank都可以看作是以上框架的一个实例。</p>
+<p>1.以概率的视角构建loss fuction</p>
+<p>给定一个文档list, <img src="https://www.zhihu.com/equation?tex=y" alt="[公式]"> 表示每个文档在一次排序中的相关分数(可以理解为label), <img src="https://www.zhihu.com/equation?tex=s" alt="[公式]"> 表示每个文档的预估分数， <img src="https://www.zhihu.com/equation?tex=%5Cpi" alt="[公式]"> 表示在给定预估分数 <img src="https://www.zhihu.com/equation?tex=s" alt="[公式]"> 的情况下，预估排序一种分布，loss function定义为在给定 <img src="https://www.zhihu.com/equation?tex=s" alt="[公式]"> 的情况下相关性分数 <img src="https://www.zhihu.com/equation?tex=y" alt="[公式]"> 的似然函数：</p>
+<p>$$\iota(y,s)=-log_2P(y|s)=-log_2\sum_{\pi \in \prod}P(y|s,\pi)P(\pi|s)$$</p>
+<p>因为<img src="https://www.zhihu.com/equation?tex=P(%5Cpi%7Cs)" alt="[公式]">是未知的，可以使用EM算法迭代求解，<strong>E步：在现有参数下根据<img src="https://www.zhihu.com/equation?tex=P(%5Cpi%7Cs)" alt="[公式]">计算 <img src="https://www.zhihu.com/equation?tex=%5Cpi" alt="[公式]"> ，M步：根据E步的假设，优化loss计算参数更新并更新该分布参数</strong>。</p>
+<p>2.在这个框架下看lambdaRank</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/25/C-like-classes-pointer-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="vino">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog of vino">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/25/C-like-classes-pointer-1/" class="post-title-link" itemprop="url">C++ like classes pointer (1)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-12-25 16:27:32 / Modified: 16:34:26" itemprop="dateCreated datePublished" datetime="2021-12-25T16:27:32+08:00">2021-12-25</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Like-classes-pointer"><a href="#Like-classes-pointer" class="headerlink" title="Like classes pointer"></a>Like classes pointer</h1><p><strong>智能指针</strong> shared_ptr, unique_ptr</p>
+<h3 id="1-为什么要有智能指针？"><a href="#1-为什么要有智能指针？" class="headerlink" title="1.为什么要有智能指针？"></a>1.为什么要有智能指针？</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">remodel</span><span class="params">(std::string &amp; str)</span></span>&#123;</span><br><span class="line">		std::string * ps = <span class="keyword">new</span> std::<span class="built_in">string</span>(str);</span><br><span class="line">		...</span><br><span class="line">		str = * ps;</span><br><span class="line">		delte ps;<span class="comment">//如果忘记了写delete，就会造成内存泄漏。</span></span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果ps有一个析构函数，该析构函数在它过期时释放它占据的内存，就完美了。可是ps是一个常规指针，不是一个对象，所以解决办法是创造一个like classes pointer。</p>
+<h3 id="2-如何创造一个like-classes-pinter？类似标准库的源代码"><a href="#2-如何创造一个like-classes-pinter？类似标准库的源代码" class="headerlink" title="2.如何创造一个like classes pinter？类似标准库的源代码"></a>2.如何创造一个like classes pinter？类似标准库的源代码</h3><p>我们的目标就是创造一个对象，但是具有指针所有的功能；</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">shared_ptr</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  T* px;</span><br><span class="line">  <span class="keyword">long</span>* pn;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">shared_ptr</span> (T* p):<span class="built_in">px</span>(p);</span><br><span class="line">  T&amp; <span class="keyword">operator</span>*() <span class="keyword">const</span>&#123;</span><br><span class="line">     <span class="keyword">return</span> *px;</span><br><span class="line">  &#125;</span><br><span class="line">  T* <span class="keyword">operator</span>-&gt;() <span class="keyword">const</span>&#123;</span><br><span class="line">     <span class="keyword">return</span> px;</span><br><span class="line">  &#125;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-如何使用智能指针？"><a href="#3-如何使用智能指针？" class="headerlink" title="3.如何使用智能指针？"></a>3.如何使用智能指针？</h3><p>以remodel函数为例,智能指针模板位于std名称空间。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;memory&gt;</span> <span class="comment">//必须包含的头文件</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">remodel</span><span class="params">(std::string &amp; str)</span></span>&#123;</span><br><span class="line">    <span class="function">std::shared_ptr&lt;std::string&gt; <span class="title">ps</span> <span class="params">(<span class="keyword">new</span> std::string(str))</span></span>;<span class="comment">//将指向string的指针替换为指向string的智能指针对象；</span></span><br><span class="line">    ....</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">weird_thing</span>())</span><br><span class="line">      <span class="keyword">throw</span> <span class="built_in">exception</span>();</span><br><span class="line">    str = * ps;</span><br><span class="line">    <span class="comment">//no delete,and no longer needed</span></span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-tips"><a href="#4-tips" class="headerlink" title="4.tips"></a>4.tips</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">string <span class="title">vacation</span><span class="params">(<span class="string">&quot;i wandered lonely as a cloud&quot;</span>)</span></span>;</span><br><span class="line"><span class="function">shared_ptr&lt;string&gt; <span class="title">pvac</span><span class="params">(&amp;vacation)</span></span>; <span class="comment">//no allow</span></span><br></pre></td></tr></table></figure>
+
+<p>pvac过期时，delete运算符会作用于非堆内存。vacation对象是存储在栈里面，而delete只作用于栈内存。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">auto_ptr&lt;string&gt; <span class="title">ps</span> <span class="params">(<span class="keyword">new</span> string(<span class="string">&quot;vacation&quot;</span>))</span></span>;</span><br><span class="line">auto_ptr&lt;string&gt; vacation;</span><br><span class="line">vacation = ps;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果vacation和ps是常规指针，则两个指针指向同一个string对象，这是不允许的，因为程序将试图删除一个对象两次，一次是ps过期时，一次是vacation过期时。如何避免？</p>
+<ul>
+<li>定义赋值运算符；执行深复制。</li>
+<li>建立所有权概念，对于特定的对象，只有一个智能指针拥有它，这样只有拥有对象的智能指针的构造函数可以删除它，然后让赋值操作转换所有权。这是auto_ptr和unique_ptr的策略。</li>
+<li>创造更高智能的指针，跟踪特定对象的智能指针数（引用计数），赋值时，计数加1，过期时计数减1，仅当最后一个指针过期时，才调用delete。这是shared_ptr的策略。</li>
+</ul>
+<h3 id="5-如何选择智能指针？"><a href="#5-如何选择智能指针？" class="headerlink" title="5.如何选择智能指针？"></a>5.如何选择智能指针？</h3><p>如果程序需要多个指向同一对象的指针，应选择shared_ptr；</p>
+<p>否则考虑使用unique_ptr;</p>
+<p>如果函数使用new分配内存，并返回指向该内存的指针，将其返回类型生命为unique_ptr是一个不错的选择。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/14/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E7%B4%A2%E5%BC%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="vino">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog of vino">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/14/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E7%B4%A2%E5%BC%95/" class="post-title-link" itemprop="url">搜索引擎索引</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-14 19:45:23" itemprop="dateCreated datePublished" datetime="2021-11-14T19:45:23+08:00">2021-11-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-11-21 21:11:18" itemprop="dateModified" datetime="2021-11-21T21:11:18+08:00">2021-11-21</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="搜索引擎索引"><a href="#搜索引擎索引" class="headerlink" title="搜索引擎索引"></a>搜索引擎索引</h1><h2 id="1-索引基础"><a href="#1-索引基础" class="headerlink" title="1 索引基础"></a>1 索引基础</h2><p><strong>单词——文档矩阵</strong>：表达两者之间所具有的一种包含关系的概念模型。</p>
+<p><img src="http://maofg.site/images/201703/word-doc.jpg"></p>
+<p>搜索引擎的索引其实就是实现单词—文档矩阵的具体数据结构。可以有不同的方式实现上述的概念模型。但是各项试验数据表明，倒排索引是单词到文档映射关系的最佳实现方式。</p>
+<p><strong>倒排索引的基本概念</strong></p>
+<p>文档、文档集合、文档编号、单词编号、倒排索引、单词词典、倒排列表、倒排文件。</p>
+<h2 id="2-单词词典"><a href="#2-单词词典" class="headerlink" title="2 单词词典"></a>2 单词词典</h2><p>单词词典用来维护文档集合中出现过的所有单词的相关信息，同时记录某个单词对应的倒排列表在倒排列表中的位置信息。</p>
+<p>对于一个规模很大的文档集合来说，如何快速定位某个单词，直接影响到搜索速度，所以需要高效的数据结构来对单词词典进行构建和查找，常用的数据结构包括哈希加链表结构和树形词典结构。</p>
+<p><strong>哈希加链表</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/280b3aaadeead9e2c75435bd1a3dae8c.png" alt="256颜色表的索引表_搜索引擎单词词典和倒排列表_那些年灬的羁绊的博客-CSDN博客"></p>
+<p><strong>树形结构</strong></p>
+<p>B树</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/6925065-a6a08a980b506300?imageMogr2/auto-orient/strip%7CimageView2/2/w/800/format/webp" alt="img"></p>
+<h3 id="3-倒排列表"><a href="#3-倒排列表" class="headerlink" title="3 倒排列表"></a>3 倒排列表</h3><p>倒排列表用来记录哪些文档包含了某个单词。一般在文档集合中会有很多文档包含某个单词，每个文档会记录文档编号（DocID），单词在这个文档中出现的次数（TF）及单词在文档中哪些闻之出现过等信息，这样与一个文档相关的信息被称为倒排索引项（posting），包含这个单词的一系列倒排索引项形成了列表结构，这就是牧歌单词对应的倒排列表。</p>
+<h4 id="4-建立索引"><a href="#4-建立索引" class="headerlink" title="4 建立索引"></a>4 建立索引</h4><h3 id="4-1-两遍文档遍历法"><a href="#4-1-两遍文档遍历法" class="headerlink" title="4.1 两遍文档遍历法"></a>4.1 两遍文档遍历法</h3><p>顾名思义，此方法需要对文档集合进行两遍扫描，并且此方法完全是在内存中完成索引的创建过程。</p>
+<p>第一遍扫描的主要目的是：获得一些统计信息，并根据这些统计信息分配内存等资源，同时建立好单词相对应的倒排列表在内存中的位置，即主要做些资源准备工作。</p>
+<p>第二遍扫描，开始真正建立每个单词的倒排列表信息。</p>
+<p>此方法完全是在内存中构建，对内存的消耗要求过高，且需要进行两遍扫描，速度不足。</p>
+<h3 id="4-2-排序法"><a href="#4-2-排序法" class="headerlink" title="4.2 排序法"></a>4.2 排序法</h3><p>该方法在建立索引的过程中，始终在内存中分配固定大小空间，用于存放中间结果和词典信息。</p>
+<p><strong>中间结果内存排序</strong>：</p>
+<p>1、读入文档后，对文档进行编号，赋予文档唯一的ID，并对文档内容进行解析，同时建立单词词典、三元组（单词ID，文档ID，单词频率）</p>
+<p>2、分配的内存被占满后，对三元组中间结果排序：首先单词ID大小排序，其次是文档ID。</p>
+<p>3、将排序好的三元组写入磁盘临时文件。</p>
+<p>4、所有文档处理完之后，对所有中间结果进行合并：合并过程中，将不同中间结果的同一个单词ID的三元组进行合并。</p>
+<h3 id="4-3-归并法"><a href="#4-3-归并法" class="headerlink" title="4.3 归并法"></a>4.3 归并法</h3><p>排序法分配固定大小的内存，但是在分配的内存定额被消耗完之后，排序法只是将中间结果写入磁盘，而词典信息一直在内存中进行维护，随着处理的文档越来越多，后期中间结果可用内存越来越少。</p>
+<p>归并法整体流程与排序法大致相同，具体实现方式中有较大差异。</p>
+<p>归并法在内存中建立一个完整的索引结构，将中间结果写入磁盘文件时会将内存中的倒排索引写入临时文件，合并时针对每个单词的倒排列表进行合并。</p>
+<h2 id="5-动态索引"><a href="#5-动态索引" class="headerlink" title="5 动态索引"></a>5 动态索引</h2><p>场景：建好初始的索引之后，后续不断有新文档进入系统，同时原先的文档集合内有可能被删除或者内容更改。</p>
+<p>结构：倒排索引，临时索引和已删除文档列表。</p>
+<p>用户输入查询请求，搜索引擎同时从倒排索引和临时索引中读取用户查询单词列表（临时索引是在内存中实时建立的倒排索引，其结构和倒排索引一样），找到包含用户查询的文档集合，并对两个结果合并，之后利用已删除的文档列表进行过滤。</p>
+<h2 id="6-索引更新策略"><a href="#6-索引更新策略" class="headerlink" title="6 索引更新策略"></a>6 索引更新策略</h2><p>考虑将临时索引的内容更新到磁盘索引中，以释放内存空间来容纳后续进来的新进文档，此时要考虑合理有效的索引更新策略。</p>
+<h3 id="6-1-完全重建策略"><a href="#6-1-完全重建策略" class="headerlink" title="6.1 完全重建策略"></a>6.1 完全重建策略</h3><p>即当新增文档达到一定的数量的，将新增文档和原来的老文档进行合并，然后利用前章节提到的建立索引的方法，对所有的文档重新建立索引。</p>
+<h3 id="6-2再合并策略"><a href="#6-2再合并策略" class="headerlink" title="6.2再合并策略"></a>6.2再合并策略</h3>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/02/fristPage-md/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="vino">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog of vino">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/02/fristPage-md/" class="post-title-link" itemprop="url">fristPage.md</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-02 23:08:26" itemprop="dateCreated datePublished" datetime="2021-11-02T23:08:26+08:00">2021-11-02</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/02/hello-world/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="vino">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog of vino">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/02/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-02 15:02:00" itemprop="dateCreated datePublished" datetime="2021-11-02T15:02:00+08:00">2021-11-02</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
   </div>
-</footer>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">vino</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">vino</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
   </div>
 
-  <div class="back-to-top-fixed soft-size--round soft-style--box">
-    <svg class="icon icon-back-to-top" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-      <path d="M725.333333 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8l-213.333333-213.333333c-17.066667-17.066667-17.066667-42.666667 0-59.733333s42.666667-17.066667 59.733333 0l213.333333 213.333333c17.066667 17.066667 17.066667 42.666667 0 59.733333C746.666667 422.4 738.133333 426.666667 725.333333 426.666667z"></path>
-      <path d="M298.666667 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8-17.066667-17.066667-17.066667-42.666667 0-59.733333l213.333333-213.333333c17.066667-17.066667 42.666667-17.066667 59.733333 0s17.066667 42.666667 0 59.733333l-213.333333 213.333333C320 422.4 311.466667 426.666667 298.666667 426.666667z"></path>
-      <path d="M512 896c-25.6 0-42.666667-17.066667-42.666667-42.666667L469.333333 170.666667c0-25.6 17.066667-42.666667 42.666667-42.666667s42.666667 17.066667 42.666667 42.666667l0 682.666667C554.666667 878.933333 537.6 896 512 896z"></path>
-    </svg>
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
   </div>
 
   
-  <!-- aplayer -->
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
 
 
-<!-- dplayer -->
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
   
 
-
   
 
-
-  
-
-
-
-
-<script src="/js/script.js"></script>
-
-
-  
-  <!-- 尾部用户自定义相关内容 -->
 </body>
 </html>
