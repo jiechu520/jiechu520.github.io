@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    
+    <title>基于对比学习的句向量表示 | blog of vino</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+<link rel="stylesheet" href="/dist/build.css?v=1637200696663.css">
+
+
+    
+<link rel="stylesheet" href="/dist/custom.css?v=1637200696663.css">
+
+
+    <script>
+        window.isPost = true
+        window.aomori = {
+            
+            
+            
+        }
+        window.aomori_logo_typed_animated = false
+        window.aomori_search_algolia = false
+
+    </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div class="container">
+    <header class="header">
+        <div class="header-type">
+            
+            <div class="header-type-inner">
+                
+                    <a class="header-type-title" href="/">blog of vino</a>
+                
+    
+                
+            </div>
+        </div>
+        <div class="header-menu">
+            <div class="header-menu-inner">
+                
+            </div>
+            <div class="header-menu-social">
+                
+            </div>
+        </div>
+
+        <div class="header-menu-mobile">
+            <div class="header-menu-mobile-inner" id="mobile-menu-open">
+                <i class="icon icon-menu"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="header-menu-mobile-menu">
+        <div class="header-menu-mobile-menu-bg"></div>
+        <div class="header-menu-mobile-menu-wrap">
+            <div class="header-menu-mobile-menu-inner">
+                <div class="header-menu-mobile-menu-close" id="mobile-menu-close">
+                    <i class="icon icon-cross"></i>
+                </div>
+                <div class="header-menu-mobile-menu-list">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    <div class="container">
+        <div class="main">
+            <section class="inner">
+                <section class="inner-main">
+                    <div class="post">
+    <article id="post-ckxx91sgz0008hbwxbut6hw6r" class="article article-type-post" itemscope
+    itemprop="blogPost">
+
+    <div class="article-inner">
+
+        
+          
+        
+        
+        
+
+        
+        <header class="article-header">
+            
+  
+    <h1 class="article-title" itemprop="name">
+      基于对比学习的句向量表示
+    </h1>
+  
+
+        </header>
+        
+
+        <div class="article-more-info article-more-info-post hairline">
+
+            <div class="article-date">
+  <time datetime="2022-01-02T08:33:29.000Z" itemprop="datePublished">2022-01-02</time>
+</div>
+
+            
+            <div class="article-category">
+                <a class="article-category-link" href="/categories/paper/">paper</a>
+            </div>
+            
+
+            
+            <div class="article-tag">
+                <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/simcse/" rel="tag">simcse</a></li></ul>
+            </div>
+            
+
+            
+
+        </div>
+
+        <div class="article-entry post-inner-html hairline" itemprop="articleBody">
+            <h1 id="simCSE-基于对比学习的句向量表示"><a href="#simCSE-基于对比学习的句向量表示" class="headerlink" title="simCSE 基于对比学习的句向量表示"></a>simCSE 基于对比学习的句向量表示</h1><p>背景，应用场景，训练数据，训练目标，损失函数，效果对比，训练方法经验，相关工作。</p>
+<h2 id="1-BackGround"><a href="#1-BackGround" class="headerlink" title="1 BackGround"></a>1 <font color=\#008000 size=5>BackGround</font></h2><p>句向量表示学习在自然语言处理（NLP）领域占据重要地位，许多NLP任务的成功离不开训练优质的句子表示向量。特别是在文本语义匹配（Semantic Textual Similarity）、文本向量检索（Dense Text Retrieval）等任务上，模型通过计算两个句子编码后的Embedding在表示空间的相似度来衡量这两个句子语义上的相关程度，从而决定其匹配分数。</p>
+<p>学习一个通用的句子嵌入是NLP的一个基本问题尽管Bert模型在诸多任务中取得不错的性能，但其自身导出的句向量（不经过Fine-tune，对所有词向量求平均）的质量降低，甚至比不上glove的结果，因此难以反映两个句子的语义相似度。</p>
+<p>BERT导出的句向量所具有的特性（<strong>ConSERT: A Contrastive Framework for Self-Supervised Sentence Representation Transfer</strong>）</p>
+<p>1:Bert对所有的句子都倾向于编码到一个较小的空间区域内，这使得大多数的句子对都具有较高的相似度分数，即使是那些语义上完全无关的句子对。称其为BERT句子表示的“塌缩”现象。![截屏2021-06-14 下午8.42.57](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-14 下午8.42.57.png)</p>
+<p>2:BERT句向量表示的塌缩与句子中的高频词有关。具体来说，当通过平均词向量的方式计算句向量时，那些高频词的词向量将会主导句向量，使之难以体现其原本的语义。当计算句向量时去除若干高频词时，塌缩现象可以一定程度上得到缓解。</p>
+<p>BERT导出的句向量难以直接用于下游的语义匹配任务，而用于Fine-tune的监督语料又是昂贵的。</p>
+<h2 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2 相关工作"></a>2 <font color=\#008000 size=5>相关工作</font></h2><p><strong>对比学习</strong><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/6qqFAQBaOFuXtaeRSmQgsQ%E6%97%A8%E5%9C%A8%E9%80%9A%E8%BF%87%E5%B0%86%E8%AF%AD%E4%B9%89%E4%B8%8A%E6%8E%A5%E8%BF%91%E7%9A%84%E9%82%BB%E5%B1%85%E6%8B%89%E5%9C%A8%E4%B8%80%E8%B5%B7%E5%B9%B6%E6%8E%A8%E5%BC%80%E9%9D%9E%E9%82%BB%E5%B1%85%E6%9D%A5%E5%AD%A6%E4%B9%A0%E6%9C%89%E6%95%88%E7%9A%84%E8%A1%A8%E7%A4%BA%E3%80%82">https://mp.weixin.qq.com/s/6qqFAQBaOFuXtaeRSmQgsQ旨在通过将语义上接近的邻居拉在一起并推开非邻居来学习有效的表示。</a></p>
+<p>![截屏2021-06-13 下午4.53.32](/Users/chujie/Desktop/截屏2021-06-13 下午4.53.32.png)</p>
+<p>sim是余弦距离。</p>
+<p>对比学习着重学习同类实例之间的共同特征，区分非同类实例之间的区别，与生成式学习比较，对比式学习不需要关注实例上的繁琐的细节，只需要在抽象语义级别的特征空间上学会对数据进行区分即可，因此模型及其优化比较简单。</p>
+<h3 id="2-1损失函数"><a href="#2-1损失函数" class="headerlink" title="2.1损失函数"></a>2.1损失函数</h3><p>对比损失的定义最早出现由Hadsell（2006）提出，原文是一种降维方法：**只需要训练样本空间的相对关系（对比平衡关系）即可在空间诶表示向量。损失定义如下：<br>$$<br>L(W,(Y,X_1,X_2)^i)=(1-Y)L_s(D_W^i(X_1,X_2))+YL_D(D_W^i(X_1,X_2))<br>$$<br>W:网络权重，Y:标志符，$D_W$:是$X_1$和$X_2$在潜变量空间的欧式距离</p>
+<h4 id="2-1-1-Triplets-Loss-2015-Google在faceNet论文中提出"><a href="#2-1-1-Triplets-Loss-2015-Google在faceNet论文中提出" class="headerlink" title="2.1.1 Triplets Loss(2015,Google在faceNet论文中提出)"></a>2.1.1 Triplets Loss(2015,Google在faceNet论文中提出)</h4><p>定义一个三元组（x,$x^+$,$x^-$)，最小化锚点和具有相同身份的正样本之间的距离，最小化锚点和具有不同身份的负样本之间的距离。使相同标签的特征在空间位置上尽量靠近，同时不同标签的特征在空间位置上尽量远离。同时为了不让样本的特征聚合到一个非常小的空间中，要求对于同一类的两个正实例和一个负实例，负例应该比正例的距离至少为margin值 <img src="https://www.zhihu.com/equation?tex=%5Calpha" alt="[公式]"> </p>
+<p>Loss: $L=max{d(x,x^+)-d(x,x^-)+\alpha,0}$</p>
+<p>三元组的状态分为三类：</p>
+<ul>
+<li>Hard triplets:正样本离锚点的距离比负样本大</li>
+<li>semi-hard triplets:正样本离锚点的距离比负样本小，但未满足Loss</li>
+<li>easy triplets 满足$d(x,x^+)&gt;d(x,x^-)+\alpha$</li>
+</ul>
+<h4 id="2-1-2-NCE-Loss"><a href="#2-1-2-NCE-Loss" class="headerlink" title="2.1.2 NCE Loss"></a>2.1.2 NCE Loss</h4><p>![截屏2021-06-13 下午9.40.11](/Users/chujie/Desktop/截屏2021-06-13 下午9.40.11.png)</p>
+<h4 id="2-1-3-互信息"><a href="#2-1-3-互信息" class="headerlink" title="2.1.3 互信息"></a>2.1.3 互信息</h4><p>![截屏2021-06-13 下午9.43.45](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-13 下午9.43.45.png)</p>
+<p>互信息往往是计算不出来的，一般对其进行估计，</p>
+<p>互信息上界估计：减少互信息，即VAE的目标，用一个常见的分布（正态分布）去估计p(c)。</p>
+<p>互信息下界估计：增加互信息，即对比学习的目标</p>
+<h4 id="2-1-4-InfoNCELoss"><a href="#2-1-4-InfoNCELoss" class="headerlink" title="2.1.4 InfoNCELoss"></a>2.1.4 InfoNCELoss</h4><p>![截屏2021-06-13 下午10.02.21](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-13 下午10.02.21.png)</p>
+<h3 id="2-2-BERT-flow-句向量空间修正"><a href="#2-2-BERT-flow-句向量空间修正" class="headerlink" title="2.2 BERT-flow:句向量空间修正"></a>2.2 BERT-flow:句向量空间修正</h3><p>它学习一种可逆映射将BERT的句向量空间映射到一个<strong>光滑，各向同性</strong>的标准高斯分布。<strong>可逆条件保证了表示空间和数据之间的互信息没有改变</strong>。</p>
+<h3 id="2-3-BERT-whitening"><a href="#2-3-BERT-whitening" class="headerlink" title="2.3 BERT-whitening"></a>2.3 BERT-whitening</h3><p>作者“直觉：认为flow模型本身很弱，BERT-flow里边使用的flow模型更弱，所以flow模型不大可能在BERT-flow中发挥至关重要的作用。反过来想，那就是也许我们可以找到更简单直接的方法达到BERT-flow的效果，目标就是让句向量变得更加各向同性一点。</p>
+<p>将句向量的均值变换为0、协方差矩阵变换为单位阵，通过线性变换直接校正句向量的协方差矩阵就能达到相近的效果</p>
+<h3 id="2-4-SimCLR"><a href="#2-4-SimCLR" class="headerlink" title="2.4 SimCLR"></a>2.4 SimCLR</h3><p><strong>SimCLR</strong>论文中遵循的对比学习框架（A Simple Framework for Contrastive Learning of Visual Representations）</p>
+<p><video src="/Users/chujie/Downloads/0f5cab40-75af-11eb-ab9c-3e1a43f1851b.mp4"></video></p>
+<p><strong>视觉表征对同一目标不同视角的输入都应具有不变性</strong></p>
+<p>simCLR对输入的图片进行数据增强，以此来模拟图片不同视角下的输入。之后采用对比损失最大化相同目标在不同数据增强下的相似度，并最小化同类目标之间的相似度。</p>
+<p>![截屏2021-06-13 下午10.14.01](/Users/chujie/Desktop/截屏2021-06-13 下午10.14.01.png)</p>
+<p>simCLR的架构由两个相同的网络模块组成。对于每一个输入网络的minibatch: </p>
+<ol>
+<li> 对mini batch中每张输入的图片进行两次随机<strong>数据增强</strong>(随机剪裁、滤镜、颜色过滤、灰度化等)来得到图片两种不同的视角;</li>
+<li> 将得到的两个表征送入两个卷积编码器(如resnet)获得<strong>抽象表示</strong>，之后对这些表示形式应用非线性变换进行投影得到投影表示;</li>
+<li> 使用<strong>余弦相似度</strong>来度量投影的相似度。</li>
+</ol>
+<h3 id="2-5-ConSERT"><a href="#2-5-ConSERT" class="headerlink" title="2.5 ConSERT"></a>2.5 ConSERT</h3><p>![截屏2021-06-15 下午7.23.41](/Users/chujie/Desktop/截屏2021-06-15 下午7.23.41.png)</p>
+<ul>
+<li>一个数据增强模块，作用于Embedding层，为同一个句子生成两个不同的增强版本（View）。</li>
+<li>一个共享的BERT编码器，为输入的句子生成句向量。</li>
+<li>一个对比损失层，用于在一个Batch的样本中计算对比损失，其思想是最大化同一个样本不同增强版本句向量的相似度，同时使得不同样本的句向量相互远离。</li>
+</ul>
+<p>![截屏2021-06-15 下午7.25.56](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-15 下午7.25.56.png)</p>
+<ul>
+<li><p><strong>对抗攻击（Adversarial Attack）</strong>：这一方法通过梯度反传生成对抗扰动，将该扰动加到原本的Embedding矩阵上，就能得到增强后的样本。由于生成对抗扰动需要梯度反传，因此这一数据增强方法仅适用于有监督训练的场景。</p>
+</li>
+<li><p><strong>打乱词序（Token Shuffling）</strong>：这一方法扰乱输入样本的词序。由于Transformer结构没有“位置”的概念，模型对Token位置的感知全靠Embedding中的Position Ids得到。因此在实现上，我们只需要将Position Ids进行Shuffle即可。</p>
+</li>
+<li><p><strong>裁剪（Cutoff</strong>)：又可以进一步分为两种：</p>
+</li>
+<li><ul>
+<li>Token Cutoff：随机选取Token，将对应Token的Embedding整行置为零。</li>
+<li>Feature Cutoff：随机选取Embedding的Feature，将选取的Feature维度整列置为零。</li>
+</ul>
+</li>
+<li><p><strong>Dropout</strong>：Embedding中的每一个元素都以一定概率置为零，与Cutoff不同的是，该方法并没有按行或者按列的约束。</p>
+</li>
+</ul>
+<p>构造正样本对？</p>
+<p><strong>对齐和均匀性</strong>：wang Isola（2020）确定了与对比学习相关的两个关键属性：对齐和均匀性，并提出了衡量表示质量的指标。给定正对的分布，：对齐计算配对的样本的嵌入之间的预期距离</p>
+<p>![截屏2021-06-13 下午5.04.11](/Users/chujie/Desktop/截屏2021-06-13 下午5.04.11.png)</p>
+<p>均匀性衡量嵌入均匀分布的程度</p>
+<p>![截屏2021-06-13 下午5.04.18](/Users/chujie/Desktop/截屏2021-06-13 下午5.04.18.png)</p>
+<h2 id="3-paper-introduction"><a href="#3-paper-introduction" class="headerlink" title="3 paper introduction"></a>3 <font color=\#008000 size=5>paper introduction</font></h2><p>文章证明了对比学习在句嵌入学习中是非常有效的，并结合预训练语言模型，提出了SimCSE——简单对比学习框架。</p>
+<p>![截屏2021-06-13 下午3.47.47](/Users/chujie/Desktop/截屏2021-06-13 下午3.47.47.png)</p>
+<h3 id="无监督simCSE"><a href="#无监督simCSE" class="headerlink" title="无监督simCSE"></a>无监督simCSE</h3><p>simCSE简单地预测输入句子本身，用dropout当作噪声；将相同的句子两次传递给预训练的编码器，并通过独立采样的dropout获得两个嵌入作为“正对”。作者认为这种简单的方式优于训练目标，如下一句预测和常见的数据增强方法（单词删除，替换），dropout本质上充当了最小的数据增强，而删除它会导致表示崩溃。</p>
+<h3 id="监督simCSE"><a href="#监督simCSE" class="headerlink" title="监督simCSE"></a>监督simCSE</h3><p>在利用NLI数据集进行句嵌入成功的基础上，将监督句子对纳入对比学习。与之前将其转换为三向分类任务不同（entailment,neutral,contradiction)不同，</p>
+<p>![截屏2021-06-13 下午4.26.13](/Users/chujie/Desktop/截屏2021-06-13 下午4.26.13.png)</p>
+<p>我们利用了entailment对可以自然地用作正例的事实。还发现添加contradiction对作为硬否定进一步提高了新能。与使用相同数据集的先前方法相比，NLI数据集的这种简单使用实现了更高的性能，与其他句子对数据集相比较，NLI数据集对于学习句嵌入特别有效。</p>
+<p>分析工具：wangand Isola,通过寓意相关的正对之间的对齐和整个表示空间的均匀性来衡量学习嵌入的质量：1:证明了“对比学习目标在理论上平坦化了句子嵌入空间的奇异值分布，从而提高了均匀性。2:预训练的词嵌入存在各向异性。3:无监督simCSE从根本上提高了一致性，同时避免了通过dropout噪声引起的退化对齐，从而大大提高了表示。4:NLI训练信号可以进一步改善正对之间的对齐，从而产生更好的句子嵌入。</p>
+<h2 id="4-Unsupervised-SimCSE"><a href="#4-Unsupervised-SimCSE" class="headerlink" title="4 Unsupervised SimCSE"></a>4 <font color=\#008000 size=5>Unsupervised SimCSE</font></h2><p>对于句子${x_i}_{i=1}^m$,$x_i^+=x_i$,在transformer的全连接层上放置一个dropout（p=0.1),令$h_i^z=f_\theta(x_i,z)$,其中$z_i$是dropout的随机掩码。通过设置不同的dropout masks $z$,$z^‘$将相同的输入提供给编码器两次。</p>
+<p><font color=red>训练数据：wiki百科随机抽取100万条语料</font></p>
+<blockquote>
+<p>正例：给定输入$x_i$,用预训练语言模型编码$x_i$两次得到的两个向量$h_i^{z_i}$和$h_i^{z_i^‘}$作为正例对</p>
+</blockquote>
+<blockquote>
+<p>负例：使用in-batch negatives的方式，即随机采样一个batch中另一个输入$x_j$作为$x_i$的负例</p>
+</blockquote>
+<p>训练目标为：</p>
+<p>![截屏2021-06-14 下午5.56.36](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-14 下午5.56.36.png)</p>
+<p><font color=bule size=4>temperature τ (<a target="_blank" rel="noopener" href="https://3a//arxiv.org/pdf/2012.09740.pdf">Understanding the Behaviour of Contrastive Loss</a>)的作用</font></p>
+<blockquote>
+<p>温度系数的作用是调节对困难样本的关注程度：<strong>越小的温度系数越关注于将本样本和最相似的困难样本分开</strong>，去得到更均匀的表示。然而困难样本往往是与本样本相似程度较高的，很多困难负样本其实是潜在的正样本，过分强迫与困难样本分开会破坏学到的潜在语义结构，因此，温度系数不能过小<br> 考虑两个极端情况，温度系数趋向于0时，对比损失退化为只关注最困难的负样本的损失函数；当温度系数趋向于无穷大时，对比损失对所有负样本都一视同仁，失去了困难样本关注的特性。</p>
+</blockquote>
+<p>论文将此方法视为数据增强的最小形式：正对实例采用完全相同的句子，仅在dropout masks上有所不同。</p>
+<p>作者对比了这种方法与在STS-B开发集上常见增强技术以及其他训练目标。</p>
+<p>![截屏2021-06-14 下午6.14.08](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-14 下午6.14.08.png)</p>
+<p>比较的指标的是Spearman相关性，结果是利用STS-B开发集在$Bert_{base}$上计算得到的，$f_\theta$表示使用一个encoder,$(f_{\theta_1},f_{\theta_2})$是使用两个独立的encoder。</p>
+<p>![截屏2021-06-14 下午6.18.40](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-14 下午6.18.40.png)</p>
+<p>极端情况下，no dropout 和固定p-0.1，但是使用相同的dropout masks，此时对于$x_i$和$x_i^+$的embedding是完全一样。</p>
+<p>![截屏2021-06-14 下午7.03.11](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-14 下午7.03.11.png)</p>
+<p>上面这幅图是每10步取这些模型的检查点，得到的对齐和均匀性度量。</p>
+<h2 id="5-Supervised-SimCSE"><a href="#5-Supervised-SimCSE" class="headerlink" title="5 Supervised SimCSE"></a>5 <font color=\#008000 size=5>Supervised SimCSE</font></h2><p>直接从监督数据集获取正例对来训练。</p>
+<p>论文首先探索了哪些数据集适合构建正例对，用不同的数据集训练对比学习模型（相同数量的训练对进行实验），实验表明大多数使用监督数据集的模型都优于unsupervised SimCSE。监督数据集中，NLI数据集表现最好（SNLI+MNLI）。原因是：NLI质量比较高，相较于其他数据集，两个句子的词汇重叠较少。</p>
+<p>x 是premise（前提）</p>
+<p>正例：NLI entailment</p>
+<p>负例：NLI contradiction</p>
+<p>添加硬否定可以进一步提高性能。</p>
+<p>![截屏2021-06-14 下午8.10.15](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-14 下午8.10.15.png)</p>
+<p><font color=Red size=5>anisotropy（各向异性）</font></p>
+<p><strong>各向异性：词向量是有维度的，每个维度上基向量单位向量长度不一样，就是各向异性的。这样就会造成我们计算向量相似度的时候产生偏差</strong></p>
+<p>语言表示中的各向异性问题即学习到的嵌入在向量空间中占据了一个狭窄的锥体，这在很大程度上限制了它们的表达能力。 termit as arepresentation degenerationproblem（Gao et al 2019) 证明使用绑定输入/输出嵌入训练的语言模型导致各向异性词嵌入，Etha-yarajh (2019) 在预训练的上下文嵌入中进一步观察到了这一点。Wang et al (2020) 表明词嵌入矩阵的奇异值急剧下降。换句话说，除了少数占主导地位的奇异值外，其他所有奇异值都接近于零</p>
+<p>缓解各向异性问题的一个简单方法是后处理：消除主成分；将嵌入映射到各向异性分布；训练期间添加正则化。比如BERT-flow和BERT-whitening将向量映射到各向同性的分布上。</p>
+<p>论文证明对比目标可以固有地“扁平化”句子嵌入举证的奇异值分布。</p>
+<p>Wang and Isola(2020)证明当负样本数量趋于无穷大是，对比学习的目标可以渐进表示为：</p>
+<p>![截屏2021-06-14 下午9.04.06](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-14 下午9.04.06.png)</p>
+<p>设$W$为${x_i}_{i=1}^m$对应的句子嵌入矩阵，即$W$的第$i$行是$h_i$，当我们最小化损失的时候等价于间接地最小化$WW^T$的最大特征值，也就是隐式地压平了嵌入空间的奇异值。相较于BERT-flow和BERT-whitening后处理，致力于寻找各向同性的表示分布，对比学习能够在优化对比损失时，达到同样规整分布的效果，同时对比损失第一项还能确保正样本的对齐，这两项起到相互制约和促进的作用，从而在训练中找到平衡点。</p>
+<h2 id="6-实验"><a href="#6-实验" class="headerlink" title="6 实验"></a>6 <font color=\#008000 size=5>实验</font></h2><p>7个标准文本语义相似性（STS）任务和7个迁移学习任务进行了实验，使用SentEval工具包。</p>
+<p>![截屏2021-06-14 下午10.23.44](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-14 下午10.23.44.png)</p>
+<p>![截屏2021-06-14 下午10.27.26](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-14 下午10.27.26.png)</p>
+<p>以下是对batch size，pooling method ，MLM辅助目标的$\lambda$对结果的影响进行了实验。</p>
+<p>![截屏2021-06-14 下午11.13.26](/Users/chujie/Desktop/截屏2021-06-14 下午11.13.26.png)</p>
+<p>![截屏2021-06-14 下午11.14.44](/Users/chujie/Desktop/截屏2021-06-14 下午11.14.44.png)</p>
+<p><font color=Red size=5>训练细节</font></p>
+<p>从BERT(uncased)和RoBERTa(cased)的预训练的checkpoint开始，在[CLS]表示之上添加了一个MLP层作为句子嵌入。基于Huggingface’s transformers包执行SimCSE。对于监督 SimCSE，使用 Adam 优化器（Kingma 和 Ba，2015 年）训练我们的模型 3 个epoch，bacth size为 512，temperature τ= 0.05。基本模型的学习率设置为 5e-5，大型模型的学习率设置为 1e-5。对于无监督的 Sim-CSE，我们将 5e-5 作为基础模型和大型模型的学习率，并且只训练一个 epoch。</p>
+<p>引入一个可选变体，添加masked language modeling（MLM）的目标作为方程的辅助损失，即在目标函数后加上$\iota+{\lambda}*{\iota}^{mlm}$,这样有助于避免SimCSE遗忘token级的信息，在前一任务可以提高性能在sentence-level STS 任务重没有效果。</p>
+<p><a target="_blank" rel="noopener" href="https://www.spaces.ac.cn/archives/8348">中文补充实验</a></p>
+<p>中文实验的最优参数：batch_size=64(条件有限)，learning_rate=le-5,dropout=0.3</p>
+<p>![截屏2021-06-15 下午11.12.04](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-15 下午11.12.04.png)</p>
+<h2 id="7-分析"><a href="#7-分析" class="headerlink" title="7 分析"></a>7 <font color=\#008000 size=5>分析</font></h2><p>![截屏2021-06-14 下午11.32.45](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-14 下午11.32.45.png)</p>
+<p>![截屏2021-06-14 下午11.38.06](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-14 下午11.38.06.png)</p>
+<p>![截屏2021-06-14 下午11.38.51](/Users/chujie/Library/Application Support/typora-user-images/截屏2021-06-14 下午11.38.51.png)</p>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2>
+        </div>
+
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+<nav class="article-nav">
+  
+    <a href="/2022/01/02/effective-C-1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <div class="article-nav-caption">下一篇</div>
+      <div class="article-nav-title">
+        
+          effective-C++-1
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/12/26/C-%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8%EF%BC%881%EF%BC%89/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-caption">上一篇</div>
+      <div class="article-nav-title">C++顺序容器（1）</div>
+    </a>
+  
+</nav>
+
+
+    <section class="share">
+        <div class="share-title">分享</div>
+        <a class="share-item" target="_blank"
+            href="https://twitter.com/share?text=基于对比学习的句向量表示 - blog of vino&url=http://example.com/2022/01/02/%E5%8F%A5%E5%AD%90%E5%B5%8C%E5%85%A5%E7%9A%84%E7%AE%80%E5%8D%95%E5%AF%B9%E6%AF%94%E5%AD%A6%E4%B9%A0/">
+            <box-icon type='logo' name='twitter'></box-icon>
+        </a>
+        <a class="share-item" target="_blank"
+            href="https://www.facebook.com/sharer.php?title=基于对比学习的句向量表示 - blog of vino&u=http://example.com/2022/01/02/%E5%8F%A5%E5%AD%90%E5%B5%8C%E5%85%A5%E7%9A%84%E7%AE%80%E5%8D%95%E5%AF%B9%E6%AF%94%E5%AD%A6%E4%B9%A0/">
+            <box-icon name='facebook-square' type='logo' ></box-icon>
+        </a>
+        <!-- <a class="share-item" target="_blank"
+            href="https://service.weibo.com/share/share.php?title=基于对比学习的句向量表示 - blog of vino&url=http://example.com/2022/01/02/%E5%8F%A5%E5%AD%90%E5%B5%8C%E5%85%A5%E7%9A%84%E7%AE%80%E5%8D%95%E5%AF%B9%E6%AF%94%E5%AD%A6%E4%B9%A0/&pic=">
+            <div class="n-icon n-icon-weibo"></div>
+        </a> -->
+    </section>
+
+</article>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+                </section>
+            </section>
+
+            
+            <aside class="sidebar ">
+                
+
+
+<div class="widget" id="widget">
+    
+      
+  <div class="widget-wrap">
+    <div class="widget-inner">
+      <div class="toc post-toc-html"></div>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget-wrap widget-cate">
+    <div class="widget-title"><span>Categories</span></div>
+    <div class="widget-inner">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/effective-C/">effective C++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%90%9C%E7%B4%A2/">搜索</a></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap widget-tags">
+    <div class="widget-title"><span>Tags</span></div>
+    <div class="widget-inner">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" rel="tag">C++ 智能指针</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-%E5%AE%B9%E5%99%A8/" rel="tag">C++容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-%E8%B5%8B%E5%80%BC/" rel="tag">C++赋值</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/simcse/" rel="tag">simcse</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%90%9C%E7%B4%A2%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">搜索排序算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap widget-recent-posts">
+    <div class="widget-title"><span>Recent Posts</span></div>
+    <div class="widget-inner">
+      <ul>
+        
+          <li>
+            <a href="/2022/01/02/2022%E5%B9%B4Q1%E5%AD%A6%E4%B9%A0%E8%AE%A1%E5%88%92/">2022年Q1学习计划</a>
+          </li>
+        
+          <li>
+            <a href="/2022/01/02/effective-C-1/">effective-C++-1</a>
+          </li>
+        
+          <li>
+            <a href="/2022/01/02/%E5%8F%A5%E5%AD%90%E5%B5%8C%E5%85%A5%E7%9A%84%E7%AE%80%E5%8D%95%E5%AF%B9%E6%AF%94%E5%AD%A6%E4%B9%A0/">基于对比学习的句向量表示</a>
+          </li>
+        
+          <li>
+            <a href="/2021/12/26/C-%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8%EF%BC%881%EF%BC%89/">C++顺序容器（1）</a>
+          </li>
+        
+          <li>
+            <a href="/2021/12/25/C-like-classes-pointer-1/">C++ like classes pointer (1)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+    
+</div>
+
+<div id="backtop"><i class="icon icon-arrow-up"></i></div>
+            </aside>
+            
+        </div>
+    </div>
+
+    <footer class="footer">
+    <div class="footer-wave">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#3c4859" fill-opacity="1" d="M0,160L60,181.3C120,203,240,245,360,240C480,235,600,181,720,186.7C840,192,960,256,1080,261.3C1200,267,1320,213,1380,186.7L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>
+    </div>
+
+    <div class="footer-wrap">
+        <div class="footer-inner"> 
+            blog of vino &copy; 2022<br>
+            Powered By Hexo · Theme By <a href="https://github.com/lh1me/hexo-theme-aomori" target="_blank">Aomori</a>
+        </div>
+    </div>
+
+</footer>
+
+
+
+
+
+
+<script src="/dist/build.js?1637200696663.js"></script>
+
+
+<script src="/dist/custom.js?1637200696663.js"></script>
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>
