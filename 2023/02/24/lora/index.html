@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="LoRA论文链接：https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2106.09685 代码链接：https:&#x2F;&#x2F;github.com&#x2F;microsoft&#x2F;LoRA LoRA是一种finetune扩散模型的训练技术。通过对标准的checkpoint模型微小的修改，可以比checkpoint模型小10到100倍。LoRA的原理比较简单，原始全量的finetune其实就是在原始模型参数基础上加入增量$$W">
+    <meta name="description" content="LoRA论文链接：https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2106.09685 代码链接：https:&#x2F;&#x2F;github.com&#x2F;microsoft&#x2F;LoRA LoRA是一种finetune扩散模型的训练技术。通过对标准的checkpoint模型微小的修改，可以比checkpoint模型小10到100倍。LoRA的原理比较简单，原始全量的finetune其实就是在原始模型参数基础上加入增量$W&amp;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Lora">
 <meta property="og:url" content="http://example.com/2023/02/24/lora/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="LoRA论文链接：https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2106.09685 代码链接：https:&#x2F;&#x2F;github.com&#x2F;microsoft&#x2F;LoRA LoRA是一种finetune扩散模型的训练技术。通过对标准的checkpoint模型微小的修改，可以比checkpoint模型小10到100倍。LoRA的原理比较简单，原始全量的finetune其实就是在原始模型参数基础上加入增量$$W">
+<meta property="og:description" content="LoRA论文链接：https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2106.09685 代码链接：https:&#x2F;&#x2F;github.com&#x2F;microsoft&#x2F;LoRA LoRA是一种finetune扩散模型的训练技术。通过对标准的checkpoint模型微小的修改，可以比checkpoint模型小10到100倍。LoRA的原理比较简单，原始全量的finetune其实就是在原始模型参数基础上加入增量$W&amp;">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/45f7e2ce00c48b8c96e938c9fe8ed3d4.png">
 <meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/10bbf49b2e9042779941c600a692d74dtplv-k3u1fbpfcp-zoom-in-crop-mark1512000.webp">
@@ -198,7 +198,7 @@
     
     <div class="post-body" itemprop="articleBody"><h1 id="LoRA"><a href="#LoRA" class="headerlink" title="LoRA"></a>LoRA</h1><p>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.09685">https://arxiv.org/abs/2106.09685</a></p>
 <p>代码链接：<a target="_blank" rel="noopener" href="https://github.com/microsoft/LoRA">https://github.com/microsoft/LoRA</a></p>
-<p>LoRA是一种finetune扩散模型的训练技术。通过对标准的checkpoint模型微小的修改，可以比checkpoint模型小10到100倍。LoRA的原理比较简单，原始全量的finetune其实就是在原始模型参数基础上加入增量$$W&#x3D;W_0+\Delta W$$，那么我们可以通过冻结原始参数 $$W_0$$，并且把增量部分通过低秩分解方式进一步降低参数量级$$\Delta W &#x3D; A<em>B^T$$, 原始参数的维度是 $$d</em>d$$, 则低秩分解后的参数量级是 $$2<em>r</em>d$$, 这里 $$r&lt;&lt;d$$， 因此可以起到大幅降低微调参数量级的效果。</p>
+<p>LoRA是一种finetune扩散模型的训练技术。通过对标准的checkpoint模型微小的修改，可以比checkpoint模型小10到100倍。LoRA的原理比较简单，原始全量的finetune其实就是在原始模型参数基础上加入增量$W&#x3D;W_0+\Delta W$，那么我们可以通过冻结原始参数 $W_0$，并且把增量部分通过低秩分解方式进一步降低参数量级$\Delta W &#x3D; A<em>B^T$, 原始参数的维度是 $d</em>d$, 则低秩分解后的参数量级是 $2<em>r</em>d$, 这里 $r&lt;&lt;d$， 因此可以起到大幅降低微调参数量级的效果。</p>
 <p>和textula inversion一样，不能直接使用LoRA模型，需要和checkpoint文件一起使用。</p>
 <h2 id="How-does-LoRA-work-in-Stable-diffusion？"><a href="#How-does-LoRA-work-in-Stable-diffusion？" class="headerlink" title="How does LoRA work in Stable diffusion？"></a>How does LoRA work in Stable diffusion？</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/45f7e2ce00c48b8c96e938c9fe8ed3d4.png" alt="image"></p>
 <p>LoRA通过在checkpoint上做小的修改替换风格，具体而言修改的地方是UNet中的cross-attention层。该层是图像和文本prompt交界的层。LORA的作者们发现微调该部分足以实现良好的性能。</p>
