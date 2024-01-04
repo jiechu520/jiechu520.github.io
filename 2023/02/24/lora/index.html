@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="google-site-verification" content="BTo06tdvlac_Dho4-PFTLmDqjKXr1KtOzavpD8XDA5k" />
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.0.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="LoRA论文链接：https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2106.09685 代码链接：https:&#x2F;&#x2F;github.com&#x2F;microsoft&#x2F;LoRA LoRA是一种finetune扩散模型的训练技术。通过对标准的checkpoint模型微小的修改，可以比checkpoint模型小10到100倍。LoRA的原理比较简单，原始全量的finetune其实就是在原始模型参数基础上加入增量$$W">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lora">
+<meta property="og:url" content="http://example.com/2023/02/24/lora/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="LoRA论文链接：https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2106.09685 代码链接：https:&#x2F;&#x2F;github.com&#x2F;microsoft&#x2F;LoRA LoRA是一种finetune扩散模型的训练技术。通过对标准的checkpoint模型微小的修改，可以比checkpoint模型小10到100倍。LoRA的原理比较简单，原始全量的finetune其实就是在原始模型参数基础上加入增量$$W">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/45f7e2ce00c48b8c96e938c9fe8ed3d4.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/10bbf49b2e9042779941c600a692d74dtplv-k3u1fbpfcp-zoom-in-crop-mark1512000.webp">
+<meta property="article:published_time" content="2023-02-24T15:00:00.000Z">
+<meta property="article:modified_time" content="2023-02-24T15:53:00.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="训练技巧">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/45f7e2ce00c48b8c96e938c9fe8ed3d4.png">
+
+
+<link rel="canonical" href="http://example.com/2023/02/24/lora/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2023/02/24/lora/","path":"2023/02/24/lora/","title":"Lora"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Lora | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#LoRA"><span class="nav-number">1.</span> <span class="nav-text">LoRA</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#How-does-LoRA-work-in-Stable-diffusion%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">How does LoRA work in Stable diffusion？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cross-attention"><span class="nav-number">1.2.</span> <span class="nav-text">cross attention</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/24/lora/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Lora | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Lora
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2023-02-24 23:00:00 / Modified: 23:53:00" itemprop="dateCreated datePublished" datetime="2023-02-24T23:00:00+08:00">2023-02-24</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="LoRA"><a href="#LoRA" class="headerlink" title="LoRA"></a>LoRA</h1><p>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.09685">https://arxiv.org/abs/2106.09685</a></p>
+<p>代码链接：<a target="_blank" rel="noopener" href="https://github.com/microsoft/LoRA">https://github.com/microsoft/LoRA</a></p>
+<p>LoRA是一种finetune扩散模型的训练技术。通过对标准的checkpoint模型微小的修改，可以比checkpoint模型小10到100倍。LoRA的原理比较简单，原始全量的finetune其实就是在原始模型参数基础上加入增量$$W&#x3D;W_0+\Delta W$$，那么我们可以通过冻结原始参数 $$W_0$$，并且把增量部分通过低秩分解方式进一步降低参数量级$$\Delta W &#x3D; A<em>B^T$$, 原始参数的维度是 $$d</em>d$$, 则低秩分解后的参数量级是 $$2<em>r</em>d$$, 这里 $$r&lt;&lt;d$$， 因此可以起到大幅降低微调参数量级的效果。</p>
+<p>和textula inversion一样，不能直接使用LoRA模型，需要和checkpoint文件一起使用。</p>
+<h2 id="How-does-LoRA-work-in-Stable-diffusion？"><a href="#How-does-LoRA-work-in-Stable-diffusion？" class="headerlink" title="How does LoRA work in Stable diffusion？"></a>How does LoRA work in Stable diffusion？</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/45f7e2ce00c48b8c96e938c9fe8ed3d4.png" alt="image"></p>
+<p>LoRA通过在checkpoint上做小的修改替换风格，具体而言修改的地方是UNet中的cross-attention层。该层是图像和文本prompt交界的层。LORA的作者们发现微调该部分足以实现良好的性能。</p>
+<p>cross attention层的权重是一个矩阵，LoRA fine tune这些权重来微调模型。那么LoRA是怎么做到模型文件如此小？LoRA的做法是将一个权重矩阵分解为两个矩阵存储，能起到的作用可以用下图表示，参数量由(1000* 2000)减少到(1000* 2+2000*2), 大概300多倍！</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/10bbf49b2e9042779941c600a692d74dtplv-k3u1fbpfcp-zoom-in-crop-mark1512000.webp" alt="img"></p>
+<p><strong>核心代码</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 初始化低秩矩阵A和B</span></span><br><span class="line">self.lora_A.update(nn.ModuleDict(&#123;adapter_name: nn.Linear(self.in_features, r, bias=<span class="literal">False</span>)&#125;))</span><br><span class="line">self.lora_B.update(nn.ModuleDict(&#123;adapter_name: nn.Linear(r, self.out_features, bias=<span class="literal">False</span>)&#125;))</span><br><span class="line">self.scaling[adapter_name] = lora_alpha / r</span><br><span class="line"></span><br><span class="line"><span class="comment">## 向前计算</span></span><br><span class="line">result = F.linear(x, transpose(self.weight, self.fan_in_fan_out), bias=self.bias)</span><br><span class="line">result += (</span><br><span class="line">    self.lora_B[self.active_adapter](</span><br><span class="line">        self.lora_A[self.active_adapter](self.lora_dropout[self.active_adapter](x))</span><br><span class="line">    )</span><br><span class="line">    * self.scaling[self.active_adapter]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>alpha参数：alpha其实是个缩放参数，本质和learning rate相同。</p>
+<h2 id="cross-attention"><a href="#cross-attention" class="headerlink" title="cross attention"></a>cross attention</h2><p>cross-attention是扩散模型中关键的技术之一，在LoRA中通过微调该模块，即可微调生成图片的样式，而在Hypernetwork中使用两个带有dropout和激活函数的全链接层，分别修改cross attention中的key和value，也可以定制想要的生成风格。可见cross attention的重要性。</p>
+<p>在讲cross-attention之前，先看看经典的transformer中attention的含义，attnetion实际上用了三个QKV矩阵，来计算不同token之间的彼此的依赖关系，Q和K可以用来计算当前token和其他token的相似度，这个相似度作为权值对V进行加权求和，可以作为下一层的token。更通俗点说，Q和k的作用是用来在token之间搬运信息，而value本身就是从当前token当中提取出来的信息. 比较常见的是self-attention，该注意力是一个sequence内部不同token间产生注意力，而cross-attention的区别是在不同的sequence之间产生注意力。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%AD%E7%BB%83%E6%8A%80%E5%B7%A7/" rel="tag"># 训练技巧</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/01/21/dali%E9%A2%84%E5%A4%84%E7%90%86/" rel="prev" title="DALI加速图像数据预处理">
+                  <i class="fa fa-angle-left"></i> DALI加速图像数据预处理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/12/20/hello-world/" rel="next" title="Hello World">
+                  Hello World <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">John Doe</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
