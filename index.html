@@ -113,7 +113,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -369,6 +369,81 @@
 
 <p>图像分类数据加载的时候的调用方式：其他的Iterator可以参考 <a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/dali/user-guide/docs/plugins/pytorch_tutorials.html">https://docs.nvidia.com/deeplearning/dali/user-guide/docs/plugins/pytorch_tutorials.html</a></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> nvidia.dali.plugin.pytorch <span class="keyword">import</span> DALIClassificationIterator</span><br><span class="line"><span class="keyword">from</span> nvidia.dali.plugin.base_iterator <span class="keyword">import</span> LastBatchPolicy</span><br><span class="line"> </span><br><span class="line">pipe_train = TrainPipeline(batch_size, num_threads, device_id, data_root, img_size, n_holes, length,custom_cutout=custom_cutout)</span><br><span class="line">pipe_train.build()</span><br><span class="line">         </span><br><span class="line"><span class="comment"># DALIClassificationIterator: 返回pytorch tensor 形式是 (data and label) , 即DataLoader</span></span><br><span class="line">train_loader = DALIClassificationIterator(pipe_train, size=pipe_train.epoch_size(<span class="string">&#x27;Reader&#x27;</span>),last_batch_policy=LastBatchPolicy.PARTIAL, auto_reset=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/21/EMA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/01/21/EMA/" class="post-title-link" itemprop="url">EMA原理和pytorch实现</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-01-21 23:03:00" itemprop="dateCreated datePublished" datetime="2023-01-21T23:03:00+08:00">2023-01-21</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="EMA的原理和pytorch实现"><a href="#EMA的原理和pytorch实现" class="headerlink" title="EMA的原理和pytorch实现"></a>EMA的原理和pytorch实现</h1><h2 id="EMA-定义"><a href="#EMA-定义" class="headerlink" title="EMA 定义"></a>EMA 定义</h2><p>指数移动平均也叫权重移动平均，是一种给予近期数据更高权重的平均方法。</p>
+<h2 id="在深度学习的优化中的EMA"><a href="#在深度学习的优化中的EMA" class="headerlink" title="在深度学习的优化中的EMA"></a>在深度学习的优化中的EMA</h2><p>在深度学习的优化过程中，$\theta_t$ 是 t 时刻的模型权重 weight， $\upsilon_t$是 t 时刻的影子权重。在梯度下降的过程中，会一直维护着这个影子权重，但是这个影子权重不会参与训练。基本的假设是<strong>模型权重在最后 n 步内，会在实际的最优点处抖动，所以我们去最后 n 步的平均，能使模型更加的鲁棒。</strong></p>
+<h3 id="EMA为何有效"><a href="#EMA为何有效" class="headerlink" title="EMA为何有效"></a>EMA为何有效</h3><p>因为在训练的时候，会使用验证集来衡量模型精度，但是验证集和测试集并不完全一致，在训练后期阶段，模型可能已经在测试集最佳精度附近波动，所以使用ema的结果会比使用单一结果更可靠。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230307191607861.png" alt="image-20230307191607861"></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230307191620727.png" alt="image-20230307191620727"></p>
+<h3 id="Pytorch实现"><a href="#Pytorch实现" class="headerlink" title="Pytorch实现"></a>Pytorch实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">EMA</span>():</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, model, decay</span>):</span><br><span class="line">        self.model = model</span><br><span class="line">        self.decay = decay</span><br><span class="line">        self.shadow = &#123;&#125;</span><br><span class="line">        self.backup = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">register</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">                self.shadow[name] = param.data.clone()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">                <span class="keyword">assert</span> name <span class="keyword">in</span> self.shadow</span><br><span class="line">                new_average = (<span class="number">1.0</span> - self.decay) * param.data + self.decay * self.shadow[name]</span><br><span class="line">                self.shadow[name] = new_average.clone()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">apply_shadow</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">                <span class="keyword">assert</span> name <span class="keyword">in</span> self.shadow</span><br><span class="line">                self.backup[name] = param.data</span><br><span class="line">                param.data = self.shadow[name]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">restore</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">                <span class="keyword">assert</span> name <span class="keyword">in</span> self.backup</span><br><span class="line">                param.data = self.backup[name]</span><br><span class="line">        self.backup = &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化</span></span><br><span class="line">ema = EMA(model, <span class="number">0.999</span>)</span><br><span class="line">ema.register()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练过程中，更新完参数后，同步update shadow weights</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">train</span>():</span><br><span class="line">    optimizer.step()</span><br><span class="line">    ema.update()</span><br><span class="line"></span><br><span class="line"><span class="comment"># eval前，apply shadow weights；eval之后，恢复原来模型的参数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">evaluate</span>():</span><br><span class="line">    ema.apply_shadow()</span><br><span class="line">    <span class="comment"># evaluate</span></span><br><span class="line">    ema.restore()</span><br></pre></td></tr></table></figure>
 
 
       
