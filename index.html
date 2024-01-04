@@ -268,8 +268,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="LoRA"><a href="#LoRA" class="headerlink" title="LoRA"></a>LoRA</h1><p>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.09685">https://arxiv.org/abs/2106.09685</a></p>
-<p>代码链接：<a target="_blank" rel="noopener" href="https://github.com/microsoft/LoRA">https://github.com/microsoft/LoRA</a></p>
+          <h1 id="LoRA"><a href="#LoRA" class="headerlink" title="LoRA"></a>LoRA</h1><p>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.09685">https://arxiv.org/abs/2106.09685</a><br>代码链接：<a target="_blank" rel="noopener" href="https://github.com/microsoft/LoRA">https://github.com/microsoft/LoRA</a></p>
 <p>LoRA是一种finetune扩散模型的训练技术。通过对标准的checkpoint模型微小的修改，可以比checkpoint模型小10到100倍。LoRA的原理比较简单，原始全量的finetune其实就是在原始模型参数基础上加入增量$W&#x3D;W_0+\Delta W$，那么我们可以通过冻结原始参数 $W_0$，并且把增量部分通过低秩分解方式进一步降低参数量级$\Delta W &#x3D; A<em>B^T$, 原始参数的维度是 $d</em>d$, 则低秩分解后的参数量级是 $2<em>r</em>d$, 这里 $r&lt;&lt;d$， 因此可以起到大幅降低微调参数量级的效果。</p>
 <p>和textula inversion一样，不能直接使用LoRA模型，需要和checkpoint文件一起使用。</p>
 <h2 id="How-does-LoRA-work-in-Stable-diffusion？"><a href="#How-does-LoRA-work-in-Stable-diffusion？" class="headerlink" title="How does LoRA work in Stable diffusion？"></a>How does LoRA work in Stable diffusion？</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/45f7e2ce00c48b8c96e938c9fe8ed3d4.png" alt="image"></p>
