@@ -265,7 +265,7 @@
     
     <div class="post-body" itemprop="articleBody">
           <h1 id="EMA的原理和pytorch实现"><a href="#EMA的原理和pytorch实现" class="headerlink" title="EMA的原理和pytorch实现"></a>EMA的原理和pytorch实现</h1><h2 id="EMA-定义"><a href="#EMA-定义" class="headerlink" title="EMA 定义"></a>EMA 定义</h2><p>指数移动平均也叫权重移动平均，是一种给予近期数据更高权重的平均方法。</p>
-<h2 id="在深度学习的优化中的EMA"><a href="#在深度学习的优化中的EMA" class="headerlink" title="在深度学习的优化中的EMA"></a>在深度学习的优化中的EMA</h2><p>在深度学习的优化过程中，<script type="math/tex">\theta_t</script> 是 t 时刻的模型权重 weight， <script type="math/tex">\upsilon_t</script> 是 t 时刻的影子权重。在梯度下降的过程中，会一直维护着这个影子权重，但是这个影子权重不会参与训练。基本的假设是<strong>模型权重在最后 n 步内，会在实际的最优点处抖动，所以我们去最后 n 步的平均，能使模型更加的鲁棒。</strong></p>
+<h2 id="在深度学习的优化中的EMA"><a href="#在深度学习的优化中的EMA" class="headerlink" title="在深度学习的优化中的EMA"></a>在深度学习的优化中的EMA</h2><p>在深度学习的优化过程中，$\theta_t$ 是 t 时刻的模型权重 weight， $\upsilon_t$ 是 t 时刻的影子权重。在梯度下降的过程中，会一直维护着这个影子权重，但是这个影子权重不会参与训练。基本的假设是<strong>模型权重在最后 n 步内，会在实际的最优点处抖动，所以我们去最后 n 步的平均，能使模型更加的鲁棒。</strong></p>
 <h3 id="EMA为何有效"><a href="#EMA为何有效" class="headerlink" title="EMA为何有效"></a>EMA为何有效</h3><p>因为在训练的时候，会使用验证集来衡量模型精度，但是验证集和测试集并不完全一致，在训练后期阶段，模型可能已经在测试集最佳精度附近波动，所以使用ema的结果会比使用单一结果更可靠。</p>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230307191607861.png" alt="image-20230307191607861"></p>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230307191620727.png" alt="image-20230307191620727"></p>
@@ -340,7 +340,7 @@
     
     <div class="post-body" itemprop="articleBody">
           <h1 id="LoRA"><a href="#LoRA" class="headerlink" title="LoRA"></a>LoRA</h1><p>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.09685">https://arxiv.org/abs/2106.09685</a><br>代码链接：<a target="_blank" rel="noopener" href="https://github.com/microsoft/LoRA">https://github.com/microsoft/LoRA</a></p>
-<p>LoRA是一种finetune扩散模型的训练技术。通过对标准的checkpoint模型微小的修改，可以比checkpoint模型小10到100倍。LoRA的原理比较简单，原始全量的finetune其实就是在原始模型参数基础上加入增量$W=W_0+\Delta W$，那么我们可以通过冻结原始参数 $W_0$，并且把增量部分通过低秩分解方式进一步降低参数量级$\Delta W = A<em>B^T$, 原始参数的维度是 $d</em>d$, 则低秩分解后的参数量级是 $2<em>r</em>d$, 这里 $r&lt;&lt;d$， 因此可以起到大幅降低微调参数量级的效果。</p>
+<p>LoRA是一种finetune扩散模型的训练技术。通过对标准的checkpoint模型微小的修改，可以比checkpoint模型小10到100倍。LoRA的原理比较简单，原始全量的finetune其实就是在原始模型参数基础上加入增量$W=W_0+\Delta W$，那么我们可以通过冻结原始参数 $W_0$，并且把增量部分通过低秩分解方式进一步降低参数量级$\Delta W = A*B^T$, 原始参数的维度是 $d*d$, 则低秩分解后的参数量级是 $2*r*d$, 这里 $r&lt;&lt;d$， 因此可以起到大幅降低微调参数量级的效果。</p>
 <p>和textula inversion一样，不能直接使用LoRA模型，需要和checkpoint文件一起使用。</p>
 <h2 id="How-does-LoRA-work-in-Stable-diffusion？"><a href="#How-does-LoRA-work-in-Stable-diffusion？" class="headerlink" title="How does LoRA work in Stable diffusion？"></a>How does LoRA work in Stable diffusion？</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/45f7e2ce00c48b8c96e938c9fe8ed3d4.png" alt="image"></p>
 <p>LoRA通过在checkpoint上做小的修改替换风格，具体而言修改的地方是UNet中的cross-attention层。该层是图像和文本prompt交界的层。LORA的作者们发现微调该部分足以实现良好的性能。</p>
