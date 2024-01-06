@@ -20,27 +20,32 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+    <meta name="description" content="resnet1.1 batch normalization原理提出背景：在训练层数较深的神经网络时，参数的变化导致每一层的输入分布会发生变化，进而上层的网络需要不停地去适应这些分布变化，使得我们的模型训练变得困难——internal Covariate Shift 问题：上层网络需要不停调整来适应输入分布的变化，导致网络学习速度的降低；网络的训练过程容易陷入梯度饱和区，减缓网络收敛速度。 减缓in">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="http://example.com/2023/12/20/hello-world/index.html">
+<meta property="og:title" content="resnet解析">
+<meta property="og:url" content="http://example.com/2022/04/11/resnet/index.html">
 <meta property="og:site_name" content="CJ blog">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta property="og:description" content="resnet1.1 batch normalization原理提出背景：在训练层数较深的神经网络时，参数的变化导致每一层的输入分布会发生变化，进而上层的网络需要不停地去适应这些分布变化，使得我们的模型训练变得困难——internal Covariate Shift 问题：上层网络需要不停调整来适应输入分布的变化，导致网络学习速度的降低；网络的训练过程容易陷入梯度饱和区，减缓网络收敛速度。 减缓in">
 <meta property="og:locale">
-<meta property="article:published_time" content="2023-12-19T16:09:14.367Z">
-<meta property="article:modified_time" content="2023-12-19T16:09:14.368Z">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701153501142.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701153552148.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701154852179.png">
+<meta property="article:published_time" content="2022-04-11T13:03:00.000Z">
+<meta property="article:modified_time" content="2023-04-11T15:03:00.000Z">
 <meta property="article:author" content="Jie Chu">
+<meta property="article:tag" content="CV">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701153501142.png">
 
 
-<link rel="canonical" href="http://example.com/2023/12/20/hello-world/">
+<link rel="canonical" href="http://example.com/2022/04/11/resnet/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh","comments":true,"permalink":"http://example.com/2023/12/20/hello-world/","path":"2023/12/20/hello-world/","title":"Hello World"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh","comments":true,"permalink":"http://example.com/2022/04/11/resnet/","path":"2022/04/11/resnet/","title":"resnet解析"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Hello World | CJ blog</title>
+<title>resnet解析 | CJ blog</title>
   
 
 
@@ -106,7 +111,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Quick-Start"><span class="nav-number">1.</span> <span class="nav-text">Quick Start</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Create-a-new-post"><span class="nav-number">1.1.</span> <span class="nav-text">Create a new post</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Run-server"><span class="nav-number">1.2.</span> <span class="nav-text">Run server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Generate-static-files"><span class="nav-number">1.3.</span> <span class="nav-text">Generate static files</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deploy-to-remote-sites"><span class="nav-number">1.4.</span> <span class="nav-text">Deploy to remote sites</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#resnet"><span class="nav-number">1.</span> <span class="nav-text">resnet</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-batch-normalization%E5%8E%9F%E7%90%86"><span class="nav-number">1.0.1.</span> <span class="nav-text">1.1 batch normalization原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-resnet-%E7%BB%93%E6%9E%84"><span class="nav-number">1.0.2.</span> <span class="nav-text">1.2  resnet 结构</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -151,7 +156,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/12/20/hello-world/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/11/resnet/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -164,12 +169,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Hello World | CJ blog">
+      <meta itemprop="name" content="resnet解析 | CJ blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Hello World
+          resnet解析
         </h1>
 
         <div class="post-meta-container">
@@ -180,7 +185,14 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2023-12-20 00:09:14" itemprop="dateCreated datePublished" datetime="2023-12-20T00:09:14+08:00">2023-12-20</time>
+      <time title="Created: 2022-04-11 21:03:00" itemprop="dateCreated datePublished" datetime="2022-04-11T21:03:00+08:00">2022-04-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-11 23:03:00" itemprop="dateModified" datetime="2023-04-11T23:03:00+08:00">2023-04-11</time>
     </span>
 
   
@@ -192,15 +204,33 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+    <div class="post-body" itemprop="articleBody"><h1 id="resnet"><a href="#resnet" class="headerlink" title="resnet"></a>resnet</h1><h3 id="1-1-batch-normalization原理"><a href="#1-1-batch-normalization原理" class="headerlink" title="1.1 batch normalization原理"></a>1.1 batch normalization原理</h3><p>提出背景：在训练层数较深的神经网络时，参数的变化导致每一层的输入分布会发生变化，进而上层的网络需要不停地去适应这些分布变化，使得我们的模型训练变得困难——internal Covariate Shift</p>
+<p>问题：上层网络需要不停调整来适应输入分布的变化，导致网络学习速度的降低；网络的训练过程容易陷入梯度饱和区，减缓网络收敛速度。</p>
+<p>减缓internal covariate shift的方法：</p>
+<ul>
+<li>白化：对输入数据分布进行变换，具有相同的均值和方差；</li>
+<li><strong>batch normalization</strong>：由于白化过程计算成本太高，且改变了网络每一层的分布。</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701153501142.png" alt="image-20220701153501142"></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701153552148.png" alt="image-20220701153552148"></p>
+<h3 id="1-2-resnet-结构"><a href="#1-2-resnet-结构" class="headerlink" title="1.2  resnet 结构"></a>1.2  resnet 结构</h3><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701154852179.png" alt="image-20220701154852179"></p>
+<p><strong>Stage 0</strong></p>
+<ul>
+<li><code>(3,224,224)</code>指输入<code>INPUT</code>的通道数(channel)、高(height)和宽(width)，即<code>(C,H,W)</code>。现假设输入的高度和宽度相等，所以用<code>(C,W,W)</code>表示。</li>
+<li>该stage中第1层包括3个先后操作</li>
+</ul>
+<ol>
+<li><code>CONV</code><br> <code>CONV</code>是卷积（Convolution）的缩写，<code>7×7</code>指卷积核大小，<code>64</code>指<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=卷积核&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;353235794&quot;}">卷积核</a>的数量（即该卷积层输出的通道数），<code>/2</code>指卷积核的步长为2。</li>
+<li><code>BN</code><br> <code>BN</code>是Batch Normalization的缩写，即常说的BN层。 </li>
+<li><code>RELU</code><br> <code>RELU</code>指ReLU激活函数。</li>
+</ol>
+<ul>
+<li><p>该stage中第2层为<code>MAXPOOL</code>，即最大池化层，其kernel大小为<code>3×3</code>、步长为<code>2</code>。</p>
+</li>
+<li><p><code>(64,56,56)</code>是该stage输出的通道数(channel)、高(height)和宽(width)，其中<code>64</code>等于该stage第1层卷积层中卷积核的数量，<code>56</code>等于<code>224/2/2</code>（步长为2会使输入尺寸减半）。 </p>
+</li>
+</ul>
+<p>总体来讲，在<em>Stage 0</em>中，形状为<code>(3,224,224)</code>的输入先后经过卷积层、<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=BN层&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;353235794&quot;}">BN层</a>、ReLU激活函数、<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=MaxPooling层&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;353235794&quot;}">MaxPooling层</a>得到了形状为<code>(64,56,56)</code>的输出。</p>
 
     </div>
 
@@ -209,16 +239,22 @@
     
 
     <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CV/" rel="tag"># CV</a>
+          </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2023/04/21/EVA02/" rel="prev" title="EVA02解析">
-                  <i class="fa fa-angle-left"></i> EVA02解析
+                <a href="/2022/03/20/Inception%E7%B3%BB%E5%88%97/" rel="prev" title="Inception系列">
+                  <i class="fa fa-angle-left"></i> Inception系列
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2023/01/21/dali%E9%A2%84%E5%A4%84%E7%90%86/" rel="next" title="DALI加速图像数据预处理">
+                  DALI加速图像数据预处理 <i class="fa fa-angle-right"></i>
+                </a>
             </div>
           </div>
     </footer>

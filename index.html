@@ -116,7 +116,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">7</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -198,6 +198,98 @@
 <p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
 <h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
 <p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/21/EVA02/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jie Chu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CJ blog">
+      <meta itemprop="description" content="日常笔记">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | CJ blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/04/21/EVA02/" class="post-title-link" itemprop="url">EVA02解析</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-04-21 21:03:00" itemprop="dateCreated datePublished" datetime="2023-04-21T21:03:00+08:00">2023-04-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-22 23:03:00" itemprop="dateModified" datetime="2023-04-22T23:03:00+08:00">2023-04-22</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="EVA-02-A-Visual-Representation-for-Neon-Genesis"><a href="#EVA-02-A-Visual-Representation-for-Neon-Genesis" class="headerlink" title="EVA-02: A Visual Representation for Neon Genesis"></a>EVA-02: A Visual Representation for Neon Genesis</h1><p>EVA02的目标是作为下一代的基于Transformer的视觉表示模型。</p>
+<p>文章主要包含两个部分：1、对普通Vit的架构改进，2、MIM的预训练策略</p>
+<p><strong>总结</strong></p>
+<p>EVA02主要有两个改进，一是，通过实验的方法来观察采用哪些NLP方向关于Vit的改进；二是，增加视觉特征编码的容量以及增加训练的轮数和图像的size；</p>
+<h2 id="1-Architecture"><a href="#1-Architecture" class="headerlink" title="1 Architecture"></a>1 Architecture</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230629182751431.png" alt="image-20230629182751431"></p>
+<p>ViT主要由 MHSA（用于全局空间信息聚合）和 pointwise的FFNs（特征变换）交错组成。但是NLP方面很多针对ViT的修改没有在视觉上应用。作者做了一个实验来探索不同的修改带来的影响：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230703191529244.png" alt="image-20230703191529244"></p>
+<p><strong>Gelu</strong>: $GELU(x)=x * \phi(x),x \sim N(0,1)$</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/v2-0d8b979444f64ab49d4bc0f4199a15c2_r.jpg" alt="img"></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/%E6%88%AA%E5%9B%BE20230914183157.png" alt="截图20230914183157"></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/v2-e31b1e5b4333a90fbcca03c9a863a0c5_r.jpg" alt="img"></p>
+<h2 id="2-pre-trainning-strategy"><a href="#2-pre-trainning-strategy" class="headerlink" title="2 pre-trainning strategy"></a>2 pre-trainning strategy</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230703195140612.png" alt="image-20230703195140612"></p>
+<p><strong>MIM teacher model变大，训练的epoch也需要变多；</strong></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230703195449659.png" alt="image-20230703195449659"></p>
+<p><strong>分辨率的增加以及在imgnet数据上的有监督ft也会增加性能</strong></p>
+<p>预训练目标类似于 EVA [44]，即仅以可见图像块为条件回归屏蔽图像文本对齐的视觉特征。我们使用 [MASK] 标记破坏输入补丁，并按照 [5, 44] 使用掩码率为 40% 的分块掩码。</p>
+<p>MIM 预训练的目标表示来自可公开访问的 EVA-CLIP [44] 视觉塔，具有 10 亿个参数。 EV A-02 的输出特征首先被归一化 [4]，然后通过线性层投影到与 EVA-CLIP 的视觉特征相同的维度。我们使用负余弦相似度作为损失函数。</p>
 
       
     </div>
@@ -446,6 +538,108 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">CUTOUT</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, n_holes, length</span>):</span><br><span class="line">        self.n_holes = n_holes</span><br><span class="line">        self.length = length</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__call__</span>(<span class="params">self, imgs</span>):</span><br><span class="line">        c, h, w = imgs.shape</span><br><span class="line">        mask = np.ones((h, w), np.float32)</span><br><span class="line">        <span class="keyword">for</span> n <span class="keyword">in</span> <span class="built_in">range</span>(self.n_holes):</span><br><span class="line">            y = np.random.randint(h)</span><br><span class="line">            x = np.random.randint(w)</span><br><span class="line">            y1 = np.clip(y - self.length // <span class="number">2</span>, <span class="number">0</span>, h)</span><br><span class="line">            y2 = np.clip(y + self.length // <span class="number">2</span>, <span class="number">0</span>, h)</span><br><span class="line">            x1 = np.clip(x - self.length // <span class="number">2</span>, <span class="number">0</span>, w)</span><br><span class="line">            x2 = np.clip(x + self.length // <span class="number">2</span>, <span class="number">0</span>, w)</span><br><span class="line">            mask[y1: y2, x1: x2] = <span class="number">0.</span></span><br><span class="line">        mask = np.expand_dims(mask, <span class="number">0</span>).repeat(c, axis=<span class="number">0</span>)</span><br><span class="line">        imgs = imgs * mask</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">return</span> imgs</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 然后在上面的 TrainPipeline上加上下面这行,model 是 “cpu”</span></span><br><span class="line">    self.mask = ops.PythonFunction(device=<span class="string">&quot;cpu&quot;</span>, function=CUTOUT(n_holes, length), num_outputs=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
 <p>图像分类数据加载的时候的调用方式：其他的Iterator可以参考 <a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/dali/user-guide/docs/plugins/pytorch_tutorials.html">https://docs.nvidia.com/deeplearning/dali/user-guide/docs/plugins/pytorch_tutorials.html</a></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> nvidia.dali.plugin.pytorch <span class="keyword">import</span> DALIClassificationIterator</span><br><span class="line"><span class="keyword">from</span> nvidia.dali.plugin.base_iterator <span class="keyword">import</span> LastBatchPolicy</span><br><span class="line"> </span><br><span class="line">pipe_train = TrainPipeline(batch_size, num_threads, device_id, data_root, img_size, n_holes, length,custom_cutout=custom_cutout)</span><br><span class="line">pipe_train.build()</span><br><span class="line">         </span><br><span class="line"><span class="comment"># DALIClassificationIterator: 返回pytorch tensor 形式是 (data and label) , 即DataLoader</span></span><br><span class="line">train_loader = DALIClassificationIterator(pipe_train, size=pipe_train.epoch_size(<span class="string">&#x27;Reader&#x27;</span>),last_batch_policy=LastBatchPolicy.PARTIAL, auto_reset=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/11/resnet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jie Chu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CJ blog">
+      <meta itemprop="description" content="日常笔记">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | CJ blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/04/11/resnet/" class="post-title-link" itemprop="url">resnet解析</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-04-11 21:03:00" itemprop="dateCreated datePublished" datetime="2022-04-11T21:03:00+08:00">2022-04-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-04-11 23:03:00" itemprop="dateModified" datetime="2023-04-11T23:03:00+08:00">2023-04-11</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="resnet"><a href="#resnet" class="headerlink" title="resnet"></a>resnet</h1><h3 id="1-1-batch-normalization原理"><a href="#1-1-batch-normalization原理" class="headerlink" title="1.1 batch normalization原理"></a>1.1 batch normalization原理</h3><p>提出背景：在训练层数较深的神经网络时，参数的变化导致每一层的输入分布会发生变化，进而上层的网络需要不停地去适应这些分布变化，使得我们的模型训练变得困难——internal Covariate Shift</p>
+<p>问题：上层网络需要不停调整来适应输入分布的变化，导致网络学习速度的降低；网络的训练过程容易陷入梯度饱和区，减缓网络收敛速度。</p>
+<p>减缓internal covariate shift的方法：</p>
+<ul>
+<li>白化：对输入数据分布进行变换，具有相同的均值和方差；</li>
+<li><strong>batch normalization</strong>：由于白化过程计算成本太高，且改变了网络每一层的分布。</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701153501142.png" alt="image-20220701153501142"></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701153552148.png" alt="image-20220701153552148"></p>
+<h3 id="1-2-resnet-结构"><a href="#1-2-resnet-结构" class="headerlink" title="1.2  resnet 结构"></a>1.2  resnet 结构</h3><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701154852179.png" alt="image-20220701154852179"></p>
+<p><strong>Stage 0</strong></p>
+<ul>
+<li><code>(3,224,224)</code>指输入<code>INPUT</code>的通道数(channel)、高(height)和宽(width)，即<code>(C,H,W)</code>。现假设输入的高度和宽度相等，所以用<code>(C,W,W)</code>表示。</li>
+<li>该stage中第1层包括3个先后操作</li>
+</ul>
+<ol>
+<li><code>CONV</code><br> <code>CONV</code>是卷积（Convolution）的缩写，<code>7×7</code>指卷积核大小，<code>64</code>指<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=卷积核&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;353235794&quot;}">卷积核</a>的数量（即该卷积层输出的通道数），<code>/2</code>指卷积核的步长为2。</li>
+<li><code>BN</code><br> <code>BN</code>是Batch Normalization的缩写，即常说的BN层。 </li>
+<li><code>RELU</code><br> <code>RELU</code>指ReLU激活函数。</li>
+</ol>
+<ul>
+<li><p>该stage中第2层为<code>MAXPOOL</code>，即最大池化层，其kernel大小为<code>3×3</code>、步长为<code>2</code>。</p>
+</li>
+<li><p><code>(64,56,56)</code>是该stage输出的通道数(channel)、高(height)和宽(width)，其中<code>64</code>等于该stage第1层卷积层中卷积核的数量，<code>56</code>等于<code>224/2/2</code>（步长为2会使输入尺寸减半）。 </p>
+</li>
+</ul>
+<p>总体来讲，在<em>Stage 0</em>中，形状为<code>(3,224,224)</code>的输入先后经过卷积层、<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=BN层&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;353235794&quot;}">BN层</a>、ReLU激活函数、<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=MaxPooling层&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;353235794&quot;}">MaxPooling层</a>得到了形状为<code>(64,56,56)</code>的输出。</p>
 
       
     </div>

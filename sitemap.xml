@@ -11,6 +11,24 @@
   </url>
   
   <url>
+    <loc>http://example.com/2023/04/21/EVA02/</loc>
+    
+    <lastmod>2023-04-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/2022/04/11/resnet/</loc>
+    
+    <lastmod>2023-04-11</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://example.com/2023/03/21/EMA/</loc>
     
     <lastmod>2023-03-22</lastmod>
