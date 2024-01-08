@@ -20,15 +20,6 @@
   </url>
   
   <url>
-    <loc>http://example.com/2023/04/19/Vit/</loc>
-    
-    <lastmod>2023-04-19</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/2022/04/11/resnet/</loc>
     
     <lastmod>2023-04-11</lastmod>
@@ -59,6 +50,15 @@
     <loc>http://example.com/2023/01/21/dali%E9%A2%84%E5%A4%84%E7%90%86/</loc>
     
     <lastmod>2023-01-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/2022/04/19/Vit/</loc>
+    
+    <lastmod>2022-04-19</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
