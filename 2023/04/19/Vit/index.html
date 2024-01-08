@@ -20,32 +20,32 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="resnet1.1 batch normalization原理提出背景：在训练层数较深的神经网络时，参数的变化导致每一层的输入分布会发生变化，进而上层的网络需要不停地去适应这些分布变化，使得我们的模型训练变得困难——internal Covariate Shift 问题：上层网络需要不停调整来适应输入分布的变化，导致网络学习速度的降低；网络的训练过程容易陷入梯度饱和区，减缓网络收敛速度。 减缓in">
+    <meta name="description" content="ViT(Vision Transformer)模型介绍受到NLP领域中Transformer成功应用的启发，Vit算法中尝试将标准的Transformer结构直接应用于图像，并对整个图像分类流程进行最少的修改。 Vit原论文中最核心的结论是，当拥有足够多的数据进行预训练的时候，ViT的表现就会超过CNN，突破Transformer的归纳偏置的限制，可以在下游任务中获得较好的迁移效果。 但是当训练数">
 <meta property="og:type" content="article">
-<meta property="og:title" content="resnet解析">
-<meta property="og:url" content="http://example.com/2022/04/11/resnet/index.html">
+<meta property="og:title" content="VIT">
+<meta property="og:url" content="http://example.com/2023/04/19/Vit/index.html">
 <meta property="og:site_name" content="CJ blog">
-<meta property="og:description" content="resnet1.1 batch normalization原理提出背景：在训练层数较深的神经网络时，参数的变化导致每一层的输入分布会发生变化，进而上层的网络需要不停地去适应这些分布变化，使得我们的模型训练变得困难——internal Covariate Shift 问题：上层网络需要不停调整来适应输入分布的变化，导致网络学习速度的降低；网络的训练过程容易陷入梯度饱和区，减缓网络收敛速度。 减缓in">
+<meta property="og:description" content="ViT(Vision Transformer)模型介绍受到NLP领域中Transformer成功应用的启发，Vit算法中尝试将标准的Transformer结构直接应用于图像，并对整个图像分类流程进行最少的修改。 Vit原论文中最核心的结论是，当拥有足够多的数据进行预训练的时候，ViT的表现就会超过CNN，突破Transformer的归纳偏置的限制，可以在下游任务中获得较好的迁移效果。 但是当训练数">
 <meta property="og:locale">
-<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701153501142.png">
-<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701153552148.png">
-<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701154852179.png">
-<meta property="article:published_time" content="2022-04-11T13:03:00.000Z">
-<meta property="article:modified_time" content="2023-04-11T15:03:00.000Z">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/ViT.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/Multi-head_Attention.jpg">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/MLP.png">
+<meta property="article:published_time" content="2023-04-19T13:00:00.000Z">
+<meta property="article:modified_time" content="2023-04-19T15:08:00.000Z">
 <meta property="article:author" content="Jie Chu">
 <meta property="article:tag" content="CV">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701153501142.png">
+<meta name="twitter:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/ViT.png">
 
 
-<link rel="canonical" href="http://example.com/2022/04/11/resnet/">
+<link rel="canonical" href="http://example.com/2023/04/19/Vit/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh","comments":true,"permalink":"http://example.com/2022/04/11/resnet/","path":"2022/04/11/resnet/","title":"resnet解析"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh","comments":true,"permalink":"http://example.com/2023/04/19/Vit/","path":"2023/04/19/Vit/","title":"VIT"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>resnet解析 | CJ blog</title>
+<title>VIT | CJ blog</title>
   
 
 
@@ -111,7 +111,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#resnet"><span class="nav-number">1.</span> <span class="nav-text">resnet</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-batch-normalization%E5%8E%9F%E7%90%86"><span class="nav-number">1.0.1.</span> <span class="nav-text">1.1 batch normalization原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-resnet-%E7%BB%93%E6%9E%84"><span class="nav-number">1.0.2.</span> <span class="nav-text">1.2  resnet 结构</span></a></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ViT-Vision-Transformer"><span class="nav-number">1.</span> <span class="nav-text">ViT(Vision Transformer)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.1.</span> <span class="nav-text">模型介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.2.</span> <span class="nav-text">模型结构与实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9B%BE%E5%83%8F%E5%88%86%E5%9D%97%E5%B5%8C%E5%85%A5"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.图像分块嵌入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%A4%9A%E5%A4%B4%E6%B3%A8%E6%84%8F%E5%8A%9B"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.多头注意力</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-MLP"><span class="nav-number">1.2.3.</span> <span class="nav-text">3.MLP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-DropPath"><span class="nav-number">1.2.4.</span> <span class="nav-text">4.DropPath</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -156,7 +156,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/11/resnet/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/19/Vit/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -169,12 +169,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="resnet解析 | CJ blog">
+      <meta itemprop="name" content="VIT | CJ blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          resnet解析
+          VIT
         </h1>
 
         <div class="post-meta-container">
@@ -184,15 +184,9 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
+      
 
-      <time title="Created: 2022-04-11 21:03:00" itemprop="dateCreated datePublished" datetime="2022-04-11T21:03:00+08:00">2022-04-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-11 23:03:00" itemprop="dateModified" datetime="2023-04-11T23:03:00+08:00">2023-04-11</time>
+      <time title="Created: 2023-04-19 21:00:00 / Modified: 23:08:00" itemprop="dateCreated datePublished" datetime="2023-04-19T21:00:00+08:00">2023-04-19</time>
     </span>
 
   
@@ -204,33 +198,18 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="resnet"><a href="#resnet" class="headerlink" title="resnet"></a>resnet</h1><h3 id="1-1-batch-normalization原理"><a href="#1-1-batch-normalization原理" class="headerlink" title="1.1 batch normalization原理"></a>1.1 batch normalization原理</h3><p>提出背景：在训练层数较深的神经网络时，参数的变化导致每一层的输入分布会发生变化，进而上层的网络需要不停地去适应这些分布变化，使得我们的模型训练变得困难——internal Covariate Shift</p>
-<p>问题：上层网络需要不停调整来适应输入分布的变化，导致网络学习速度的降低；网络的训练过程容易陷入梯度饱和区，减缓网络收敛速度。</p>
-<p>减缓internal covariate shift的方法：</p>
-<ul>
-<li>白化：对输入数据分布进行变换，具有相同的均值和方差；</li>
-<li><strong>batch normalization</strong>：由于白化过程计算成本太高，且改变了网络每一层的分布。</li>
-</ul>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701153501142.png" alt="image-20220701153501142"></p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701153552148.png" alt="image-20220701153552148"></p>
-<h3 id="1-2-resnet-结构"><a href="#1-2-resnet-结构" class="headerlink" title="1.2  resnet 结构"></a>1.2  resnet 结构</h3><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20220701154852179.png" alt="image-20220701154852179"></p>
-<p><strong>Stage 0</strong></p>
-<ul>
-<li><code>(3,224,224)</code>指输入<code>INPUT</code>的通道数(channel)、高(height)和宽(width)，即<code>(C,H,W)</code>。现假设输入的高度和宽度相等，所以用<code>(C,W,W)</code>表示。</li>
-<li>该stage中第1层包括3个先后操作</li>
-</ul>
-<ol>
-<li><code>CONV</code><br> <code>CONV</code>是卷积（Convolution）的缩写，<code>7×7</code>指卷积核大小，<code>64</code>指<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=卷积核&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;353235794&quot;}">卷积核</a>的数量（即该卷积层输出的通道数），<code>/2</code>指卷积核的步长为2。</li>
-<li><code>BN</code><br> <code>BN</code>是Batch Normalization的缩写，即常说的BN层。 </li>
-<li><code>RELU</code><br> <code>RELU</code>指ReLU激活函数。</li>
-</ol>
-<ul>
-<li><p>该stage中第2层为<code>MAXPOOL</code>，即最大池化层，其kernel大小为<code>3×3</code>、步长为<code>2</code>。</p>
-</li>
-<li><p><code>(64,56,56)</code>是该stage输出的通道数(channel)、高(height)和宽(width)，其中<code>64</code>等于该stage第1层卷积层中卷积核的数量，<code>56</code>等于<code>224/2/2</code>（步长为2会使输入尺寸减半）。 </p>
-</li>
-</ul>
-<p>总体来讲，在<em>Stage 0</em>中，形状为<code>(3,224,224)</code>的输入先后经过卷积层、<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=BN层&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;353235794&quot;}">BN层</a>、ReLU激活函数、<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=MaxPooling层&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;353235794&quot;}">MaxPooling层</a>得到了形状为<code>(64,56,56)</code>的输出。</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="ViT-Vision-Transformer"><a href="#ViT-Vision-Transformer" class="headerlink" title="ViT(Vision Transformer)"></a>ViT(Vision Transformer)</h1><h2 id="模型介绍"><a href="#模型介绍" class="headerlink" title="模型介绍"></a>模型介绍</h2><p>受到NLP领域中Transformer成功应用的启发，Vit算法中尝试将标准的Transformer结构直接应用于图像，并对整个图像分类流程进行最少的修改。</p>
+<p><strong>Vit原论文中最核心的结论是，当拥有足够多的数据进行预训练的时候，ViT的表现就会超过CNN，突破Transformer的归纳偏置的限制，可以在下游任务中获得较好的迁移效果。</strong></p>
+<p>但是当训练数据集不够大的时候，ViT的表现通常比同等大小的ResNets要差一些，因为Transformer和CNN相比缺少归纳偏置（inductive bias），即一种先验知识，提前做好的假设。CNN具有两种归纳偏置，一种是局部性（locality/two-dimensional neighborhood structure），即图片上相邻的区域具有相似的特征；一种是平移不变形（translation equivariance）， $f(g(x)=g(f(x)))$ ，其中g代表卷积操作，f代表平移操作。当CNN具有以上两种归纳偏置，就有了很多先验信息，需要相对少的数据就可以学习一个比较好的模型。</p>
+<h2 id="模型结构与实现"><a href="#模型结构与实现" class="headerlink" title="模型结构与实现"></a>模型结构与实现</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/ViT.png" alt="图1 ViT算法结构示意图"></p>
+<h3 id="1-图像分块嵌入"><a href="#1-图像分块嵌入" class="headerlink" title="1.图像分块嵌入"></a>1.图像分块嵌入</h3><p>transformer的输入是一个二维矩阵，因此在ViT算法中，首先要做的是如何将一个$H\times W\times C$ 的三维图像转换为$N\times D$ 的二维输入。</p>
+<p>iT中的具体实现方式为：将 $H×W×C$ 的图像，变为一个 $N×(P^2\times C)$ 的序列。这个序列可以看作是一系列展平的图像块，也就是将图像切分成小块后，再将其展平。该序列中一共包含了 $N=HW/P^2$ 个图像块，每个图像块的维度则是 $(P^2\times C)$。其中 $P$ 是图像块的大小，$C$ 是通道数量。经过如上变换，就可以将 $N$ 视为sequence的长度了。</p>
+<p>但是，此时每个图像块的维度是 $(P2\times C)$，而我们实际需要的向量维度是 $D$，因此我们还需要对图像块进行 Embedding。这里 Embedding 的方式非常简单，只需要对每个 $(P^2\times C)$的图像块做一个线性变换，将维度压缩为 $D$ 即可。</p>
+<h3 id="2-多头注意力"><a href="#2-多头注意力" class="headerlink" title="2.多头注意力"></a>2.多头注意力</h3><p>将图像转换成序列之后，就可以将其输入到 Transformer 中结构中进行特征提取了。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/Multi-head_Attention.jpg" alt="图4 多头注意力"></p>
+<h3 id="3-MLP"><a href="#3-MLP" class="headerlink" title="3.MLP"></a>3.MLP</h3><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/MLP.png" alt="图7 多层感知机"></p>
+<h3 id="4-DropPath"><a href="#4-DropPath" class="headerlink" title="4.DropPath"></a>4.DropPath</h3><p>除了以上重要模块意外，代码实现过程中还使用了DropPath（Stochastic Depth）来代替传统的Dropout结构，DropPath可以理解为一种特殊的 Dropout。其作用是在训练过程中随机丢弃子图层（randomly drop a subset of layers），而在预测时正常使用完整的 Graph。</p>
+<p><strong>参考文献</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2010.11929">An Image is Worth 16x16 Words:Transformers for Image Recognition at Scale</a></p>
 
     </div>
 
@@ -247,13 +226,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2022/03/20/Inception%E7%B3%BB%E5%88%97/" rel="prev" title="Inception系列">
-                  <i class="fa fa-angle-left"></i> Inception系列
+                <a href="/2023/03/21/EMA/" rel="prev" title="EMA原理和pytorch实现">
+                  <i class="fa fa-angle-left"></i> EMA原理和pytorch实现
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2023/01/21/dali%E9%A2%84%E5%A4%84%E7%90%86/" rel="next" title="DALI加速图像数据预处理">
-                  DALI加速图像数据预处理 <i class="fa fa-angle-right"></i>
+                <a href="/2023/04/21/EVA02/" rel="next" title="EVA02解析">
+                  EVA02解析 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>

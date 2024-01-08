@@ -116,7 +116,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -290,6 +290,87 @@
 <p><strong>分辨率的增加以及在imgnet数据上的有监督ft也会增加性能</strong></p>
 <p>预训练目标类似于 EVA [44]，即仅以可见图像块为条件回归屏蔽图像文本对齐的视觉特征。我们使用 [MASK] 标记破坏输入补丁，并按照 [5, 44] 使用掩码率为 40% 的分块掩码。</p>
 <p>MIM 预训练的目标表示来自可公开访问的 EVA-CLIP [44] 视觉塔，具有 10 亿个参数。 EV A-02 的输出特征首先被归一化 [4]，然后通过线性层投影到与 EVA-CLIP 的视觉特征相同的维度。我们使用负余弦相似度作为损失函数。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/19/Vit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jie Chu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CJ blog">
+      <meta itemprop="description" content="日常笔记">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | CJ blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/04/19/Vit/" class="post-title-link" itemprop="url">VIT</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2023-04-19 21:00:00 / Modified: 23:08:00" itemprop="dateCreated datePublished" datetime="2023-04-19T21:00:00+08:00">2023-04-19</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="ViT-Vision-Transformer"><a href="#ViT-Vision-Transformer" class="headerlink" title="ViT(Vision Transformer)"></a>ViT(Vision Transformer)</h1><h2 id="模型介绍"><a href="#模型介绍" class="headerlink" title="模型介绍"></a>模型介绍</h2><p>受到NLP领域中Transformer成功应用的启发，Vit算法中尝试将标准的Transformer结构直接应用于图像，并对整个图像分类流程进行最少的修改。</p>
+<p><strong>Vit原论文中最核心的结论是，当拥有足够多的数据进行预训练的时候，ViT的表现就会超过CNN，突破Transformer的归纳偏置的限制，可以在下游任务中获得较好的迁移效果。</strong></p>
+<p>但是当训练数据集不够大的时候，ViT的表现通常比同等大小的ResNets要差一些，因为Transformer和CNN相比缺少归纳偏置（inductive bias），即一种先验知识，提前做好的假设。CNN具有两种归纳偏置，一种是局部性（locality/two-dimensional neighborhood structure），即图片上相邻的区域具有相似的特征；一种是平移不变形（translation equivariance）， $f(g(x)=g(f(x)))$ ，其中g代表卷积操作，f代表平移操作。当CNN具有以上两种归纳偏置，就有了很多先验信息，需要相对少的数据就可以学习一个比较好的模型。</p>
+<h2 id="模型结构与实现"><a href="#模型结构与实现" class="headerlink" title="模型结构与实现"></a>模型结构与实现</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/ViT.png" alt="图1 ViT算法结构示意图"></p>
+<h3 id="1-图像分块嵌入"><a href="#1-图像分块嵌入" class="headerlink" title="1.图像分块嵌入"></a>1.图像分块嵌入</h3><p>transformer的输入是一个二维矩阵，因此在ViT算法中，首先要做的是如何将一个$H\times W\times C$ 的三维图像转换为$N\times D$ 的二维输入。</p>
+<p>iT中的具体实现方式为：将 $H×W×C$ 的图像，变为一个 $N×(P^2\times C)$ 的序列。这个序列可以看作是一系列展平的图像块，也就是将图像切分成小块后，再将其展平。该序列中一共包含了 $N=HW/P^2$ 个图像块，每个图像块的维度则是 $(P^2\times C)$。其中 $P$ 是图像块的大小，$C$ 是通道数量。经过如上变换，就可以将 $N$ 视为sequence的长度了。</p>
+<p>但是，此时每个图像块的维度是 $(P2\times C)$，而我们实际需要的向量维度是 $D$，因此我们还需要对图像块进行 Embedding。这里 Embedding 的方式非常简单，只需要对每个 $(P^2\times C)$的图像块做一个线性变换，将维度压缩为 $D$ 即可。</p>
+<h3 id="2-多头注意力"><a href="#2-多头注意力" class="headerlink" title="2.多头注意力"></a>2.多头注意力</h3><p>将图像转换成序列之后，就可以将其输入到 Transformer 中结构中进行特征提取了。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/Multi-head_Attention.jpg" alt="图4 多头注意力"></p>
+<h3 id="3-MLP"><a href="#3-MLP" class="headerlink" title="3.MLP"></a>3.MLP</h3><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/MLP.png" alt="图7 多层感知机"></p>
+<h3 id="4-DropPath"><a href="#4-DropPath" class="headerlink" title="4.DropPath"></a>4.DropPath</h3><p>除了以上重要模块意外，代码实现过程中还使用了DropPath（Stochastic Depth）来代替传统的Dropout结构，DropPath可以理解为一种特殊的 Dropout。其作用是在训练过程中随机丢弃子图层（randomly drop a subset of layers），而在预测时正常使用完整的 Graph。</p>
+<p><strong>参考文献</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2010.11929">An Image is Worth 16x16 Words:Transformers for Image Recognition at Scale</a></p>
 
       
     </div>

@@ -20,6 +20,15 @@
   </url>
   
   <url>
+    <loc>http://example.com/2023/04/19/Vit/</loc>
+    
+    <lastmod>2023-04-19</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://example.com/2022/04/11/resnet/</loc>
     
     <lastmod>2023-04-11</lastmod>
@@ -67,7 +76,7 @@
 
   <url>
     <loc>http://example.com/</loc>
-    <lastmod>2024-01-06</lastmod>
+    <lastmod>2024-01-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -75,14 +84,14 @@
   
   <url>
     <loc>http://example.com/tags/%E8%AE%AD%E7%BB%83%E6%8A%80%E5%B7%A7/</loc>
-    <lastmod>2024-01-06</lastmod>
+    <lastmod>2024-01-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/tags/CV/</loc>
-    <lastmod>2024-01-06</lastmod>
+    <lastmod>2024-01-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
