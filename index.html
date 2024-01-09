@@ -116,7 +116,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -669,6 +669,102 @@ p_{i}^{j}=\displaystyle \int^{b_j}_{b_{j-1}}N(x;\Delta u_i,\Delta \sigma_i)dx</s
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>【1】N. Murray, L. Marchesotti, and F. Perronnin. Ava: A large-scale database for aesthetic visual analysis. In Computer Vision and Pattern Recognition (CVPR), pages 2408–2415,Providence, RI, USA, 2012. IEEE.</p>
 <p>【2】S. Kong, X. Shen, Z. Lin, R. Mech, and C. Fowlkes. Photo aesthetics ranking network with attributes and content adapta-tion. In European Conference on Computer Vision (ECCV),<br>page 662679, Amsterdam, The Netherlands, 2016. Springer.</p>
 <p>【3】H. Talebi and P . Milanfar. Nima: Neural image assess-ment. IEEE Transactions on Image Processing, 27:3998–4011, 2017</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/10/NIMA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jie Chu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CJ blog">
+      <meta itemprop="description" content="日常笔记">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | CJ blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/05/10/NIMA/" class="post-title-link" itemprop="url">NIMA——Neural Image Assessment</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-05-10 21:00:00" itemprop="dateCreated datePublished" datetime="2022-05-10T21:00:00+08:00">2022-05-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2022-05-11 23:08:00" itemprop="dateModified" datetime="2022-05-11T23:08:00+08:00">2022-05-11</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="NIMA：Neural-Image-Assessment"><a href="#NIMA：Neural-Image-Assessment" class="headerlink" title="NIMA：Neural Image Assessment"></a>NIMA：Neural Image Assessment</h1><h2 id="1、introduction"><a href="#1、introduction" class="headerlink" title="1、introduction"></a>1、introduction</h2><ol>
+<li><p>基于CNN的方法相比较早期基于手工制作的特征的做法，性能有显著的提升；</p>
+</li>
+<li><p>AVA 数据集，图片审美视觉分析的标准数据集；</p>
+</li>
+<li><p>深度CNN非常适合审美评估任务【1】【2】；他们的双列 CNN 由四个卷积层和两个全连接层组成，其输入是调整大小的图像和大小为 224 × 224 的裁剪窗口；</p>
+</li>
+<li><p>之前大多是通过分类或者回归的方法预测人类评估的分数；</p>
+</li>
+<li><p>kong【3】训练了一个基于 AlexNet 的 CNN 来学习两个输入图像的审美分数差异，从而间接优化排名相关性。</p>
+</li>
+<li><p>NIMA的目标是预测与人类评分的相关性，而不是将图片分类或者回归到平均分。提出了EMD loss，它显示了有序类分类的性能提升。实验也表明，这种方法也更准确地预测了平均分。</p>
+</li>
+</ol>
+<h2 id=""><a href="#" class="headerlink" title=" "></a> </h2><h2 id="2、proposed-method"><a href="#2、proposed-method" class="headerlink" title="2、proposed method"></a>2、proposed method</h2><p>模型建立在图片分类模型的结构基础上。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20231026114849878.png" alt="image-20231026114849878"></p>
+<p>在训练阶段，输入图像被重新缩放为256<em>256，然后随机提取 224\</em>224的裁剪，这减少潜在的过度拟合问题。</p>
+<h2 id="3、实验"><a href="#3、实验" class="headerlink" title="3、实验"></a>3、实验</h2><p>基线CNN权重通过在ImageNet上训练来初始化，最后一个全连接层是随机初始化。权重和偏置动量设置为0.9,基线CNN最后一层dropout应用0.75。基线CNN层和最后一个全连接层的学习率分别设置为3<em>10e-7,3\</em>10e-6。在基线CNN层上设置较低的学习率会导致使用sgd时更容易和更快优化。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>【1】Deep multi-patch aggregation network for image style, aesthetics, and quality estimation</p>
+<p>【2】Rating image aesthetics using deep learning</p>
+<p>【3】S. Kong, X. Shen, Z. Lin, R. Mech, and C. Fowlkes, “Photo aesthetics ranking network with attributes and content adaptation,” in European Conference on Computer Vision. Springer, 2016, pp. 662–679. 1, 2, 6, 7</p>
 
       
     </div>

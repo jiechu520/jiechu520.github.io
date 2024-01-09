@@ -65,6 +65,15 @@
   </url>
   
   <url>
+    <loc>http://example.com/2022/05/10/NIMA/</loc>
+    
+    <lastmod>2022-05-11</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://example.com/2022/04/19/Vit/</loc>
     
     <lastmod>2022-04-19</lastmod>
