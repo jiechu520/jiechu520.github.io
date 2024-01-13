@@ -116,7 +116,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-count">11</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -138,6 +138,170 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/01/13/%E6%96%87%E7%94%9F%E5%9B%BE%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jie Chu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CJ blog">
+      <meta itemprop="description" content="日常笔记">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | CJ blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/01/13/%E6%96%87%E7%94%9F%E5%9B%BE%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/" class="post-title-link" itemprop="url">Untitled</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-01-13 22:35:09" itemprop="dateCreated datePublished" datetime="2024-01-13T22:35:09+08:00">2024-01-13</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <hr>
+<p>title: 文生图模型演进</p>
+<p>date: 2023-12-30 21:00:00</p>
+<p>updated: 2023-12-30 23:08:00</p>
+<p>tags: AIGC</p>
+<p>mathjax: true</p>
+<p>-—</p>
+<h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h2><p>此文是为了更好的理解 stable diffusion以及DALL-E 3等最新的图像生成模型，回顾一下在它们之前更早的模型。stable diffusion的作者也是 VQ-GAN的作者，DALL-E3之前还有 DALL-E，DALL-E2。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640.png" alt="图片"></p>
+<h2 id="2-AE"><a href="#2-AE" class="headerlink" title="2. AE"></a>2. AE</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/v2-120f54237d6bc3529d54270139ea8276_r.jpg" alt="img"></p>
+<p><strong>作用</strong>：可以用于学习<font color=red> 无标签数据的有效编码</font>, 学习对高维数据的进行低维表示，常用于<font color=red>降维</font>，数据去噪，特征学习。</p>
+<p><strong>基本思想</strong>：AE（auto-encoder）是很早之前的技术了，思路也非常简单：用一个编码器（Encoder）把输入编码为 latent vector；然后用 Decoder 将其解码为重建图像，<font color=red>希望重建后的图像与输入图像越接近越好</font>。通常 latent vector 的维度比输入、输出的维度小，因此称之为 bottleneck。AE 是一个自重建的过程，所以叫做“自-编码器”。</p>
+<p><strong>特点</strong>：但是模型在 Latent Space 没有增加任何的约束或者正则化，意味着<font color=red>不知道 Latent Space 是如何构建的</font>, 所以很难使用 latent space 来采样生成一个新的图像。</p>
+<h2 id="DAE"><a href="#DAE" class="headerlink" title="DAE"></a>DAE</h2><p>DAE（Denoising autoencoder）将原始输入图像进行一定程度的打乱，得到 corrupted input。然后把后者输入AE，目标仍然是希望重建后的图像与原始输入越接近越好。DAE 的效果很不错，原因之一就是图像的冗余度太高了，即使添加了噪声，模型依然能抓取它的特征。而这种方式增强了模型的鲁棒性，防止过拟合。</p>
+<h2 id="3-VAE"><a href="#3-VAE" class="headerlink" title="3. VAE"></a>3. VAE</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/v2-9fdb71e7e0b359f900a54878be5f2477_r.jpg" alt="img"></p>
+<p><strong>论文</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1312.6114">[1312.6114] Auto-Encoding Variational Bayes</a></p>
+<p><strong>作用</strong>：除了AE的作用之外，还广泛应用于生成新的、与训练数据相似但不完全相同的样本。</p>
+<p><strong>基本思想</strong>：VAE（Variational autoencoder）仍然由一个编码器和一个解码器构成，并且目标仍然是重建原始输入。但中间不再是学习 latent vector z ，而是学习它的后验分布 $p(z|x)$ ，并假设它遵循<font color=red>多维高斯分布</font>。具体来说，编码器得到两个输出，并分别作为高斯分布的均值和协方差矩阵的对角元（假设协方差矩阵是对角矩阵）。然后在这个高斯分布中采样，送入解码器。实际工程实现中，会用到重参数化（reparameterization）的技巧。</p>
+<p><strong>特点</strong>：VAE训练目标除了重构误差，还包括最小化隐空间的KL散度，以确保隐空间与标准正态分布接近。但VAE最大的问题也是这个，使用了固定的先验分布。</p>
+<h2 id="4-VQ-VAE"><a href="#4-VQ-VAE" class="headerlink" title="4. VQ-VAE"></a>4. VQ-VAE</h2><blockquote>
+<p><strong>VQ(vector quantization)</strong>是一种数据压缩和量化的技术，它可以将连续的向量映射到一组离散的具有代表性的向量中。在深度学习领域，VQ通常用来将连续的隐空间表示映射到一个有限的、离散的 <strong>codebook</strong> 中。</p>
+</blockquote>
+<p>VAE 具有一个最大的问题就是使用了固定的先验（高斯分布），其次是使用了<strong>连续的中间表征，导致模型的可控性差</strong>。为了解决这个问题，VQ-VAE（Vector Quantized Variational Autoencoder）选择使用<strong>离散的中间表征</strong>，同时，通常会使用一个自回归模型来学习先验（例如 PixelCNN），在训练完成后，用来采样得到 $z_e$。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/v2-956ed05aed4340fd44c2a2853800edf0_r.jpg" alt="img"></p>
+<p>图像首先经过encoder，得到$z_e$,它是$H\times W$个 $D$ 维向量。$e_1,e_2,…,e_k$是 $K$ 个 $D$ 维向量，称为codebook。 对于 $z_e$ 中的每个 $D$ 维向量，都可以在 codebook 中找到最接近的 $e_i$, 构成 $z_q$, 这就是decoder的输入。一般 $k=8192, D=512 or 768$。</p>
+<p>从 $z_e(x)$ 到 $z_q(x)$ 这个变化可以看成一个聚类，$e_1,e_2,…,e_k$ 可以看作 K 个聚类中心。这样把 encoder 得到的 embedding 离散化了，只由聚类中心表示。</p>
+<h3 id="4-1-VQ-VAE的训练"><a href="#4-1-VQ-VAE的训练" class="headerlink" title="4.1 VQ-VAE的训练"></a>4.1 VQ-VAE的训练</h3><p>在VQ中使用 Argmin来获取最小的距离，这一步是不可导的，因为无法将 Decoder 和 Encoder联合训练，针对这个问题，作者添加了一个trick，如上图红线所示：直接将 $z_q(x)$的梯度cooy给$Z_e(x)$, 而不是给 codebook里面的embedding。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/%E6%8E%A8%E6%8E%A8%E6%88%AA%E5%9B%BE_20240112000325.jpg" alt="推推截图_20240112000325"></p>
+<p>VQ-VAE的loss如上所示，分成三部分，第一项用来训练 encoder和decoder，第二项叫 codebook loss,只训练 codebook，让codebook中的embedding向各自最近的$Z_e(x)$靠近VQGAN。第三项叫 commitment loss,只训练encoder, 目的是encourage the output of encoder to stay close to the chosen codebook vector to prevent it from flucturating too frequently from one code vector to another, 即防止encoder的输出频繁在各个codebook embedding之间跳</p>
+<p>具体代码实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">VectorQuantizer</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, num_embeddings, embedding_dim, commitment_cost</span>):</span><br><span class="line">        <span class="built_in">super</span>(VectorQuantizer, self).__init__()</span><br><span class="line">        </span><br><span class="line">        self._embedding_dim = embedding_dim</span><br><span class="line">        self._num_embeddings = num_embeddings</span><br><span class="line">        </span><br><span class="line">        self._embedding = nn.Embedding(self._num_embeddings, self._embedding_dim)</span><br><span class="line">        self._embedding.weight.data.uniform_(-<span class="number">1</span>/self._num_embeddings, <span class="number">1</span>/self._num_embeddings)</span><br><span class="line">        self._commitment_cost = commitment_cost</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        <span class="comment"># convert inputs from BCHW -&gt; BHWC</span></span><br><span class="line">        inputs = inputs.permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>).contiguous()</span><br><span class="line">        input_shape = inputs.shape</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># Flatten input</span></span><br><span class="line">        flat_input = inputs.view(-<span class="number">1</span>, self._embedding_dim)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># Calculate distances</span></span><br><span class="line">        distances = (torch.<span class="built_in">sum</span>(flat_input**<span class="number">2</span>, dim=<span class="number">1</span>, keepdim=<span class="literal">True</span>) </span><br><span class="line">                    + torch.<span class="built_in">sum</span>(self._embedding.weight**<span class="number">2</span>, dim=<span class="number">1</span>)</span><br><span class="line">                    - <span class="number">2</span> * torch.matmul(flat_input, self._embedding.weight.t()))</span><br><span class="line">            </span><br><span class="line">        <span class="comment"># Encoding</span></span><br><span class="line">        encoding_indices = torch.argmin(distances, dim=<span class="number">1</span>).unsqueeze(<span class="number">1</span>)</span><br><span class="line">        encodings = torch.zeros(encoding_indices.shape[<span class="number">0</span>], self._num_embeddings, device=inputs.device)</span><br><span class="line">        encodings.scatter_(<span class="number">1</span>, encoding_indices, <span class="number">1</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># Quantize and unflatten</span></span><br><span class="line">        quantized = torch.matmul(encodings, self._embedding.weight).view(input_shape)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># Loss</span></span><br><span class="line">        e_latent_loss = F.mse_loss(quantized.detach(), inputs)</span><br><span class="line">        q_latent_loss = F.mse_loss(quantized, inputs.detach())</span><br><span class="line">        loss = q_latent_loss + self._commitment_cost * e_latent_loss</span><br><span class="line">        </span><br><span class="line">        quantized = inputs + (quantized - inputs).detach()</span><br><span class="line">        avg_probs = torch.mean(encodings, dim=<span class="number">0</span>)</span><br><span class="line">        perplexity = torch.exp(-torch.<span class="built_in">sum</span>(avg_probs * torch.log(avg_probs + <span class="number">1e-10</span>)))</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># convert quantized from BHWC -&gt; BCHW</span></span><br><span class="line">        <span class="keyword">return</span> loss, quantized.permute(<span class="number">0</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>).contiguous(), perplexity, encodings</span><br></pre></td></tr></table></figure>
+<h3 id="4-2-VQ-VAE-PixelCNN"><a href="#4-2-VQ-VAE-PixelCNN" class="headerlink" title="4.2 VQ-VAE + PixelCNN"></a>4.2 VQ-VAE + PixelCNN</h3><p>有了上述的 VQ-VAE 模型，可以很容易实现图像<strong>压缩、重建</strong>的目的，但是无法生成新的图像数据。当然可以随机生成 Index，然后对应生成量化后的 latent code，进而使用 Decoder 来生成输出图像。但是这样的 latent code 完全没有全局信息甚至局部信息，因为每个位置都是随机生成的。因此，作者引入了 PixelCNN 来自回归的生成考虑了全局信息的 latent code，进而可以生成更真实的图像，如下图所示：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240112001504547.png" alt="image-20240112001504547"></p>
+<p>PixelCNN 和 VQ-VAE 的一作是同一个人，来自 Google DeepMind，对应的论文为：Conditional Image Generation with PixelCNN Decoders。此处我们不再对 PixelCNN 展开，只需要知道它是一个自回归生成模型，可以逐个像素的生成，因为其是自回归模型，所以每个位置都能看到之前位置的信息，这样生成的 latent code 能够更全面的考虑到空间信息，有助于提高模型生成图像的质量和多样性。</p>
+<h3 id="4-3-VQ-VAE-2"><a href="#4-3-VQ-VAE-2" class="headerlink" title="4.3 VQ-VAE-2"></a>4.3 VQ-VAE-2</h3><p>VQ-VAE-2 的模型结构如下图所示，以 256x256 的图像压缩重建为例：</p>
+<ul>
+<li>训练阶段：其首先使用 Encoder 将图像压缩到 Bottom Level，对应大小为 64x64，然后进一步使用 Encoder 压缩到 Top Level，大小为 32x32。重建时，首先将 32x32 的表征经过 VQ 量化为 latent code，然后经过 Decoder 重建 64x64 的压缩图像，再经过 VQ 和 Decoder 重建 256x256 的图像。</li>
+<li>推理阶段（图像生成）：使用 PixelCNN 首先生成 Top Level 的离散 latent code，然后作为条件输入 PixelCNN 以生成 Bottom Level 的更高分辨率的离散 latent code。之后使用两个 Level 的离散 latent code 生成最终的图像。</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640-20240112002031130.png" alt="图片"></p>
+<p>当然，基于这个思想作者也进一步验证了使用 3 个 Level 来生成 1024x1024 分辨率的图像，相应的压缩分辨率分别为 128x128、64x64、32x32。</p>
+<h3 id="5-VQ-GAN"><a href="#5-VQ-GAN" class="headerlink" title="5 VQ-GAN"></a>5 VQ-GAN</h3><h4 id="5-1-概述"><a href="#5-1-概述" class="headerlink" title="5.1 概述"></a>5.1 概述</h4><p>paper:<a target="_blank" rel="noopener" href="https://openaccess.thecvf.com/content/CVPR2021/html/Esser_Taming_Transformers_for_High-Resolution_Image_Synthesis_CVPR_2021_paper.html">https://openaccess.thecvf.com/content/CVPR2021/html/Esser_Taming_Transformers_for_High-Resolution_Image_Synthesis_CVPR_2021_paper.html</a></p>
+<p>code:<a target="_blank" rel="noopener" href="https://github.com/CompVis/taming-transformers">https://github.com/CompVis/taming-transformers</a></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230512112944268.png" alt="image-20230512112944268"></p>
+<p>VQ-GAN 相比较 VQ-VAE 的主要改变有以下几点：</p>
+<ul>
+<li>引入 GAN 的思想，将 VQ-VAE 当做生成器（Generator），并加入判别器（Discriminator），以对生成图像的质量进行判断、监督，以及加入感知重建损失（不只是约束像素的差异，还约束 feature map 的差异），以此来重建更具有保真度的图片，也就学习了更丰富的 codebook。</li>
+<li>将 PixelCNN 替换为性能更强大的自回归 GPT2 模型（针对不同的任务可以选择不同的规格）</li>
+<li>引入滑动窗口自注意力机制，以降低计算负载，生成更大分辨率的图像。</li>
+</ul>
+<p>VQ-GAN 也是 stable diffusion的作者。</p>
+<h4 id="5-2-方法"><a href="#5-2-方法" class="headerlink" title="5.2 方法"></a>5.2 方法</h4><p>模型结构如上图所示，实际训练的时候是分为<font color=red>两阶段训练的</font>。</p>
+<p>如下图所示，第一阶段训练，相比 VQ-VAE 主要是增加 Discriminator， 以及将重建损失替换成 <font color=red> LPIPS损失：</font></p>
+<ul>
+<li>Discriminator：对生成的图像块进行判别，每一块都会返回 True 和 False，然后将对应的损失加入整体损失中。</li>
+<li>LPIPS：除了像素级误差外，也会使用 VGG 提取 input 图像和 reconstruction 图像的多尺度 feature map，以监督对应的误差（具体可参考 lpips.py - CompVis/taming-transformers · GitHub）。</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113215830827.png" alt="image-20240113215830827"></p>
+<h3 id="6-DALL-E-dVAE-DALL-E"><a href="#6-DALL-E-dVAE-DALL-E" class="headerlink" title="6. DALL-E (dVAE, DALL-E)"></a>6. DALL-E (dVAE, DALL-E)</h3><h4 id="6-1-概述"><a href="#6-1-概述" class="headerlink" title="6.1 概述"></a>6.1 概述</h4><p>DALL-E 最主要的贡献是提供了不错的文本引导图片生成的能力，其不是在 VQ-VAE 基础上修改，而是首先引入 VAE 的变种 dVAE，然后在此基础上进一步训练 DALL-E。可惜的是，OpenAI 并不 Open，只开源了 dVAE 部分模型，文本引导生成部分并没有开源，不过 Huggingface 和 Google Cloud 团队进行了复现，并发布对应的 DALL-E mini 模型。</p>
+<p>DALL-E 对应的论文为：[2102.12092] Zero-Shot Text-to-Image Generation。对应的代码库为：GitHub - openai/DALL-E: PyTorch package for the discrete VAE used for DALL·E.。</p>
+<p>DALL-E mini 对应的文档为：DALL-E Mini Explained，对应的代码库为：GitHub - borisdayma/dalle-mini: DALL·E Mini - Generate images from a text prompt。</p>
+<h4 id="6-2-dVAE"><a href="#6-2-dVAE" class="headerlink" title="6.2 dVAE"></a>6.2 dVAE</h4><p>dVAE（discrete VAE）与VQ-VAE的区别在于<font color=red>引入 Gumbel Softmax 来训练</font>, 避免 VQ-VAE 训练中 ArgMin 不可导的问题。 </p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113222402539.png" alt="image-20240113222402539"></p>
+<h4 id="6-3-模型训练"><a href="#6-3-模型训练" class="headerlink" title="6.3 模型训练"></a>6.3 模型训练</h4><p>有了 dVAE 模型之后，第二阶段就是就是训练 Transformer（此阶段会固定 dVAE），使其具备文本引导生成的能力。DALL-E 使用大规模的图像-文本对数据集进行训练，训练过程中使用 dVAE 的 Encoder 将图像编码为离散的 latent code。然后将文本输入 Transformer，并使用生成的 latent code 来作为 target 输出。以此就可以完成有监督的自回归训练。推理时只需输入文本，然后逐个生成图像对应的 Token，直到生成 1024 个，然后将其作为离散的 latent code 进一步生成最终图像。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113222517785.png" alt="image-20240113222517785"></p>
+<p>最终作者在 1024 个 16G 的 V100 GPU 上完成训练，batch size 为 1024，总共更新了 430,000 次模型，也就相当于训练了 4.3 亿图像-文本对（训练集包含 250M 图像-文本对，主要是 Conceptual Captions 和 YFFCC100M）。</p>
+<h4 id="6-4-DALL-E-mini-模型概述"><a href="#6-4-DALL-E-mini-模型概述" class="headerlink" title="6.4 DALL-E mini 模型概述"></a>6.4 DALL-E mini 模型概述</h4><p>如下图所示，DALL-E mini 中作者使用 VQ-GAN 替代 dVAE，使用 Encoder + Decoder 的 BART 替代 DALL-E 中 Decoder only 的 Transformer。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113222725076.png" alt="dalle-e mini infer"></p>
+<p>在推理过程中，不是生成单一的图像，而是会经过采样机制生成多个 latent code，并使用 VQ-GAN 的 Decoder 生成多个候选图像，之后再使用 CLIP 提取这些图像的 embedding 和文本 embedding，之后进行比对排序，挑选出最匹配的生成结果。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113222818173.png" alt="image-20240113222818173"></p>
+<h4 id="6-5-DALL-E-mini-和-DALL-E-对比"><a href="#6-5-DALL-E-mini-和-DALL-E-对比" class="headerlink" title="6.5 DALL-E mini 和 DALL-E 对比"></a>6.5 DALL-E mini 和 DALL-E 对比</h4><p>DALL-E mini 和 DALL-E 在模型、训练上都有比较大的差异，具体体现在：</p>
+<ul>
+<li>DALL-E 使用 12B 的 GPT-3 作为 Transformer，而 mini 使用的是 0.4B 的 BART，小 27 倍。</li>
+<li>mini 中使用预训练的 VQ-GAN、BART 的 Encoder 以及 CLIP，而 DALL-E 从头开始训练，mini 训练代价更小。</li>
+<li>DALL-E 使用 1024 个图像 Token，词表更小为 8192，而 mini 使用 256 个图像 Token，词表大小为 16384。</li>
+<li>DALL-E 支持最多 256 个文本 Token，对应词表为 16,384，mini 支持最多 1024 文本 Token，词表大小为 50,264。</li>
+<li>mini 使用的 BART 是 Encoder + Decoder 的，因此文本是使用双向编码，也就是每个文本 Token 都能看到所有文本 Token，而 DALL-E 是 Decoder only 的 GPT-3，文本 Token 只能看到之前的 Token。</li>
+<li>DALL-E 使用 250M 图像-文本对训练，而 mini 只使用了 15M。</li>
+</ul>
+<h3 id="7-CLIP-VQ-GAN-VQGAN-CLIP"><a href="#7-CLIP-VQ-GAN-VQGAN-CLIP" class="headerlink" title="7 CLIP+VQ-GAN(VQGAN-CLIP)"></a>7 CLIP+VQ-GAN(VQGAN-CLIP)</h3><p>Katherine 等人将 VQ-GAN 和 OpenAI 发布的 CLIP 模型结合起来，利用 CLIP 的图文对齐能力来赋予 VQ-GAN 文本引导生成的能力。其最大的优势是不需要额外的预训练，也不需要对 CLIP 和 VQ-GAN 进行微调，只需在推理阶段执行少量的迭代即可实现。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113223222191.png" alt="image-20240113223222191"></p>
+<p>如上图所示：使用初始图像通过 VQ-GAN 生成一个图像，然后使用 CLIP 对生成图像和 Target Text 提取 embedding，然后计算相似性，并将其误差作为反馈对隐空间的 Z-vector 进行迭代更新，直到生成图像和 Target Text 对应的 embedding 很相似为止。</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1312.6114">https://arxiv.org/abs/1312.6114</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1711.00937">https://arxiv.org/abs/1711.00937</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1606.05328">https://arxiv.org/abs/1606.05328</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1906.00446">https://arxiv.org/abs/1906.00446</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2012.09841">https://arxiv.org/abs/2012.09841</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/CompVis/taming-transformers">https://github.com/CompVis/taming-transformers</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2102.12092">https://arxiv.org/abs/2102.12092</a></li>
+<li><a target="_blank" rel="noopener" href="https://wandb.ai/dalle-mini/dalle-mini/reports/DALL-E-Mini-Explained--Vmlldzo4NjIxODA">https://wandb.ai/dalle-mini/dalle-mini/reports/DALL-E-Mini-Explained--Vmlldzo4NjIxODA</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/borisdayma/dalle-mini">https://github.com/borisdayma/dalle-mini</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2204.08583">https://arxiv.org/abs/2204.08583</a></li>
+<li><a target="_blank" rel="noopener" href="https://python.plainenglish.io/variational-autoencoder-1eb543f5f055">https://python.plainenglish.io/variational-autoencoder-1eb543f5f055</a></li>
+<li><a target="_blank" rel="noopener" href="https://ljvmiranda921.github.io/notebook/2021/08/08/clip-vqgan/">https://ljvmiranda921.github.io/notebook/2021/08/08/clip-vqgan/</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -966,123 +1130,9 @@ p_{i}^{j}=\displaystyle \int^{b_j}_{b_{j-1}}N(x;\Delta u_i,\Delta \sigma_i)dx</s
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/20/Inception%E7%B3%BB%E5%88%97/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Jie Chu">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CJ blog">
-      <meta itemprop="description" content="日常笔记">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | CJ blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/03/20/Inception%E7%B3%BB%E5%88%97/" class="post-title-link" itemprop="url">Inception系列</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2022-03-20 11:03:00" itemprop="dateCreated datePublished" datetime="2022-03-20T11:03:00+08:00">2022-03-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2022-03-22 13:03:00" itemprop="dateModified" datetime="2022-03-22T13:03:00+08:00">2022-03-22</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="Inception"><a href="#Inception" class="headerlink" title="Inception"></a>Inception</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>一般来说，提升神经网络性能最直接的办法就是增加网络的尺寸，包括增加网络的深度和宽度两个方面。但这种方式存在一些问题：</p>
-<ol>
-<li><p>参数太多，如果训练数据集有限，很容易产生过拟合；</p>
-</li>
-<li><p>网络越大，参数越多，计算复杂度越高，难以应用；</p>
-</li>
-<li><p>网络越深，容易出现梯度弥散问题，难以优化模型；</p>
-</li>
-</ol>
-<h2 id="Inception-v1"><a href="#Inception-v1" class="headerlink" title="Inception-v1"></a>Inception-v1</h2><p>深度研究 Inception Net模型之前，必须了解 Inception 网络的一个重要概念：</p>
-<p><strong>1×1卷积</strong>：1×1 卷积简单地将输入像素及其所有相应通道映射到输出像素。1×1卷积作为降维模块，一定程度上减少的计算量。</p>
-<ul>
-<li>例如，在不使用1×1卷积的情况下执行5×5卷积，如下所示：</li>
-</ul>
-<p><img title="" src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/inceptionNet.png" alt="" data-align="center"></p>
-<p>FLOPs运算次数：（14×14×48）×（5×5×480）= 112.9M</p>
-<ul>
-<li>使用 1×1 卷积：</li>
-</ul>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/inceptionNet2.png" title="" alt="" data-align="center"></p>
-<p>FLOPs运算次数</p>
-<p>1×1卷积的操作数= （14×14×16）×（1×1×480）=1.5M<br>5×5卷积的操作数= （14×14×48）×（5×5×16 ) = 3.8M<br>相加后，1.5M + 3.8M = 5.3M</p>
-<p>因此1×1卷积可以帮助减少模型大小，这可以在某种程度上帮助减少过度拟合问题；</p>
-<p><strong>降维初始模型</strong></p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/modified.png" title="" alt="" data-align="center"></p>
-<h2 id="Inception-v2"><a href="#Inception-v2" class="headerlink" title="Inception v2"></a>Inception v2</h2><h3 id="Inception-v1架构的问题"><a href="#Inception-v1架构的问题" class="headerlink" title="Inception v1架构的问题"></a>Inception v1架构的问题</h3><p>Inception V1有时会使用5×5等卷积，导致输入维度大幅下降。这导致神经网络使用一些精度下降。其背后的原因是，如果输入维度下降得太快，神经网络容易丢失信息。 此外，与3×3相比，<br>当我们使用更大的卷积（如5×5 ）时，复杂度也会降低. 我们可以在因式分解方面走得更远，即我们可以将3×3卷积分成<strong>1×3</strong>的非对称卷积，然后是3×1卷积。这相当于滑动一个具有与3×3卷积相同感受野但比*3×3便宜33%的两层网络。当输入维度很大但仅当输入大小为mxm时，这种分解不适用于早期层（m 在 12 到 20 之间）。根据 Inception V1 架构，辅助分类器提高了网络的收敛性。他们认为，通过将有用的梯度推到较早的层（以减少损失），它可以帮助减少深层网络中梯度消失问题的影响。但是，这篇论文的作者发现这个分类器在训练的早期并没有很好地提高收敛性。</p>
-<h3 id="Batch-Normalization"><a href="#Batch-Normalization" class="headerlink" title="Batch Normalization"></a>Batch Normalization</h3><p>在BN的论文里，作者提出了Internal Covariate Shift这个问题，即在训练神经网络的过程中，因为前一层的参数变化而导致每层的输入分布都在不断变化（the distribution of each layer’s inputs changes during training, as the parameters of the previous layers change）。这使得我们需要更低的学习率和更小心地进行参数初始化，导致我们难以充分构建一个具有饱满地非线性结构的模型，而这个现象就被称作Internal Covariate Shift。为了解决这个问题，Google提出了Batch Normalization（批规范化）。即在每次梯度下降前，对每个mini-batch做归一化操作来降低数据分布的影响。</p>
-<h3 id="小卷积和代替大卷积核"><a href="#小卷积和代替大卷积核" class="headerlink" title="小卷积和代替大卷积核"></a>小卷积和代替大卷积核</h3><p><img title="" src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/5x5replaced3x3.png" alt="灯箱" data-align="center"></p>
-<p>该架构还将 nXn 分解转换为<em>1xn</em>和 nx1 分解。正如我们上面讨论的，3×3 卷积可以转换为<em>1×3 ，然后是 3×1 卷积，与<em>*3×3</em></em>相比，计算复杂度降低了 33% 。</p>
-<p><img title="" src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/1xn.png" alt="灯箱" data-align="center"></p>
-<h2 id="Inception-v3"><a href="#Inception-v3" class="headerlink" title="Inception v3"></a>Inception v3</h2><p>Inception v3 类似于 Inception v2，并做了以下改动：</p>
-<ul>
-<li><p>使用 RMSprop 优化器；</p>
-</li>
-<li><p>辅助分类器全连接层的BN；</p>
-</li>
-<li><p>使用 7×7 分解卷积；</p>
-</li>
-</ul>
-<h2 id="Inception-v4"><a href="#Inception-v4" class="headerlink" title="Inception v4"></a>Inception v4</h2><p>将 Inception 模块和残差连接 结合起来。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA57qi6bKk6bG85LiO57u_6am0,size_20,color_FFFFFF,t_70,g_se,x_16.png" alt=""></p>
-<p>EmbOding!9196#CN360</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" title="Next page" aria-label="Next page" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
 
 </div>
   </main>
