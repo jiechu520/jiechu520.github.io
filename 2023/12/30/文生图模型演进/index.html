@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="title: 文生图模型演进 date: 2023-12-30 21:00:00 updated: 2023-12-30 23:08:00 tags: AIGC mathjax: true -— 1. 背景此文是为了更好的理解 stable diffusion以及DALL-E 3等最新的图像生成模型，回顾一下在它们之前更早的模型。stable diffusion的作者也是 VQ-GAN的作者，D">
+    <meta name="description" content="1. 背景此文是为了更好的理解 stable diffusion以及DALL-E 3等最新的图像生成模型，回顾一下在它们之前更早的模型。stable diffusion的作者也是 VQ-GAN的作者，DALL-E3之前还有 DALL-E，DALL-E2。  2. AE 作用：可以用于学习 无标签数据的有效编码, 学习对高维数据的进行低维表示，常用于降维，数据去噪，特征学习。 基本思想：AE（aut">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CJ blog">
-<meta property="og:url" content="http://example.com/2024/01/13/%E6%96%87%E7%94%9F%E5%9B%BE%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/index.html">
+<meta property="og:title" content="文生图模型演进">
+<meta property="og:url" content="http://example.com/2023/12/30/%E6%96%87%E7%94%9F%E5%9B%BE%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/index.html">
 <meta property="og:site_name" content="CJ blog">
-<meta property="og:description" content="title: 文生图模型演进 date: 2023-12-30 21:00:00 updated: 2023-12-30 23:08:00 tags: AIGC mathjax: true -— 1. 背景此文是为了更好的理解 stable diffusion以及DALL-E 3等最新的图像生成模型，回顾一下在它们之前更早的模型。stable diffusion的作者也是 VQ-GAN的作者，D">
+<meta property="og:description" content="1. 背景此文是为了更好的理解 stable diffusion以及DALL-E 3等最新的图像生成模型，回顾一下在它们之前更早的模型。stable diffusion的作者也是 VQ-GAN的作者，DALL-E3之前还有 DALL-E，DALL-E2。  2. AE 作用：可以用于学习 无标签数据的有效编码, 学习对高维数据的进行低维表示，常用于降维，数据去噪，特征学习。 基本思想：AE（aut">
 <meta property="og:locale">
 <meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640.png">
 <meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/v2-120f54237d6bc3529d54270139ea8276_r.jpg">
@@ -41,21 +41,22 @@
 <meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113222725076.png">
 <meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113222818173.png">
 <meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113223222191.png">
-<meta property="article:published_time" content="2024-01-13T14:35:09.171Z">
-<meta property="article:modified_time" content="2024-01-13T14:35:09.171Z">
+<meta property="article:published_time" content="2023-12-30T13:00:00.000Z">
+<meta property="article:modified_time" content="2023-12-30T15:08:00.000Z">
 <meta property="article:author" content="Jie Chu">
+<meta property="article:tag" content="AIGC">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640.png">
 
 
-<link rel="canonical" href="http://example.com/2024/01/13/%E6%96%87%E7%94%9F%E5%9B%BE%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/">
+<link rel="canonical" href="http://example.com/2023/12/30/%E6%96%87%E7%94%9F%E5%9B%BE%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh","comments":true,"permalink":"http://example.com/2024/01/13/%E6%96%87%E7%94%9F%E5%9B%BE%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/","path":"2024/01/13/文生图模型演进/","title":""}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh","comments":true,"permalink":"http://example.com/2023/12/30/%E6%96%87%E7%94%9F%E5%9B%BE%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/","path":"2023/12/30/文生图模型演进/","title":"文生图模型演进"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title> | CJ blog</title>
+<title>文生图模型演进 | CJ blog</title>
   
 
 
@@ -121,7 +122,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">1. 背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-AE"><span class="nav-number">2.</span> <span class="nav-text">2. AE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DAE"><span class="nav-number">3.</span> <span class="nav-text">DAE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-VAE"><span class="nav-number">4.</span> <span class="nav-text">3. VAE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-VQ-VAE"><span class="nav-number">5.</span> <span class="nav-text">4. VQ-VAE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-VQ-VAE%E7%9A%84%E8%AE%AD%E7%BB%83"><span class="nav-number">5.1.</span> <span class="nav-text">4.1 VQ-VAE的训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-VQ-VAE-PixelCNN"><span class="nav-number">5.2.</span> <span class="nav-text">4.2 VQ-VAE + PixelCNN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-VQ-VAE-2"><span class="nav-number">5.3.</span> <span class="nav-text">4.3 VQ-VAE-2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-VQ-GAN"><span class="nav-number">5.4.</span> <span class="nav-text">5 VQ-GAN</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E6%A6%82%E8%BF%B0"><span class="nav-number">5.4.1.</span> <span class="nav-text">5.1 概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E6%96%B9%E6%B3%95"><span class="nav-number">5.4.2.</span> <span class="nav-text">5.2 方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-DALL-E-dVAE-DALL-E"><span class="nav-number">5.5.</span> <span class="nav-text">6. DALL-E (dVAE, DALL-E)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#6-1-%E6%A6%82%E8%BF%B0"><span class="nav-number">5.5.1.</span> <span class="nav-text">6.1 概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-2-dVAE"><span class="nav-number">5.5.2.</span> <span class="nav-text">6.2 dVAE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-3-%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">5.5.3.</span> <span class="nav-text">6.3 模型训练</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-4-DALL-E-mini-%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0"><span class="nav-number">5.5.4.</span> <span class="nav-text">6.4 DALL-E mini 模型概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-5-DALL-E-mini-%E5%92%8C-DALL-E-%E5%AF%B9%E6%AF%94"><span class="nav-number">5.5.5.</span> <span class="nav-text">6.5 DALL-E mini 和 DALL-E 对比</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-CLIP-VQ-GAN-VQGAN-CLIP"><span class="nav-number">5.6.</span> <span class="nav-text">7 CLIP+VQ-GAN(VQGAN-CLIP)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">5.7.</span> <span class="nav-text">参考文献</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">1. 背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-AE"><span class="nav-number">2.</span> <span class="nav-text">2. AE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DAE"><span class="nav-number">3.</span> <span class="nav-text">DAE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-VAE"><span class="nav-number">4.</span> <span class="nav-text">3. VAE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-VQ-VAE"><span class="nav-number">5.</span> <span class="nav-text">4. VQ-VAE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-VQ-VAE%E7%9A%84%E8%AE%AD%E7%BB%83"><span class="nav-number">5.1.</span> <span class="nav-text">4.1 VQ-VAE的训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-VQ-VAE-PixelCNN"><span class="nav-number">5.2.</span> <span class="nav-text">4.2 VQ-VAE + PixelCNN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-VQ-VAE-2"><span class="nav-number">5.3.</span> <span class="nav-text">4.3 VQ-VAE-2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-VQ-GAN"><span class="nav-number">6.</span> <span class="nav-text">5 VQ-GAN</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E6%A6%82%E8%BF%B0"><span class="nav-number">6.1.</span> <span class="nav-text">5.1 概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E6%96%B9%E6%B3%95"><span class="nav-number">6.2.</span> <span class="nav-text">5.2 方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-DALL-E-dVAE-DALL-E"><span class="nav-number">7.</span> <span class="nav-text">6. DALL-E (dVAE, DALL-E)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-%E6%A6%82%E8%BF%B0"><span class="nav-number">7.1.</span> <span class="nav-text">6.1 概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-dVAE"><span class="nav-number">7.2.</span> <span class="nav-text">6.2 dVAE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">7.3.</span> <span class="nav-text">6.3 模型训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-DALL-E-mini-%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0"><span class="nav-number">7.4.</span> <span class="nav-text">6.4 DALL-E mini 模型概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-DALL-E-mini-%E5%92%8C-DALL-E-%E5%AF%B9%E6%AF%94"><span class="nav-number">7.5.</span> <span class="nav-text">6.5 DALL-E mini 和 DALL-E 对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-CLIP-VQ-GAN-VQGAN-CLIP"><span class="nav-number">8.</span> <span class="nav-text">7 CLIP+VQ-GAN(VQGAN-CLIP)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">9.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -139,7 +140,7 @@
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -166,7 +167,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/01/13/%E6%96%87%E7%94%9F%E5%9B%BE%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/12/30/%E6%96%87%E7%94%9F%E5%9B%BE%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -179,12 +180,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | CJ blog">
+      <meta itemprop="name" content="文生图模型演进 | CJ blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          
+          文生图模型演进
         </h1>
 
         <div class="post-meta-container">
@@ -194,8 +195,9 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
+      
 
-      <time title="Created: 2024-01-13 22:35:09" itemprop="dateCreated datePublished" datetime="2024-01-13T22:35:09+08:00">2024-01-13</time>
+      <time title="Created: 2023-12-30 21:00:00 / Modified: 23:08:00" itemprop="dateCreated datePublished" datetime="2023-12-30T21:00:00+08:00">2023-12-30</time>
     </span>
 
   
@@ -207,14 +209,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><hr>
-<p>title: 文生图模型演进</p>
-<p>date: 2023-12-30 21:00:00</p>
-<p>updated: 2023-12-30 23:08:00</p>
-<p>tags: AIGC</p>
-<p>mathjax: true</p>
-<p>-—</p>
-<h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h2><p>此文是为了更好的理解 stable diffusion以及DALL-E 3等最新的图像生成模型，回顾一下在它们之前更早的模型。stable diffusion的作者也是 VQ-GAN的作者，DALL-E3之前还有 DALL-E，DALL-E2。</p>
+    <div class="post-body" itemprop="articleBody"><h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h2><p>此文是为了更好的理解 stable diffusion以及DALL-E 3等最新的图像生成模型，回顾一下在它们之前更早的模型。stable diffusion的作者也是 VQ-GAN的作者，DALL-E3之前还有 DALL-E，DALL-E2。</p>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640.png" alt="图片"></p>
 <h2 id="2-AE"><a href="#2-AE" class="headerlink" title="2. AE"></a>2. AE</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/v2-120f54237d6bc3529d54270139ea8276_r.jpg" alt="img"></p>
 <p><strong>作用</strong>：可以用于学习<font color=red> 无标签数据的有效编码</font>, 学习对高维数据的进行低维表示，常用于<font color=red>降维</font>，数据去噪，特征学习。</p>
@@ -248,7 +243,7 @@
 </ul>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640-20240112002031130.png" alt="图片"></p>
 <p>当然，基于这个思想作者也进一步验证了使用 3 个 Level 来生成 1024x1024 分辨率的图像，相应的压缩分辨率分别为 128x128、64x64、32x32。</p>
-<h3 id="5-VQ-GAN"><a href="#5-VQ-GAN" class="headerlink" title="5 VQ-GAN"></a>5 VQ-GAN</h3><h4 id="5-1-概述"><a href="#5-1-概述" class="headerlink" title="5.1 概述"></a>5.1 概述</h4><p>paper:<a target="_blank" rel="noopener" href="https://openaccess.thecvf.com/content/CVPR2021/html/Esser_Taming_Transformers_for_High-Resolution_Image_Synthesis_CVPR_2021_paper.html">https://openaccess.thecvf.com/content/CVPR2021/html/Esser_Taming_Transformers_for_High-Resolution_Image_Synthesis_CVPR_2021_paper.html</a></p>
+<h2 id="5-VQ-GAN"><a href="#5-VQ-GAN" class="headerlink" title="5 VQ-GAN"></a>5 VQ-GAN</h2><h3 id="5-1-概述"><a href="#5-1-概述" class="headerlink" title="5.1 概述"></a>5.1 概述</h3><p>paper:<a target="_blank" rel="noopener" href="https://openaccess.thecvf.com/content/CVPR2021/html/Esser_Taming_Transformers_for_High-Resolution_Image_Synthesis_CVPR_2021_paper.html">https://openaccess.thecvf.com/content/CVPR2021/html/Esser_Taming_Transformers_for_High-Resolution_Image_Synthesis_CVPR_2021_paper.html</a></p>
 <p>code:<a target="_blank" rel="noopener" href="https://github.com/CompVis/taming-transformers">https://github.com/CompVis/taming-transformers</a></p>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230512112944268.png" alt="image-20230512112944268"></p>
 <p>VQ-GAN 相比较 VQ-VAE 的主要改变有以下几点：</p>
@@ -258,26 +253,26 @@
 <li>引入滑动窗口自注意力机制，以降低计算负载，生成更大分辨率的图像。</li>
 </ul>
 <p>VQ-GAN 也是 stable diffusion的作者。</p>
-<h4 id="5-2-方法"><a href="#5-2-方法" class="headerlink" title="5.2 方法"></a>5.2 方法</h4><p>模型结构如上图所示，实际训练的时候是分为<font color=red>两阶段训练的</font>。</p>
+<h3 id="5-2-方法"><a href="#5-2-方法" class="headerlink" title="5.2 方法"></a>5.2 方法</h3><p>模型结构如上图所示，实际训练的时候是分为<font color=red>两阶段训练的</font>。</p>
 <p>如下图所示，第一阶段训练，相比 VQ-VAE 主要是增加 Discriminator， 以及将重建损失替换成 <font color=red> LPIPS损失：</font></p>
 <ul>
 <li>Discriminator：对生成的图像块进行判别，每一块都会返回 True 和 False，然后将对应的损失加入整体损失中。</li>
 <li>LPIPS：除了像素级误差外，也会使用 VGG 提取 input 图像和 reconstruction 图像的多尺度 feature map，以监督对应的误差（具体可参考 lpips.py - CompVis/taming-transformers · GitHub）。</li>
 </ul>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113215830827.png" alt="image-20240113215830827"></p>
-<h3 id="6-DALL-E-dVAE-DALL-E"><a href="#6-DALL-E-dVAE-DALL-E" class="headerlink" title="6. DALL-E (dVAE, DALL-E)"></a>6. DALL-E (dVAE, DALL-E)</h3><h4 id="6-1-概述"><a href="#6-1-概述" class="headerlink" title="6.1 概述"></a>6.1 概述</h4><p>DALL-E 最主要的贡献是提供了不错的文本引导图片生成的能力，其不是在 VQ-VAE 基础上修改，而是首先引入 VAE 的变种 dVAE，然后在此基础上进一步训练 DALL-E。可惜的是，OpenAI 并不 Open，只开源了 dVAE 部分模型，文本引导生成部分并没有开源，不过 Huggingface 和 Google Cloud 团队进行了复现，并发布对应的 DALL-E mini 模型。</p>
+<h2 id="6-DALL-E-dVAE-DALL-E"><a href="#6-DALL-E-dVAE-DALL-E" class="headerlink" title="6. DALL-E (dVAE, DALL-E)"></a>6. DALL-E (dVAE, DALL-E)</h2><h3 id="6-1-概述"><a href="#6-1-概述" class="headerlink" title="6.1 概述"></a>6.1 概述</h3><p>DALL-E 最主要的贡献是提供了不错的文本引导图片生成的能力，其不是在 VQ-VAE 基础上修改，而是首先引入 VAE 的变种 dVAE，然后在此基础上进一步训练 DALL-E。可惜的是，OpenAI 并不 Open，只开源了 dVAE 部分模型，文本引导生成部分并没有开源，不过 Huggingface 和 Google Cloud 团队进行了复现，并发布对应的 DALL-E mini 模型。</p>
 <p>DALL-E 对应的论文为：[2102.12092] Zero-Shot Text-to-Image Generation。对应的代码库为：GitHub - openai/DALL-E: PyTorch package for the discrete VAE used for DALL·E.。</p>
 <p>DALL-E mini 对应的文档为：DALL-E Mini Explained，对应的代码库为：GitHub - borisdayma/dalle-mini: DALL·E Mini - Generate images from a text prompt。</p>
-<h4 id="6-2-dVAE"><a href="#6-2-dVAE" class="headerlink" title="6.2 dVAE"></a>6.2 dVAE</h4><p>dVAE（discrete VAE）与VQ-VAE的区别在于<font color=red>引入 Gumbel Softmax 来训练</font>, 避免 VQ-VAE 训练中 ArgMin 不可导的问题。 </p>
+<h3 id="6-2-dVAE"><a href="#6-2-dVAE" class="headerlink" title="6.2 dVAE"></a>6.2 dVAE</h3><p>dVAE（discrete VAE）与VQ-VAE的区别在于<font color=red>引入 Gumbel Softmax 来训练</font>, 避免 VQ-VAE 训练中 ArgMin 不可导的问题。 </p>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113222402539.png" alt="image-20240113222402539"></p>
-<h4 id="6-3-模型训练"><a href="#6-3-模型训练" class="headerlink" title="6.3 模型训练"></a>6.3 模型训练</h4><p>有了 dVAE 模型之后，第二阶段就是就是训练 Transformer（此阶段会固定 dVAE），使其具备文本引导生成的能力。DALL-E 使用大规模的图像-文本对数据集进行训练，训练过程中使用 dVAE 的 Encoder 将图像编码为离散的 latent code。然后将文本输入 Transformer，并使用生成的 latent code 来作为 target 输出。以此就可以完成有监督的自回归训练。推理时只需输入文本，然后逐个生成图像对应的 Token，直到生成 1024 个，然后将其作为离散的 latent code 进一步生成最终图像。</p>
+<h3 id="6-3-模型训练"><a href="#6-3-模型训练" class="headerlink" title="6.3 模型训练"></a>6.3 模型训练</h3><p>有了 dVAE 模型之后，第二阶段就是就是训练 Transformer（此阶段会固定 dVAE），使其具备文本引导生成的能力。DALL-E 使用大规模的图像-文本对数据集进行训练，训练过程中使用 dVAE 的 Encoder 将图像编码为离散的 latent code。然后将文本输入 Transformer，并使用生成的 latent code 来作为 target 输出。以此就可以完成有监督的自回归训练。推理时只需输入文本，然后逐个生成图像对应的 Token，直到生成 1024 个，然后将其作为离散的 latent code 进一步生成最终图像。</p>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113222517785.png" alt="image-20240113222517785"></p>
 <p>最终作者在 1024 个 16G 的 V100 GPU 上完成训练，batch size 为 1024，总共更新了 430,000 次模型，也就相当于训练了 4.3 亿图像-文本对（训练集包含 250M 图像-文本对，主要是 Conceptual Captions 和 YFFCC100M）。</p>
-<h4 id="6-4-DALL-E-mini-模型概述"><a href="#6-4-DALL-E-mini-模型概述" class="headerlink" title="6.4 DALL-E mini 模型概述"></a>6.4 DALL-E mini 模型概述</h4><p>如下图所示，DALL-E mini 中作者使用 VQ-GAN 替代 dVAE，使用 Encoder + Decoder 的 BART 替代 DALL-E 中 Decoder only 的 Transformer。</p>
+<h3 id="6-4-DALL-E-mini-模型概述"><a href="#6-4-DALL-E-mini-模型概述" class="headerlink" title="6.4 DALL-E mini 模型概述"></a>6.4 DALL-E mini 模型概述</h3><p>如下图所示，DALL-E mini 中作者使用 VQ-GAN 替代 dVAE，使用 Encoder + Decoder 的 BART 替代 DALL-E 中 Decoder only 的 Transformer。</p>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113222725076.png" alt="dalle-e mini infer"></p>
 <p>在推理过程中，不是生成单一的图像，而是会经过采样机制生成多个 latent code，并使用 VQ-GAN 的 Decoder 生成多个候选图像，之后再使用 CLIP 提取这些图像的 embedding 和文本 embedding，之后进行比对排序，挑选出最匹配的生成结果。</p>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113222818173.png" alt="image-20240113222818173"></p>
-<h4 id="6-5-DALL-E-mini-和-DALL-E-对比"><a href="#6-5-DALL-E-mini-和-DALL-E-对比" class="headerlink" title="6.5 DALL-E mini 和 DALL-E 对比"></a>6.5 DALL-E mini 和 DALL-E 对比</h4><p>DALL-E mini 和 DALL-E 在模型、训练上都有比较大的差异，具体体现在：</p>
+<h3 id="6-5-DALL-E-mini-和-DALL-E-对比"><a href="#6-5-DALL-E-mini-和-DALL-E-对比" class="headerlink" title="6.5 DALL-E mini 和 DALL-E 对比"></a>6.5 DALL-E mini 和 DALL-E 对比</h3><p>DALL-E mini 和 DALL-E 在模型、训练上都有比较大的差异，具体体现在：</p>
 <ul>
 <li>DALL-E 使用 12B 的 GPT-3 作为 Transformer，而 mini 使用的是 0.4B 的 BART，小 27 倍。</li>
 <li>mini 中使用预训练的 VQ-GAN、BART 的 Encoder 以及 CLIP，而 DALL-E 从头开始训练，mini 训练代价更小。</li>
@@ -286,10 +281,10 @@
 <li>mini 使用的 BART 是 Encoder + Decoder 的，因此文本是使用双向编码，也就是每个文本 Token 都能看到所有文本 Token，而 DALL-E 是 Decoder only 的 GPT-3，文本 Token 只能看到之前的 Token。</li>
 <li>DALL-E 使用 250M 图像-文本对训练，而 mini 只使用了 15M。</li>
 </ul>
-<h3 id="7-CLIP-VQ-GAN-VQGAN-CLIP"><a href="#7-CLIP-VQ-GAN-VQGAN-CLIP" class="headerlink" title="7 CLIP+VQ-GAN(VQGAN-CLIP)"></a>7 CLIP+VQ-GAN(VQGAN-CLIP)</h3><p>Katherine 等人将 VQ-GAN 和 OpenAI 发布的 CLIP 模型结合起来，利用 CLIP 的图文对齐能力来赋予 VQ-GAN 文本引导生成的能力。其最大的优势是不需要额外的预训练，也不需要对 CLIP 和 VQ-GAN 进行微调，只需在推理阶段执行少量的迭代即可实现。</p>
+<h2 id="7-CLIP-VQ-GAN-VQGAN-CLIP"><a href="#7-CLIP-VQ-GAN-VQGAN-CLIP" class="headerlink" title="7 CLIP+VQ-GAN(VQGAN-CLIP)"></a>7 CLIP+VQ-GAN(VQGAN-CLIP)</h2><p>Katherine 等人将 VQ-GAN 和 OpenAI 发布的 CLIP 模型结合起来，利用 CLIP 的图文对齐能力来赋予 VQ-GAN 文本引导生成的能力。其最大的优势是不需要额外的预训练，也不需要对 CLIP 和 VQ-GAN 进行微调，只需在推理阶段执行少量的迭代即可实现。</p>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240113223222191.png" alt="image-20240113223222191"></p>
 <p>如上图所示：使用初始图像通过 VQ-GAN 生成一个图像，然后使用 CLIP 对生成图像和 Target Text 提取 embedding，然后计算相似性，并将其误差作为反馈对隐空间的 Z-vector 进行迭代更新，直到生成图像和 Target Text 对应的 embedding 很相似为止。</p>
-<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ol>
 <li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1312.6114">https://arxiv.org/abs/1312.6114</a></li>
 <li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1711.00937">https://arxiv.org/abs/1711.00937</a></li>
 <li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1606.05328">https://arxiv.org/abs/1606.05328</a></li>
@@ -311,6 +306,9 @@
     
 
     <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AIGC/" rel="tag"># AIGC</a>
+          </div>
 
         
 
