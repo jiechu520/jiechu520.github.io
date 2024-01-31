@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="google-site-verification" content="BTo06tdvlac_Dho4-PFTLmDqjKXr1KtOzavpD8XDA5k" />
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.0.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"jiechu520.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Stable Diffusion 系列模型1. 背景 stable diffusion系列从 LDM 到SDXL 一直是开源工作里传播和使用最广的，大量工作都在此基础上展开。 从 2021年5月 openai 发表的 DM beat GANS 开始，diffusion model 的效果开始超过传统的 GAN 模型，进一步推动了 DM 在图像生成领域的应用。 早期的 DM 作用于像素空间，训练和推">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Stable Diffusion 系列模型">
+<meta property="og:url" content="https://jiechu520.github.io/2023/08/19/Stable%20DIffusion%20%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/index.html">
+<meta property="og:site_name" content="CJ blog">
+<meta property="og:description" content="Stable Diffusion 系列模型1. 背景 stable diffusion系列从 LDM 到SDXL 一直是开源工作里传播和使用最广的，大量工作都在此基础上展开。 从 2021年5月 openai 发表的 DM beat GANS 开始，diffusion model 的效果开始超过传统的 GAN 模型，进一步推动了 DM 在图像生成领域的应用。 早期的 DM 作用于像素空间，训练和推">
+<meta property="og:locale">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240116234259305.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/v2-3123494fa758b5fc404f42752e2f1101_r.jpg">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240116235722441.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640-20240117000025136.png">
+<meta property="article:published_time" content="2023-08-19T13:00:00.000Z">
+<meta property="article:modified_time" content="2023-12-19T15:08:00.000Z">
+<meta property="article:author" content="Jie Chu">
+<meta property="article:tag" content="CV">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240116234259305.png">
+
+
+<link rel="canonical" href="https://jiechu520.github.io/2023/08/19/Stable%20DIffusion%20%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh","comments":true,"permalink":"https://jiechu520.github.io/2023/08/19/Stable%20DIffusion%20%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/","path":"2023/08/19/Stable DIffusion 模型演进/","title":"Stable Diffusion 系列模型"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Stable Diffusion 系列模型 | CJ blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">CJ blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">不知名算法工程师</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Stable-Diffusion-%E7%B3%BB%E5%88%97%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">Stable Diffusion 系列模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">1. 背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%BC%94%E8%BF%9B"><span class="nav-number">1.2.</span> <span class="nav-text">2. 演进</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-Latent-Diffusion"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 Latent Diffusion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-stable-diffusion-V1"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 stable diffusion V1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-Stable-Diffusion-V1-5"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 Stable Diffusion V1.5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-Stable-Diffusion-V2"><span class="nav-number">1.2.4.</span> <span class="nav-text">2.4 Stable Diffusion V2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-Stable-Diffusion-XL"><span class="nav-number">1.2.5.</span> <span class="nav-text">3.4  Stable Diffusion XL</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jie Chu</p>
+  <div class="site-description" itemprop="description">日常笔记</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://jiechu520.github.io/2023/08/19/Stable%20DIffusion%20%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jie Chu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CJ blog">
+      <meta itemprop="description" content="日常笔记">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Stable Diffusion 系列模型 | CJ blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Stable Diffusion 系列模型
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-08-19 21:00:00" itemprop="dateCreated datePublished" datetime="2023-08-19T21:00:00+08:00">2023-08-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-12-19 23:08:00" itemprop="dateModified" datetime="2023-12-19T23:08:00+08:00">2023-12-19</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="Stable-Diffusion-系列模型"><a href="#Stable-Diffusion-系列模型" class="headerlink" title="Stable Diffusion 系列模型"></a>Stable Diffusion 系列模型</h1><h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240116234259305.png" alt="image-20240116234259305"></p>
+<p>stable diffusion系列从 LDM 到SDXL 一直是开源工作里传播和使用最广的，大量工作都在此基础上展开。</p>
+<p>从 2021年5月 openai 发表的 DM beat GANS 开始，diffusion model 的效果开始超过传统的 GAN 模型，进一步推动了 DM 在图像生成领域的应用。</p>
+<p>早期的 DM 作用于像素空间，训练和推理的成本很高，为了实现在有效的计算资源上训练 DM，同时保持其质量和灵活性，作者提出将 DM 应用于强大的预训练 AutoEncoder 的隐空间（Latent Space），这也就是为什么提出的模型叫 <strong>LDM</strong>。此外，作者还在模型中引入交叉注意力层，可以将文本、边界框等条件很方便地引入到模型中，将 DM 转化为强大而灵活的生成器，实现高分辨率的生成。作者提出的 LDM 模型同样在图像修复、类别条件生成等方面取得很好的效果，同时与基于像素空间的扩散模型相比，大大降低计算要求。</p>
+<h2 id="2-演进"><a href="#2-演进" class="headerlink" title="2. 演进"></a>2. 演进</h2><h3 id="2-1-Latent-Diffusion"><a href="#2-1-Latent-Diffusion" class="headerlink" title="2.1 Latent Diffusion"></a>2.1 Latent Diffusion</h3><p>Stable Diffusion 之前的版本，对应的正是论文的开源版本，位于代码库 High-Resolution Image Synthesis with Latent Diffusion Models 中。</p>
+<p>该版本发布于 2022 年 4 月，主要包含三个模型：</p>
+<ul>
+<li>文生图模型：基于 LAION-400M 数据集训练，包含 1.45B 参数。</li>
+<li>图像修复模型：指定区域进行擦除。</li>
+<li>基于 ImageNet 的类别生成模型：在 ImageNet 上训练，指定类别条件生成，获得了 3.6 的 FID 分数。使用了 Classifier Free Guidance 技术。</li>
+</ul>
+<p>代码实现参考了 OpenAI 的 Diffusion Models Beat GANs 代码实现。</p>
+<h3 id="2-2-stable-diffusion-V1"><a href="#2-2-stable-diffusion-V1" class="headerlink" title="2.2 stable diffusion V1"></a>2.2 stable diffusion V1</h3><p>V1 系列的模型结构和LDM类似基本没有变化；</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/v2-3123494fa758b5fc404f42752e2f1101_r.jpg" alt="img"></p>
+<p>该版本发布于 2022 年 8 月，该模型包含 2 个子模型：</p>
+<ul>
+<li>AutoEncoder 模型：U-Net，8 倍下采样，包含 860M 参数。</li>
+<li>Text Encoder 模型：使用 CLIP ViT-L/14 中的 Text encoder。</li>
+</ul>
+<p>模型首先在 256x256 的分辨率下训练，然后在 512x512 的分辨率下微调。总共包含 4 个子版本：</p>
+<ul>
+<li>sd-v1-1.ckpt：<ul>
+<li>在 LAION-2B-en 数据集上以 256x256 分辨率训练 237k step。</li>
+<li>在 LAION-high-resolution（LAION-5B 中超过 1024x1024 分辨率的 170M 样本）上以 512x512 分辨率继续训练 194k step。</li>
+</ul>
+</li>
+<li>sd-v1-2.ckpt：<ul>
+<li>复用 sd-v1-1.ckpt，在 LAION-aesthetics v2 5+（LAION-2B-en 中美观度分数大于 5.0 的子集） 上以 512x512 分辨率继续训练 515k step。</li>
+</ul>
+</li>
+<li>sd-v1-3.ckpt：<ul>
+<li>复用 sd-v1-2.ckpt，在 LAION-aesthetics v2 5+ 上以 512x512 分辨率继续训练 195k step，使用了 Classifier Free Guidance 技术，以 10% 概率删除文本条件。</li>
+</ul>
+</li>
+<li>sd-v1-4.ckpt：<ul>
+<li>复用 sd-v1-2.ckpt，在 LAION-aesthetics v2 5+ 上以 512x512 分辨率继续训练 225k step，使用了 Classifier Free Guidance 技术，以 10% 概率删除文本条件。</li>
+</ul>
+</li>
+</ul>
+<p>对应的 FID 和 CLIP 分数如下图所示：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240116235722441.png" alt="image-20240116235722441"></p>
+<h3 id="2-3-Stable-Diffusion-V1-5"><a href="#2-3-Stable-Diffusion-V1-5" class="headerlink" title="2.3 Stable Diffusion V1.5"></a>2.3 Stable Diffusion V1.5</h3><p>Stable Diffusion 的 V1.5 版本，由runway发布，</p>
+<p>该版本发布于 2022 年 10 月，主要包含两个模型：</p>
+<ul>
+<li>sd-v1-5.ckpt：<ul>
+<li>复用 sd-v1-2.ckpt，在 LAION-aesthetics v2 5+ 上以 512x512 分辨率继续训练 595k step，使用了 Classifier Free Guidance 技术，以 10% 概率删除文本条件。</li>
+</ul>
+</li>
+<li>sd-v1-5-inpainting.ckpt：<ul>
+<li>复用 sd-v1-5.ckpt，在 LAION-aesthetics v2 5+ 上以 512x512 分辨率以 inpainting 训练了 440k step，使用 Classifier Free Guidance 技术，以 10% 概率删除文本条件。在 U-Net 的输入中额外加了 5 个 channel，4 个用于 masked 的图像，1 个用于 mask 本身。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-4-Stable-Diffusion-V2"><a href="#2-4-Stable-Diffusion-V2" class="headerlink" title="2.4 Stable Diffusion V2"></a>2.4 Stable Diffusion V2</h3><p>Stable Diffusion 的 V2 版本，由 Stability-AI 发布</p>
+<p>V2 包含三个子版本，分别为 v2.0，v2.1 和 Stable UnCLIP 2.1：</p>
+<ul>
+<li>v2.0：<ul>
+<li>发布于 2022 年 11 月，U-Net 模型和 V1.5 相同，Text encoder 模型换成了 OpenCLIP-ViT/H 中的 text encoder。</li>
+<li>SD 2.0-base：分别率为 512x512</li>
+<li>SD 2.0-v：基于 2.0-base 微调，分辨率提升到 768x768，同时利用 [2202.00512] Progressive Distillation for Fast Sampling of Diffusion Models 提出的技术大幅降低 Diffusion 的步数。</li>
+<li>发布了一个文本引导的 4 倍超分模型。</li>
+<li>基于 2.0-base 微调了一个深度信息引导的生成模型。</li>
+<li>基于 2.0-base 微调了一个文本信息引导的修复模型。</li>
+</ul>
+</li>
+<li>v2.1：<ul>
+<li>发布于 2022 年 12 月，模型结构和参数量都和 v2.0 相同。并在 v2.0 的基础上使用 LAION 5B 数据集（较低的 NSFW 过滤约束）微调。同样包含 512x512 分辨率的 v2.1-base 和 768x768 分辨率的 v2.1-v。</li>
+</ul>
+</li>
+<li>Stable UnCLIP 2.1：<ul>
+<li>发布于 2023 年 3 月，基于 v2.1-v（768x768 分辨率） 微调，参考 OpenAI 的 DALL-E 2（也就是 UnCLIP），可以更好的实现和其他模型的联合，同样提供基于 CLIP ViT-L 的 Stable unCLIP-L 和基于 CLIP ViT-H 的 Stable unCLIP-H</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640-20240117000025136.png" alt="图片"></p>
+<p>从结果来看，V2版本相对于V1.5提升比较明显，但是实际体验效果比较一般，而且V2版本难以finetune。</p>
+<h3 id="3-4-Stable-Diffusion-XL"><a href="#3-4-Stable-Diffusion-XL" class="headerlink" title="3.4  Stable Diffusion XL"></a>3.4  Stable Diffusion XL</h3><p>Stable Diffusion 的 XL 版本，由 Stability-AI 发布，位于代码库 Generative Models by Stability AI。</p>
+<p>该版本发布于 2023 年 06 月，主要包含两个模型：</p>
+<ul>
+<li>SDXL-base-0.9：基于多尺度分辨率训练，最大分辨率 1024x1024，包含两个 Text encoder，分别为 OpenCLIP-ViT/G 和 CLIP-ViT/L。</li>
+<li>SDXL-refiner-0.9：用来生成更高质量的图像，不应直接使用，此外文本条件只使用 OpenCLIP 中的 Text encoder。</li>
+</ul>
+<p>2023 年 07 月发布 1.0 版本，同样对应两个模型：</p>
+<ul>
+<li>SDXL-base-1.0：基于 SDXL-base-0.9 改进。</li>
+<li>SDXL-refiner-1.0：基于 SDXL-refiner-0.9 改进。</li>
+</ul>
+<p>2023 年 11 月发表 SDXL-Trubo 版本，通过引入蒸馏技术来优化加速的版本。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CV/" rel="tag"># CV</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/04/21/EVA02/" rel="prev" title="EVA02解析">
+                  <i class="fa fa-angle-left"></i> EVA02解析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/12/20/hello-world/" rel="next" title="Hello World">
+                  Hello World <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Jie Chu</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

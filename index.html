@@ -116,7 +116,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-count">15</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -587,6 +587,169 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://jiechu520.github.io/2023/08/19/Stable%20DIffusion%20%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jie Chu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CJ blog">
+      <meta itemprop="description" content="日常笔记">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | CJ blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/08/19/Stable%20DIffusion%20%E6%A8%A1%E5%9E%8B%E6%BC%94%E8%BF%9B/" class="post-title-link" itemprop="url">Stable Diffusion 系列模型</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-08-19 21:00:00" itemprop="dateCreated datePublished" datetime="2023-08-19T21:00:00+08:00">2023-08-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-12-19 23:08:00" itemprop="dateModified" datetime="2023-12-19T23:08:00+08:00">2023-12-19</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="Stable-Diffusion-系列模型"><a href="#Stable-Diffusion-系列模型" class="headerlink" title="Stable Diffusion 系列模型"></a>Stable Diffusion 系列模型</h1><h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240116234259305.png" alt="image-20240116234259305"></p>
+<p>stable diffusion系列从 LDM 到SDXL 一直是开源工作里传播和使用最广的，大量工作都在此基础上展开。</p>
+<p>从 2021年5月 openai 发表的 DM beat GANS 开始，diffusion model 的效果开始超过传统的 GAN 模型，进一步推动了 DM 在图像生成领域的应用。</p>
+<p>早期的 DM 作用于像素空间，训练和推理的成本很高，为了实现在有效的计算资源上训练 DM，同时保持其质量和灵活性，作者提出将 DM 应用于强大的预训练 AutoEncoder 的隐空间（Latent Space），这也就是为什么提出的模型叫 <strong>LDM</strong>。此外，作者还在模型中引入交叉注意力层，可以将文本、边界框等条件很方便地引入到模型中，将 DM 转化为强大而灵活的生成器，实现高分辨率的生成。作者提出的 LDM 模型同样在图像修复、类别条件生成等方面取得很好的效果，同时与基于像素空间的扩散模型相比，大大降低计算要求。</p>
+<h2 id="2-演进"><a href="#2-演进" class="headerlink" title="2. 演进"></a>2. 演进</h2><h3 id="2-1-Latent-Diffusion"><a href="#2-1-Latent-Diffusion" class="headerlink" title="2.1 Latent Diffusion"></a>2.1 Latent Diffusion</h3><p>Stable Diffusion 之前的版本，对应的正是论文的开源版本，位于代码库 High-Resolution Image Synthesis with Latent Diffusion Models 中。</p>
+<p>该版本发布于 2022 年 4 月，主要包含三个模型：</p>
+<ul>
+<li>文生图模型：基于 LAION-400M 数据集训练，包含 1.45B 参数。</li>
+<li>图像修复模型：指定区域进行擦除。</li>
+<li>基于 ImageNet 的类别生成模型：在 ImageNet 上训练，指定类别条件生成，获得了 3.6 的 FID 分数。使用了 Classifier Free Guidance 技术。</li>
+</ul>
+<p>代码实现参考了 OpenAI 的 Diffusion Models Beat GANs 代码实现。</p>
+<h3 id="2-2-stable-diffusion-V1"><a href="#2-2-stable-diffusion-V1" class="headerlink" title="2.2 stable diffusion V1"></a>2.2 stable diffusion V1</h3><p>V1 系列的模型结构和LDM类似基本没有变化；</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/v2-3123494fa758b5fc404f42752e2f1101_r.jpg" alt="img"></p>
+<p>该版本发布于 2022 年 8 月，该模型包含 2 个子模型：</p>
+<ul>
+<li>AutoEncoder 模型：U-Net，8 倍下采样，包含 860M 参数。</li>
+<li>Text Encoder 模型：使用 CLIP ViT-L/14 中的 Text encoder。</li>
+</ul>
+<p>模型首先在 256x256 的分辨率下训练，然后在 512x512 的分辨率下微调。总共包含 4 个子版本：</p>
+<ul>
+<li>sd-v1-1.ckpt：<ul>
+<li>在 LAION-2B-en 数据集上以 256x256 分辨率训练 237k step。</li>
+<li>在 LAION-high-resolution（LAION-5B 中超过 1024x1024 分辨率的 170M 样本）上以 512x512 分辨率继续训练 194k step。</li>
+</ul>
+</li>
+<li>sd-v1-2.ckpt：<ul>
+<li>复用 sd-v1-1.ckpt，在 LAION-aesthetics v2 5+（LAION-2B-en 中美观度分数大于 5.0 的子集） 上以 512x512 分辨率继续训练 515k step。</li>
+</ul>
+</li>
+<li>sd-v1-3.ckpt：<ul>
+<li>复用 sd-v1-2.ckpt，在 LAION-aesthetics v2 5+ 上以 512x512 分辨率继续训练 195k step，使用了 Classifier Free Guidance 技术，以 10% 概率删除文本条件。</li>
+</ul>
+</li>
+<li>sd-v1-4.ckpt：<ul>
+<li>复用 sd-v1-2.ckpt，在 LAION-aesthetics v2 5+ 上以 512x512 分辨率继续训练 225k step，使用了 Classifier Free Guidance 技术，以 10% 概率删除文本条件。</li>
+</ul>
+</li>
+</ul>
+<p>对应的 FID 和 CLIP 分数如下图所示：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240116235722441.png" alt="image-20240116235722441"></p>
+<h3 id="2-3-Stable-Diffusion-V1-5"><a href="#2-3-Stable-Diffusion-V1-5" class="headerlink" title="2.3 Stable Diffusion V1.5"></a>2.3 Stable Diffusion V1.5</h3><p>Stable Diffusion 的 V1.5 版本，由runway发布，</p>
+<p>该版本发布于 2022 年 10 月，主要包含两个模型：</p>
+<ul>
+<li>sd-v1-5.ckpt：<ul>
+<li>复用 sd-v1-2.ckpt，在 LAION-aesthetics v2 5+ 上以 512x512 分辨率继续训练 595k step，使用了 Classifier Free Guidance 技术，以 10% 概率删除文本条件。</li>
+</ul>
+</li>
+<li>sd-v1-5-inpainting.ckpt：<ul>
+<li>复用 sd-v1-5.ckpt，在 LAION-aesthetics v2 5+ 上以 512x512 分辨率以 inpainting 训练了 440k step，使用 Classifier Free Guidance 技术，以 10% 概率删除文本条件。在 U-Net 的输入中额外加了 5 个 channel，4 个用于 masked 的图像，1 个用于 mask 本身。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-4-Stable-Diffusion-V2"><a href="#2-4-Stable-Diffusion-V2" class="headerlink" title="2.4 Stable Diffusion V2"></a>2.4 Stable Diffusion V2</h3><p>Stable Diffusion 的 V2 版本，由 Stability-AI 发布</p>
+<p>V2 包含三个子版本，分别为 v2.0，v2.1 和 Stable UnCLIP 2.1：</p>
+<ul>
+<li>v2.0：<ul>
+<li>发布于 2022 年 11 月，U-Net 模型和 V1.5 相同，Text encoder 模型换成了 OpenCLIP-ViT/H 中的 text encoder。</li>
+<li>SD 2.0-base：分别率为 512x512</li>
+<li>SD 2.0-v：基于 2.0-base 微调，分辨率提升到 768x768，同时利用 [2202.00512] Progressive Distillation for Fast Sampling of Diffusion Models 提出的技术大幅降低 Diffusion 的步数。</li>
+<li>发布了一个文本引导的 4 倍超分模型。</li>
+<li>基于 2.0-base 微调了一个深度信息引导的生成模型。</li>
+<li>基于 2.0-base 微调了一个文本信息引导的修复模型。</li>
+</ul>
+</li>
+<li>v2.1：<ul>
+<li>发布于 2022 年 12 月，模型结构和参数量都和 v2.0 相同。并在 v2.0 的基础上使用 LAION 5B 数据集（较低的 NSFW 过滤约束）微调。同样包含 512x512 分辨率的 v2.1-base 和 768x768 分辨率的 v2.1-v。</li>
+</ul>
+</li>
+<li>Stable UnCLIP 2.1：<ul>
+<li>发布于 2023 年 3 月，基于 v2.1-v（768x768 分辨率） 微调，参考 OpenAI 的 DALL-E 2（也就是 UnCLIP），可以更好的实现和其他模型的联合，同样提供基于 CLIP ViT-L 的 Stable unCLIP-L 和基于 CLIP ViT-H 的 Stable unCLIP-H</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640-20240117000025136.png" alt="图片"></p>
+<p>从结果来看，V2版本相对于V1.5提升比较明显，但是实际体验效果比较一般，而且V2版本难以finetune。</p>
+<h3 id="3-4-Stable-Diffusion-XL"><a href="#3-4-Stable-Diffusion-XL" class="headerlink" title="3.4  Stable Diffusion XL"></a>3.4  Stable Diffusion XL</h3><p>Stable Diffusion 的 XL 版本，由 Stability-AI 发布，位于代码库 Generative Models by Stability AI。</p>
+<p>该版本发布于 2023 年 06 月，主要包含两个模型：</p>
+<ul>
+<li>SDXL-base-0.9：基于多尺度分辨率训练，最大分辨率 1024x1024，包含两个 Text encoder，分别为 OpenCLIP-ViT/G 和 CLIP-ViT/L。</li>
+<li>SDXL-refiner-0.9：用来生成更高质量的图像，不应直接使用，此外文本条件只使用 OpenCLIP 中的 Text encoder。</li>
+</ul>
+<p>2023 年 07 月发布 1.0 版本，同样对应两个模型：</p>
+<ul>
+<li>SDXL-base-1.0：基于 SDXL-base-0.9 改进。</li>
+<li>SDXL-refiner-1.0：基于 SDXL-refiner-0.9 改进。</li>
+</ul>
+<p>2023 年 11 月发表 SDXL-Trubo 版本，通过引入蒸馏技术来优化加速的版本。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://jiechu520.github.io/2023/04/21/EVA02/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1019,137 +1182,6 @@
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240116105418257.png" alt="image-20240116105418257"></p>
 <p><strong>数据增强</strong></p>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240116105510461.png" alt="image-20240116105510461"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://jiechu520.github.io/2022/06/21/DARN/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Jie Chu">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CJ blog">
-      <meta itemprop="description" content="日常笔记">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | CJ blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/06/21/DARN/" class="post-title-link" itemprop="url">图片美观度模型</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2022-06-21 21:00:00" itemprop="dateCreated datePublished" datetime="2022-06-21T21:00:00+08:00">2022-06-21</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2022-06-22 23:08:00" itemprop="dateModified" datetime="2022-06-22T23:08:00+08:00">2022-06-22</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="360图片搜索—图片美观度模型"><a href="#360图片搜索—图片美观度模型" class="headerlink" title="360图片搜索—图片美观度模型"></a>360图片搜索—图片美观度模型</h1><p><a target="_blank" rel="noopener" href="https://github.com/lmm360/Image-aesthetic-assessment">code和数据集地址</a></p>
-<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>在图片搜索中，用户希望搜索的图片不但和自己的查询相关，并且在视觉感官、图片质量等方面也要比较满意。此时，就需要我们计算图片图片的在美学上的特征分值，加到排序模型中，将高相关性、高美学质量的图像排在检索结果的前面。</p>
-<p>但是现有的图片质量模型主要考虑图像的质量，如像素，清晰度、有无噪声，在图像的美学特征，如构图、色彩、内容和谐等考虑的权重偏低。</p>
-<h2 id="二、相关研究"><a href="#二、相关研究" class="headerlink" title="二、相关研究"></a>二、相关研究</h2><p>大部分的工作将这种美观度评估的任务形式化为回归或者分类问题。开源的数据集有 AVA【1】, AADB【2】等。代表的工作有 NIMA模型【3】和DARN模型【4】。360美观度模型正是在DARN模型的基础上改进得到的。</p>
-<p><strong>NIMA模型</strong>利用了AVA数据集，AVA数据集包含了约 25w张图像，由业余摄影师根据审美品质进行评分，200人评分的平均分就是该张图像的最终的分数。</p>
-<p><strong>NIMA模型</strong>目标是预测与人类评分的相关性，而不是将图片分类或者回归到平均分。提出了<strong>EMD loss</strong>，它显示了有序类分类的性能提升。下面是模型结构。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20231026144748579.png" alt="image-20231026144748579"></p>
-<p>开源的数据集AVA、AADB图像与图片搜索的图像在种类和美学质量分布上有很大的差异，所以不能再公开的数据集上训练模型。最好的方式使构建自己的数据集，但是像AVA数据集的构建，需要一批具有美学专业知识的标注人员对每张图片进行标注。标注成本和难度都有很大</p>
-<p>Microsoft提出了<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/abs/1805.00309">《An Universal Image Attractiveness Ranking Framework》</a>，很好的解决美学数据集构建难的问题，并提出了新的美学模型——DARN模型。下面介绍DARN模型以及360美观度模型在此之上的改进。</p>
-<h2 id="三、基于DARN的美观度模型"><a href="#三、基于DARN的美观度模型" class="headerlink" title="三、基于DARN的美观度模型"></a>三、基于DARN的美观度模型</h2><h3 id="1、数据集构建"><a href="#1、数据集构建" class="headerlink" title="1、数据集构建"></a>1、数据集构建</h3><p>数据集的构建过程如下：</p>
-<p>1、在图片搜索中高中低频queey中各选择2000条query。</p>
-<p>2、根据query在图片搜索返回结果中，top20里面，top40-60里面各抽取两张图片。</p>
-<p>3、根据Swiss-system tournament规则、对这4张图像进行三轮标注。</p>
-<p>4、每一轮标注，将同一query下4张图片组成两对，每一对图像由7个人标注人员去进行投票：</p>
-<p>左边更好，左边好一点，一样好，右边好一点，右边更好。</p>
-<p>具体标注可以参考下图：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20231026154542693.png" alt="image-20231026154542693"></p>
-<p>这样标注的好处是，标注人员无需掌握专业知识，“比较”相对于给出一个直接的分值更简单，多人投票也降低主观偏好带来的偏差。7个标注人员对image1和image2进行投票的结果中，左边更好，左边好一点，一样好，右边好一点，右边更好的人数分别为0、1、1、4、1，则这对图像的label为：</p>
-<script type="math/tex; mode=display">
-l(image1,image2)=(0,1,1,4,1)</script><h3 id="2、DARN模型"><a href="#2、DARN模型" class="headerlink" title="2、DARN模型"></a>2、DARN模型</h3><p>我们的标注数据是pair对，模型结构如下：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20231026163835872.png" alt="image-20231026163835872"></p>
-<p>左边的网络和右边的网络是参数共享的，图像对输入到网络中，经过 Deep CNN（如resnet50）的特征抽取，再经过三个fc层，然后计算最终输出的方差和均值。</p>
-<p>假设每张图像都是由很多的专业的美学专家评分得到的，那么根据中心极限定理，图像美观度分值$X$服从正态分布，AVA数据基本就符合正态分布。所以<strong>最终计算得到的均值和方差就可以看作是模型计算的该图像的平均美观度分值和方差</strong>。</p>
-<p>对于一个pair对 $[x_i,x_j]$, 它们的 label 记为${0,1,2,3,4}$ 分别对应着左边更好，左边好一点，一样好，右边好一点，右边更好。对于我们的标注数据有：</p>
-<script type="math/tex; mode=display">
-\sum_{y=0}^4{P_{ij}(xi-xj)=y}=1</script><p>直觉上，图像通过模型得到的美观度分值有以下两个特点：</p>
-<ul>
-<li>图像越美观，模型得到美观度分数均值越大。</li>
-<li>图像对的label应该与美观度分数一致。如，$u_i&gt;&gt;u_j$,那么标注图像 $i$ 好一点或者更好的人数应该更多。如果 $u_i=u_j$,则大部分人标注的 label 是 “一样好”。</li>
-</ul>
-<p>上面说到我们假设美观度分值服从正态分布，那么两个美观度分值的差也服从正态分布，记$x_{i}^{left}$,$x_{j}^{right}$分别表示图像对中左边图像美观度和右边图像美观度（左边和右边只是为了对应我们数据的标注label），他们美观度的差值 $\Delta X$ 服从 $N(x,u_i-u_j,\sigma_{1}^{2}+\sigma_{2}^{2})$。</p>
-<p>然后我们定义4个可以学习的边界值 ${b_i}_{i=0}^{3}$，这4个boundaries将 x 轴分成5部分，也就将正态分布和x轴围成的区域分成了5个部分，这5个部分就对应了 我们设定的 五个label {左边更好，左边好一点，一样好，右边好一点，右边更好}，我们定义 $p_{i}^{j}，j={0,1,2,3}$表示第$i$对图像对被标注lable $j$ 的概率。$\Delta u_i $和 $\Delta \sigma_i$ 表示第$i$对图像对美观度分值差的均值和方差。于是我们有：</p>
-<script type="math/tex; mode=display">
-p_{i}^{j}=\displaystyle \int^{b_j}_{b_{j-1}}N(x;\Delta u_i,\Delta \sigma_i)dx</script><p>形象点可以看下图：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20231026175218691.png" alt="image-20231026175218691"></p>
-<p>上面这张图显示了标签如何随着图像对的分数差值系统的变化。当右侧图像的平均得分远高于左侧图像时，得分差的分布将向右移动，导致标签“右侧更好”的概率更高。当左右之间的分数差异变小时，分布向左移动并导致标签发生变化。因此，当两个图像的分数相等时，中间桶中的面积最大，这意味着这对图像最有可能被标记为“一样好”。</p>
-<p>至此我们可以计算出模型对第 $i$ 对图像对的美观度分值的差的分布 $p_i=(p_{i}^{0},p_{i}^{1},p_{i}^{2},p_{i}^{3},p_{i}^{4})$ ，而我们</p>
-<p>图像对的真实label 为 $l=(n_{i}^{0},n_{i}^{1},n_{i}^{2},n_{i}^{3},n_{i}^{4})$, 因此我们可以定义一个对数最大似然损失函数：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20231026180559585.png" alt="image-20231026180559585"></p>
-<p>从上面的过程可以看出，由于预先假设图像的美学评分服从正态分布，而正态分布可以由均值和方差两个参数控制，所以严格的说，DARN模型预测的不是美学评分，而是美学评分分布。<strong>在实际应用时，可以直接用均值作为该图像的美学评分</strong>。</p>
-<h3 id="3、实验改进"><a href="#3、实验改进" class="headerlink" title="3、实验改进"></a>3、实验改进</h3><p>实验的过程中，根据我们的数据集和训练情况对DARN模型做了一些改进和调整。</p>
-<p>1、 原始DARN模型中，deep CNN以及以后所有FC层，激活函数都是 Relu。缺少带有归一化能力的激活函数和norm操作，则很可能随着<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=W方差&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;83896463&quot;}">W方差</a>的增大，出现个别节点数值过大的问题，导致训练时loss很可能出现nan的情况。所以将第一个FC层的激活函数改为 tanh。</p>
-<p>2、在计算均值之前加上softplus激活函数。使得最后推理的结果都是正的，且减小方差。模型中计算正态分布在某一个区间的积分，需要保证 $\sigma &gt;0$，才能让正态分布函数有意义，但是原始论文中：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20231026182412236.png" alt="image-20231026182412236"></p>
-<p>使用的是Relu激活函数，有可能训练得到 $\sigma = 0$。</p>
-<p>3、训练中对边界值进行截断，防止训练中部分 $\Delta u$过大，产生nan值。</p>
-<p>4、最后一层维度通过实验调整为 16。</p>
-<p>5、边界值的初始化值对于模型训练影响很大，我们数据集下初始化值为（-0.75，-0.25， 0.25, 0.75）</p>
-<p>6、deep CNN 由 resnet50 调整为 swin transformer。</p>
-<h2 id="四、结果展示"><a href="#四、结果展示" class="headerlink" title="四、结果展示"></a>四、结果展示</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image2022-11-3_15-17-31.png" alt="image2022-11-3_15-17-31"></p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image2022-11-3_15-21-28.png" alt="image2022-11-3_15-21-28"></p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image2022-11-3_15-24-26.png" alt="image2022-11-3_15-19-28"></p>
-<p>该美观度模型计算的特征应用在360图片搜索的排序中，离线ndcg指标和在线Ctr均得到了提升。</p>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>【1】N. Murray, L. Marchesotti, and F. Perronnin. Ava: A large-scale database for aesthetic visual analysis. In Computer Vision and Pattern Recognition (CVPR), pages 2408–2415,Providence, RI, USA, 2012. IEEE.</p>
-<p>【2】S. Kong, X. Shen, Z. Lin, R. Mech, and C. Fowlkes. Photo aesthetics ranking network with attributes and content adapta-tion. In European Conference on Computer Vision (ECCV),<br>page 662679, Amsterdam, The Netherlands, 2016. Springer.</p>
-<p>【3】H. Talebi and P . Milanfar. Nima: Neural image assess-ment. IEEE Transactions on Image Processing, 27:3998–4011, 2017</p>
 
       
     </div>
