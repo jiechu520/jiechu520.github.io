@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="google-site-verification" content="BTo06tdvlac_Dho4-PFTLmDqjKXr1KtOzavpD8XDA5k" />
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.0.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"jiechu520.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="扩散模型可控生成的方法总结文生图模型可控生成可以分为结构控制和内容控制。 结构控制以ControlNet和T2I-Adapter为代表，通过用户输入的 canny, sketch, depth map等来控制生成图像的结构，主要通过改变原始unet不同分辨率的中间特征来达到目的。controlnet是将额外网络的得到特征加到unet deocder上，T2I-Adapter是将额外网络得到的特征加">
+<meta property="og:type" content="article">
+<meta property="og:title" content="扩散模型可控生成的方法总结">
+<meta property="og:url" content="https://jiechu520.github.io/2024/01/20/%E5%8F%AF%E6%8E%A7%E7%94%9F%E6%88%90/index.html">
+<meta property="og:site_name" content="CJ blog">
+<meta property="og:description" content="扩散模型可控生成的方法总结文生图模型可控生成可以分为结构控制和内容控制。 结构控制以ControlNet和T2I-Adapter为代表，通过用户输入的 canny, sketch, depth map等来控制生成图像的结构，主要通过改变原始unet不同分辨率的中间特征来达到目的。controlnet是将额外网络的得到特征加到unet deocder上，T2I-Adapter是将额外网络得到的特征加">
+<meta property="og:locale">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240204114115794.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240204114212325.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/tmp.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240204192311798.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240204195928381.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240205111424762.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240202152533469.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240205143940328.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240205153137031.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240205153851008.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240205153925988.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240205144907436.png">
+<meta property="og:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240205153944668.png">
+<meta property="article:published_time" content="2024-01-20T13:00:00.000Z">
+<meta property="article:modified_time" content="2024-02-01T15:08:00.000Z">
+<meta property="article:author" content="Jie Chu">
+<meta property="article:tag" content="AIGC">
+<meta property="article:tag" content="stable diffusion">
+<meta property="article:tag" content="VAE">
+<meta property="article:tag" content="GAN">
+<meta property="article:tag" content="Dalle">
+<meta property="article:tag" content="pixart-alpha">
+<meta property="article:tag" content="文生图模型综述">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240204114115794.png">
+
+
+<link rel="canonical" href="https://jiechu520.github.io/2024/01/20/%E5%8F%AF%E6%8E%A7%E7%94%9F%E6%88%90/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh","comments":true,"permalink":"https://jiechu520.github.io/2024/01/20/%E5%8F%AF%E6%8E%A7%E7%94%9F%E6%88%90/","path":"2024/01/20/可控生成/","title":"扩散模型可控生成的方法总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>扩散模型可控生成的方法总结 | CJ blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">CJ blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">不知名算法工程师</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E5%8F%AF%E6%8E%A7%E7%94%9F%E6%88%90%E7%9A%84%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93"><span class="nav-number">1.</span> <span class="nav-text">扩散模型可控生成的方法总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1%E3%80%81Controlnet"><span class="nav-number">2.</span> <span class="nav-text">1、Controlnet</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E8%83%8C%E6%99%AF"><span class="nav-number">2.0.1.</span> <span class="nav-text">1.1 背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E6%96%B9%E6%B3%95"><span class="nav-number">2.0.2.</span> <span class="nav-text">1.2 方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E6%80%BB%E7%BB%93"><span class="nav-number">2.0.3.</span> <span class="nav-text">1.3 总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81T2I-Adapter"><span class="nav-number">2.1.</span> <span class="nav-text">2、T2I-Adapter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-IP-Adapter"><span class="nav-number">2.2.</span> <span class="nav-text">3. IP-Adapter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%BA%94%E7%94%A8"><span class="nav-number">2.3.</span> <span class="nav-text">4. 应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-AnyDoor"><span class="nav-number">2.3.1.</span> <span class="nav-text">4.1 AnyDoor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-PhotoMaker"><span class="nav-number">2.3.2.</span> <span class="nav-text">4.2 PhotoMaker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-InstantID"><span class="nav-number">2.3.3.</span> <span class="nav-text">4.3 InstantID</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jie Chu</p>
+  <div class="site-description" itemprop="description">日常笔记</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://jiechu520.github.io/2024/01/20/%E5%8F%AF%E6%8E%A7%E7%94%9F%E6%88%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jie Chu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CJ blog">
+      <meta itemprop="description" content="日常笔记">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="扩散模型可控生成的方法总结 | CJ blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          扩散模型可控生成的方法总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-01-20 21:00:00" itemprop="dateCreated datePublished" datetime="2024-01-20T21:00:00+08:00">2024-01-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-02-01 23:08:00" itemprop="dateModified" datetime="2024-02-01T23:08:00+08:00">2024-02-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B/" itemprop="url" rel="index"><span itemprop="name">扩散模型</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="扩散模型可控生成的方法总结"><a href="#扩散模型可控生成的方法总结" class="headerlink" title="扩散模型可控生成的方法总结"></a>扩散模型可控生成的方法总结</h1><p>文生图模型可控生成可以分为<strong>结构控制和内容控制</strong>。</p>
+<p>结构控制以ControlNet和T2I-Adapter为代表，通过用户输入的 canny, sketch, depth map等来控制生成图像的结构，主要通过改变原始unet不同分辨率的中间特征来达到目的。controlnet是将额外网络的得到特征加到unet deocder上，T2I-Adapter是将额外网络得到的特征加到对应的Unet encoder上。</p>
+<p>概念控制以 IP-Adapter为代表，通过引入新的输入来控制生成图像的内容。很多文章都验证了 <strong>cross attention layers</strong> 是控制图像空间布局与条件提示之间对应关系的关键，简言之，生成图像的语义主要通过cross attention来控制。<strong>prompt to prompt</strong>通过将原始prompt生成的 attention map和修改后的prompt生成的attention map结合到一起来达到图像编辑的功能。一些工作通过各种各样的方式得到新的特征，然后将其与文本特征连接或者是通过替换原始文本特征，将合并后的特征输入到扩散模型的UNet中，以指导图像生成，如photomaker。</p>
+<p>接下来我们介绍一下可控生成的代表性工作Contronet，Adapter，后续很多的工作大多基于此做的改进来达到自己期望的结果。</p>
+<h1 id="1、Controlnet"><a href="#1、Controlnet" class="headerlink" title="1、Controlnet"></a>1、Controlnet</h1><h3 id="1-1-背景"><a href="#1-1-背景" class="headerlink" title="1.1 背景"></a>1.1 背景</h3><p>在 controlnet 之前的图像扩散模型，像 stable diffusion，只支持文本来控制图像生成。如果要生成符合期望，有特定细节的图像，需要调整 seed 和 prompt，耗时比较长。借助 ControlNet，可以使用各种输入条件如（outlines， human poses， depth mpas，edge maps等）控制图像生成。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240204114115794.png" alt="image-20240204114115794"></p>
+<h3 id="1-2-方法"><a href="#1-2-方法" class="headerlink" title="1.2 方法"></a>1.2 方法</h3><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240204114212325.png" alt="image-20240204114212325"></p>
+<p>ControlNet 是一种 “辅助式” 的神经网络模型结构，可以增强具有特定任务条件的预训练图像扩散模型。如 Figure 2 所示，Controlnet 可以应用于任意神经网络结构。Controlnet 主要在 <strong>trainable copy</strong> 上施加控制条件，然后将施加控制条件之后的结果和原来SD模型的结果相加获得最终的输出结果。</p>
+<p>其中，原模型的权重保持不变，在训练中 frozen, <strong>保留了原模型原本的能力</strong>；与此同时，使用额外数据对 <strong>trainable copy</strong>进行微调，学习我们想要添加的条件。ContorlNet 模型中有两个 <strong>zero convolution</strong> 模块，它们是 $1\times1$卷积，并且权重和偏置都初始化为零。这样一来，在我们开始训练ControlNet之前，所有zero convolution模块的输出都为零，使得ControlNet完完全全就在原模型的能力上进行微调训练，不会产生大的能力偏差，<strong>也会降低破坏原模型能力的风险**</strong>。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/tmp.png" alt="tmp"></p>
+<p>上面是应用在开源文生图模型 Stable Diffusion上 ControlNet 的整体结果，其主要在Stable Diffusion的U-Net中起作用，<strong>ControlNet主要将Stable Diffusion U-Net的Encoder部分进行复制训练，在Stable Diffusion U-Net的Decoder模块中通过skip connection加入了zero convolution模块处理后的特征</strong>，以实现对最终模型与训练数据的一致性。</p>
+<p>具体地，ControlNet包含了12个编码块和1个Stable Diffusion U-Net中间块的“可训练”副本。这12个编码块有4种分辨率，分别是64×64、32×32、16×16和8×8，每种分辨率对应3个编码块 。ControlNet的输出被添加到Stable Diffusion U-Net的12 个残差结构和1个中间块中。同时由于Stable Diffusion U-Net是经典的U-Net结构，因此 ControlNet架构有很强的兼容性与迁移能力，可以用于其他扩散模型中。</p>
+<p><strong>ControlNet一开始的输入Condition怎么与SD模型的隐空间特征结合呢？</strong>在这里ControlNet主要是训练过程中添加了四层卷积层，将图像空间Condition转化为隐空间Condition。这些卷积层的卷积核为4×4，步长为2，通道分别为16，32，64，128，初始化为高斯权重，并与整个ControlNet模型进行联合训练。</p>
+<h3 id="1-3-总结"><a href="#1-3-总结" class="headerlink" title="1.3 总结"></a>1.3 总结</h3><p><strong>优点</strong>：</p>
+<ol>
+<li>即插即用：controlnet不会影响SD模型原本的生成能力。</li>
+<li>可控生成：controlnet在原本文本指导下，增加各种条件控制模型生成。</li>
+<li>泛化能力强：可以和社区现有不同 finetune SD模型结合。</li>
+<li>灵活：既适用于小规模数据训练（只连接 mid block），也适用于大规模数据训练（先训练contorlnet，再解锁冻结的sd 权重一起训练）。</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li>模型比较大（模型文件通常在一点几GB），增加了推理的时间。</li>
+<li>当模型错误理解输入图像的语义时，模型很难生成正确的内容。</li>
+</ol>
+<h2 id="2、T2I-Adapter"><a href="#2、T2I-Adapter" class="headerlink" title="2、T2I-Adapter"></a>2、T2I-Adapter</h2><p>T2I-Adapter 和 ControlNet 模型一样，能够作为控制条件控制SD模型生成图片的过程。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240204192311798.png" alt="image-20240204192311798"></p>
+<p>与 ControlNet 不同的是，T2I-Adapter通过一个 Adapter 额外模型去输入额外的条件，Adapter由四个特征提取模块和三个下采样模块组成，每个特征提取模块 scale由以及个卷积层和两个residual blocks组成。每个scale产生的特征维度与对应的unet层类似，然后和对应的Unet encoder 中间特征相加。</p>
+<p><strong>优点</strong>:</p>
+<ul>
+<li><strong>即插即用</strong>：T2I-Adapter算法不会影响SD模型原本的生成能力。</li>
+<li><strong>简单且小巧</strong>：它们可以轻松地与SD模型结合，T2I-Adapter模型大约只有77M的参数和大约300M的存储空间，且几乎不影响原本模型的推理速度。</li>
+<li><strong>灵活组合</strong>：可以轻松与多个ControlNet模型组合使用，以实现多条件控制。</li>
+<li><strong>泛化能力</strong>：在不同的SD模型上具备较好的泛化控制性能。</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>生成质量相比ControlNet 略差。</li>
+<li>预训练的模型相比ControlNet少。</li>
+</ul>
+<h2 id="3-IP-Adapter"><a href="#3-IP-Adapter" class="headerlink" title="3. IP-Adapter"></a>3. IP-Adapter</h2><p>Stable Diffusion系列模型在正常情况下是只支持文本提示词的输入，而IP-Adapter算法能够在SD模型的图像生成过程中引入<strong>图像提示词（Image Prompt）</strong>，从而能够识别输入图像的风格和内容，然后控制SD模型生成相似风格或者内容的图片，同时也可以搭配其他类型的ControlNet一起使用。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240204195928381.png" alt="image-20240204195928381"></p>
+<p>IP-Adapter的关键设计是：<strong>解耦的交叉注意机制，它将文本特征和图像特征的交叉注意层分开。</strong>在这之前一些工作做法是 CLIP 图像编码器提取的图像特征通过可训练网络映射到新特征，然后与文本特征连接或者是通过替换原始文本特征，将合并后的特征输入到扩散模型的UNet中，以指导图像生成。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240205111424762.png" alt="image-20240205111424762"></p>
+<p>优点：</p>
+<ul>
+<li><strong>即插即用</strong>：IP-Adapter不会影响原本模型的能力。</li>
+<li><strong>简单轻量</strong>：总训练参数约22M。</li>
+<li><strong>灵活组合</strong>：可以与controlnet等结构控制的模型结合使用。</li>
+<li><strong>泛化能力</strong>：在不同的SD模型上具备较好的泛化控制性能。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>只能生成内容和风格与参考图像相似的图像。</li>
+</ul>
+<h2 id="4-应用"><a href="#4-应用" class="headerlink" title="4. 应用"></a>4. 应用</h2><p>接下来我们介绍一些应用以上技术，在社区比较火的工作。</p>
+<h3 id="4-1-AnyDoor"><a href="#4-1-AnyDoor" class="headerlink" title="4.1 AnyDoor"></a>4.1 AnyDoor</h3><p>AnyDoor的任务是 ViT-ALL 即 virtual try-all，zero-shot将任何参考图像放在任意场景图像的指定位置。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240202152533469.png" alt="image-20240202152533469"></p>
+<p>模型架构如上，可以看做是 <strong>IP-Adapter和ControlNet</strong>的结合，这里的通过一个自监督的图像编码器提取图像特征然后替代文本特征输入到Cross attention中。Detail Extractor是一个Controlnet网络结构。训练时候，只冻结U-net encoder，</p>
+<p><strong>关键创新点</strong>：<font color=blue>利用一个自监督的图像表示模型-DINO-V2来提取更加细粒度的图像特征，而不是CLIP</font></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240205143940328.png" alt="image-20240205143940328"></p>
+<h3 id="4-2-PhotoMaker"><a href="#4-2-PhotoMaker" class="headerlink" title="4.2 PhotoMaker"></a>4.2 PhotoMaker</h3><p>photomaker的任务是identity-preserving image synthesis，即生成ID一致的人物图像。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240205153137031.png" alt="image-20240205153137031"></p>
+<p>模型结构如上图所示，通过将image encoder提取到 image embedding 与 text embedding融合再替换text embedding中的对应的token，来达到引入 ID 图像信息。训练的时候，原本Unet是一起训练的，无法做到即插即用。效果看起来跟IP-adapter接近，输入的参考图像的数量越多生成效果越好。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240205153851008.png" alt="image-20240205153851008"></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240205153925988.png" alt="image-20240205153925988"></p>
+<h3 id="4-3-InstantID"><a href="#4-3-InstantID" class="headerlink" title="4.3 InstantID"></a>4.3 InstantID</h3><p>InstantID的任务是 identity-preserving image synthesis，即生成ID一致的人物图像。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240205144907436.png" alt="image-20240205144907436"></p>
+<p>模型结构如上图，也可以看作是 IP-Adapter 和 ControlNet的结合。其中，IP-Adapter的输入是通过 Face Encoder 模型来提取脸部特征。ControlNet的输入是面部关键点图，条件输入去除了文本特征，只使用 Face embedding。训练的时候，Unet完全冻结。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240205153944668.png" alt="image-20240205153944668"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AIGC/" rel="tag"># AIGC</a>
+              <a href="/tags/stable-diffusion/" rel="tag"># stable diffusion</a>
+              <a href="/tags/VAE/" rel="tag"># VAE</a>
+              <a href="/tags/GAN/" rel="tag"># GAN</a>
+              <a href="/tags/Dalle/" rel="tag"># Dalle</a>
+              <a href="/tags/pixart-alpha/" rel="tag"># pixart-alpha</a>
+              <a href="/tags/%E6%96%87%E7%94%9F%E5%9B%BE%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0/" rel="tag"># 文生图模型综述</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/01/16/Personalization/" rel="prev" title="">
+                  <i class="fa fa-angle-left"></i> 
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Jie Chu</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

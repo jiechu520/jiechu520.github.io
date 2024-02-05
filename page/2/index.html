@@ -116,13 +116,19 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">3</span>
-        <span class="site-state-item-name">tags</span>
+          <a href="/tags/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
 </div>
@@ -138,6 +144,124 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://jiechu520.github.io/2023/01/09/MAE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jie Chu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CJ blog">
+      <meta itemprop="description" content="日常笔记">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | CJ blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/01/09/MAE/" class="post-title-link" itemprop="url">MAE——Masked Autoencoders</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-01-09 21:00:00" itemprop="dateCreated datePublished" datetime="2023-01-09T21:00:00+08:00">2023-01-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2022-01-09 23:08:00" itemprop="dateModified" datetime="2022-01-09T23:08:00+08:00">2022-01-09</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="MAE：Masked-Autoencoders"><a href="#MAE：Masked-Autoencoders" class="headerlink" title="MAE：Masked Autoencoders"></a>MAE：Masked Autoencoders</h1><p>code: <a target="_blank" rel="noopener" href="https://github.com/facebookresearch/mae">https://github.com/facebookresearch/mae</a></p>
+<p>paper: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2111.06377">https://arxiv.org/abs/2111.06377</a></p>
+<h2 id="1、概述"><a href="#1、概述" class="headerlink" title="1、概述"></a>1、概述</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240111174241212.png" alt="image-20240111174241212"></p>
+<p><strong>以一定比例随机mask掉图片中的一些图像块然后重建这些部分像素值。</strong></p>
+<p>主要特点有两个：</p>
+<ol>
+<li><strong>非对称</strong>的编、解码器设计</li>
+<li>使用<strong>较高(如 75%)的掩码率</strong>(mask 比例)</li>
+</ol>
+<p>第1点所述的“非对称”主要体现在 <strong>输入形式</strong> 与 <strong>网络结构</strong> 上：编码器(Encoder)仅对可见(un-masked)的图像块进行编码，而解码器(Decoder)的输入则是所有的图像块；同时，Decoder 可以是比较轻量的(比如 Encoder 通常是多层堆叠的 Transformer，而 Decoder 仅需较少层甚至1层就 ok)。这也表明 Encoder 与 Decoder 之间是<strong>解耦</strong>的。</p>
+<p>第2点是该工作的一个重要发现：不同于 NLP，<strong>在 CV 中可能要配合较高的 mask 比例才能作为“有效”的自监督代理任务。“有效”指的是任务本身足够困难，这样模型才能学到有效的潜在特征表示。</strong></p>
+<p>由于 Encoder 仅处理 un-masked 的 patch(占所有输入的少数)，因此，尽管其本身网络结构比较重载，但依然能够高效训练，特别是对于大模型，能够加速3倍以上，同时配合较高的掩码率，还能够涨点。</p>
+<p>作者从一个问题出来解释选择这样mask策略以及模型设计的理由，<strong>“为什么 masked autoencoding 在CV中应用比较少相较于NLP？”</strong> 作者提炼了以下三点：</p>
+<ul>
+<li>架构差异：之前CNN的架构不适合使用</li>
+<li>信息密度不同: 语言的信息密度比较高，将句子中的少量词语抹去再让模型预测被抹去的这些词是比较困难的任务；但对于图像则相反，它在空间中是冗余的，对于图片中的某个部分，模型很容易由其相邻的图像块推断出来，因此在CV中，mask的比例应该更高，才能使任务本身具有足够的挑战性，从而使模型学到良好的潜在特征表示。</li>
+<li>解码的目标不一致：CV 和 NLP 在解码器的设计上应该有不一样的考虑：NLP 解码输出的是对应被 mask 掉的词语，本身包含了丰富的语义信息；而 CV 要重建的是被 mask 掉的图像块(像素值)，是低语义的。因此，NLP 的解码器可以很简单，比如 BERT，严格来说它并没有解码器，最后用 MLP 也可以搞定。因为来自编码器的特征也是高度语义的，与需要解码的目标之间的 gap 较小；而 CV 的解码器设计则需要“谨慎”考虑了，因为它要将<strong>来自编码器的高级语义特征解码至低级语义层级</strong>。</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240111174251713.png" alt="image-20240111174251713"></p>
+<h2 id="2、具体方法"><a href="#2、具体方法" class="headerlink" title="2、具体方法"></a>2、具体方法</h2><p>MAE的特点主要是：<font color=red><strong>高掩码率</strong>的<strong>随机</strong> mask 策略、<strong>非对称</strong>的编、解码器设计 以及 重建的目标是<strong>像素</strong>值</font></p>
+<h3 id="2-1-masked-策略"><a href="#2-1-masked-策略" class="headerlink" title="2.1 masked 策略"></a>2.1 masked 策略</h3><p>沿袭 ViT 的做法，将图像分成一块块(ViT 中是 16x16 大小)不重叠的 patch，然后使用服从<strong>均匀分布(uniform distribution)</strong>的采样策略对这些 patches 随机采样一部分，同时 mask 掉余下的另一部分。被 mask 掉的 patches 占所有 patches 的大部分(实验效果发现最好的比例是 75%)，它们不会输入到 Encoder。</p>
+<p>作者实验发现：无论是finetune，还是 fine-tune 还是 linear-probe(微调方法，将最后一层替换成线性层，微调时冻结其他层，只训练这个线性层)，75%都是一个比较好的比例。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240115201547788.png" alt="image-20240115201547788"></p>
+<h3 id="2-2-Encoder"><a href="#2-2-Encoder" class="headerlink" title="2.2 Encoder"></a>2.2 Encoder</h3><p><strong>Encoder只处理 un-masked 的patches</strong>。Encoder可以是Vit或者其他backbone。图像划分成patch采用Vit的做法。</p>
+<p>先将图像从 (B,C,H,W) reshape 成 (B,N,PxPxC)，其中 N 和 P 分别为 patch 数量 和 patch 大小( $H/P \times W/P$)，也就是<strong>将3通道的图像转换成 N 个 维度大小为 PxPxC 的向量</strong>；然后，<strong>通过线性映射(linear projection，可以是全连接层)将其嵌入(embed)到指定的维度空间大小</strong>，记为 ‘dim’(从 PxPxC project 到 dim)，转换成为 <strong>token</strong>(B,N,dim)；最后再<strong>加上位置嵌入(position embedding)</strong>，从而为各个 patch 添加位置信息。<strong>位置嵌入是所有图像共享的、可学习的</strong>，shape 与 每张图的 token 相对应，即：(N,dim)。</p>
+<p>由于 un-masked patches 占所有 patches 的少数，计算消耗和空间需求都减少了，因此可以训练很大的 Encoder。</p>
+<h3 id="2-3-Decoder"><a href="#2-3-Decoder" class="headerlink" title="2.3 Decoder"></a>2.3 Decoder</h3><p>Decoder 不仅需要处理经过 Encoder 编码的 un-masked 的 tokens，还需要处理 masked tokens。但请注意，<strong>masked token 并非由之前 mask 掉的 patch 经过 embedding 转换而来，而是可学习的、所有 masked patches 都共享的1个向量，对，仅仅就是1个！</strong></p>
+<p>通过 position embedding 来区分各个 masked patch 对应的 token。</p>
+<h3 id="2-4-loss"><a href="#2-4-loss" class="headerlink" title="2.4 loss"></a>2.4 loss</h3><p>MAE 预训练任务的目标是重建像素值，并且仅仅是 masked patches 的像素值，也就是<strong>仅对 mask 掉的部分计算 loss</strong>，而 loss 就是很大众的 MSE。为何仅计算 mask 部分的 loss？实验结果发现这样做模型的性能会更好，而如果对所有 patches 都计算 loss 的话会掉点。</p>
+<h2 id="3-实验"><a href="#3-实验" class="headerlink" title="3. 实验"></a>3. 实验</h2><p><strong>mask采样策略</strong></p>
+<p>作者通过实验比较，最终选择了服从均匀分布的随机采样，以下是详细实验结果：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240116104651814.png" alt="image-20240116104651814"></p>
+<p><strong>Decoder设计</strong></p>
+<p>作者还研究了Decoder的设计，下图展示了 Decoder 的深度和宽度对于 ft 和 linear probe 的影响。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240116104906404.png" alt="image-20240116104906404"></p>
+<p>Decoder 的深度和宽度对于 linear probe 有较为明显的影响，但对于 fine-tune 的影响却不那么突出。究其本质，原因是是<strong>预训练任务(图像重建)与下游任务(图像识别)之间存在着 gap</strong>。</p>
+<p><strong>encoder为什么不用 masked tokens</strong></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240116105137183.png" alt="image-20240116105137183"></p>
+<p>原因是下游任务并不存在这些 masked tokens，上下游任务之间存在gap。如果Encoder 也对 masked tokens 进行编码，会进一步将这种 gap 的影响“扩散”至下游任务中。</p>
+<p><strong>各种重建目标的比较</strong></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240116105418257.png" alt="image-20240116105418257"></p>
+<p><strong>数据增强</strong></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240116105510461.png" alt="image-20240116105510461"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -184,6 +308,15 @@
       </span>
       <span class="post-meta-item-text">Edited on</span>
       <time title="Modified: 2022-06-22 23:08:00" itemprop="dateModified" datetime="2022-06-22T23:08:00+08:00">2022-06-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/CV/" itemprop="url" rel="index"><span itemprop="name">CV</span></a>
+        </span>
     </span>
 
   
@@ -594,6 +727,15 @@ p_{i}^{j}=\displaystyle \int^{b_j}_{b_{j-1}}N(x;\Delta u_i,\Delta \sigma_i)dx</s
       </span>
       <span class="post-meta-item-text">Edited on</span>
       <time title="Modified: 2022-03-22 13:03:00" itemprop="dateModified" datetime="2022-03-22T13:03:00+08:00">2022-03-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/CV/" itemprop="url" rel="index"><span itemprop="name">CV</span></a>
+        </span>
     </span>
 
   
