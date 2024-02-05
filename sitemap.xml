@@ -38,27 +38,9 @@
   </url>
   
   <url>
-    <loc>https://jiechu520.github.io/2024/01/16/Personalization/</loc>
-    
-    <lastmod>2024-01-16</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://jiechu520.github.io/2024/01/02/ECLIPSE/</loc>
     
     <lastmod>2024-01-02</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://jiechu520.github.io/2023/12/20/hello-world/</loc>
-    
-    <lastmod>2023-12-19</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -113,6 +95,15 @@
     <loc>https://jiechu520.github.io/2023/01/21/dali%E9%A2%84%E5%A4%84%E7%90%86/</loc>
     
     <lastmod>2023-01-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://jiechu520.github.io/2023/12/10/Personalization/</loc>
+    
+    <lastmod>2022-12-10</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -272,6 +263,69 @@
   
   <url>
     <loc>https://jiechu520.github.io/tags/%E6%96%87%E7%94%9F%E5%9B%BE%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0/</loc>
+    <lastmod>2024-02-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://jiechu520.github.io/tags/EVA02/</loc>
+    <lastmod>2024-02-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://jiechu520.github.io/tags/prior/</loc>
+    <lastmod>2024-02-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://jiechu520.github.io/tags/ECLIPSE/</loc>
+    <lastmod>2024-02-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://jiechu520.github.io/tags/MAE/</loc>
+    <lastmod>2024-02-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://jiechu520.github.io/tags/%E8%87%AA%E7%9B%91%E7%9D%A3/</loc>
+    <lastmod>2024-02-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://jiechu520.github.io/tags/NIMA/</loc>
+    <lastmod>2024-02-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://jiechu520.github.io/tags/lora/</loc>
+    <lastmod>2024-02-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://jiechu520.github.io/tags/anytext/</loc>
+    <lastmod>2024-02-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://jiechu520.github.io/tags/Vit/</loc>
     <lastmod>2024-02-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
