@@ -153,6 +153,396 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://jiechu520.github.io/2024/02/09/%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jie Chu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CJ blog">
+      <meta itemprop="description" content="日常笔记">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | CJ blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/02/09/%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0/" class="post-title-link" itemprop="url">图像生成模型综述</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-02-09 21:00:00" itemprop="dateCreated datePublished" datetime="2024-02-09T21:00:00+08:00">2024-02-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-02-19 23:08:00" itemprop="dateModified" datetime="2024-02-19T23:08:00+08:00">2024-02-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B/" itemprop="url" rel="index"><span itemprop="name">扩散模型</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>[toc]</p>
+<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>为了更好的理解图像生成模型的演化过程，在这里，对这一系列模型进行总结，包括任务场景、评估指标、模型类型、效率优化、局限性等方面分别总结，以便更好地对比和理解。</p>
+<h2 id="二、任务场景"><a href="#二、任务场景" class="headerlink" title="二、任务场景"></a>二、任务场景</h2><h3 id="2-1-无条件生成"><a href="#2-1-无条件生成" class="headerlink" title="2.1 无条件生成"></a>2.1 无条件生成</h3><p>生成模型在生成图像时不受<font color=red>任何额外条件或约束的影响</font>。模型从学习的数据分布中生成图像，而不需要关注输入条件。</p>
+<p>无条件适用于那些不需要额外信息或上下文的场景。例如，针对人脸数据训练，那么就可以输入随机噪声，然后生成逼真的人脸图像，而不用考虑任何特定属性或描述。</p>
+<p>CelebA-HQ（人脸）、FFHQ（人脸）、LSUN-Churches（教堂） 和 LSUN-Bedrooms（卧室） 都是常见的无条件评估任务。</p>
+<ul>
+<li>CelebA-HQ 包含 30,000 1024x1024 分辨率的高质量人脸图像。（<a target="_blank" rel="noopener" href="https://paperswithcode.com/dataset/celeba-hq）">https://paperswithcode.com/dataset/celeba-hq）</a></li>
+<li>FFHQ 同样是高质量的人脸数据集，包含 70,000 张 1024x1024 分辨率的高质量人脸图像，有不同的种族、肤色和背景等。（<a target="_blank" rel="noopener" href="https://github.com/NVlabs/ffhq-dataset）">https://github.com/NVlabs/ffhq-dataset）</a></li>
+<li>LSUN 数据集包含 10 个场景类别，包括卧室、厨房、教堂等等，每个图像的大小都为 256x256 分辨率，每个类别包含 120,000 到 3,000,000 张图像。</li>
+</ul>
+<p>如下图所示为分别基于以上数据集训练之后（4 个模型）生成的图像示例（来自 LDM）：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/9ad8b9515f0b4f5cf85f21ad37f9d01a.png" alt="9ad8b9515f0b4f5cf85f21ad37f9d01a"></p>
+<h3 id="2-2-有条件生成"><a href="#2-2-有条件生成" class="headerlink" title="2.2 有条件生成"></a>2.2 有条件生成</h3><p>有条件生成可以通过cross attention的方式引入各式各样的条件控制图像生成。</p>
+<h4 id="2-2-1-类别条件生成"><a href="#2-2-1-类别条件生成" class="headerlink" title="2.2.1 类别条件生成"></a>2.2.1 类别条件生成</h4><p>类别条件生成是非常常见的一种场景，也有许多相关的任务，其中 ImageNet 是最常见的一种，ImageNet 常用于图像分类任务，每个图像都有一个类别标签，总共有 1000 个类别。在图像生成领域，可以指定对应的类别标签，然后让模型按照类别生成图像。</p>
+<h4 id="2-2-2-文本条件生成"><a href="#2-2-2-文本条件生成" class="headerlink" title="2.2.2 文本条件生成"></a>2.2.2 文本条件生成</h4><p>当前最常见的图像生成范式，输入自然语言描述，模型即可生成相应的图像。</p>
+<h4 id="2-2-3-位置条件"><a href="#2-2-3-位置条件" class="headerlink" title="2.2.3 位置条件"></a>2.2.3 位置条件</h4><p>有些时候我们会对图像中物体的布局，或主体的位置有特殊的要求，此时可以结合上述的类别条件和文本条件来约束模型。</p>
+<p>如下图所示，左侧图中指定了图片中物体的位置关系（以边界框坐标表示），最终模型按要求生成了对应的图像（图片来自 LDM，模型基于 COCO 数据集训练）：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/6f2aa993ca449d9bc52dd72740e46ef6.png" alt="6f2aa993ca449d9bc52dd72740e46ef6"></p>
+<h4 id="2-2-4-图像扩充-Outpainting-and-图像内编辑-inpainting"><a href="#2-2-4-图像扩充-Outpainting-and-图像内编辑-inpainting" class="headerlink" title="2.2.4 图像扩充 (Outpainting) and 图像内编辑 (inpainting)"></a>2.2.4 图像扩充 (Outpainting) and 图像内编辑 (inpainting)</h4><p>给定图像，将其扩展为更大的图片；市面上比较火的应用，如 ai扩图，商品图背景生成，基本上都是基于outpainting 的方式。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image%20(9).png" alt="image (9)" style="zoom: 25%;" /><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/tmpi1mj8me6.png" alt="tmpi1mj8me6" style="zoom: 50%;" /></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/c_raw.png" alt="c_raw" style="zoom: 25%;" /><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/tmpiliondnx.png" alt="tmpiliondnx" style="zoom:33%;" /></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640.gif" alt="640"></p>
+<p>inpaint 和 outpaint 模型的训练方式基本相同，都是用文生图模型的权重进行初始化，然后改变 Unet 输入的 channels（5 additional input channels ，4 for the encoded masked-image and 1 for the mask itself）,新增的channels zero-initialized。</p>
+<p>但是需要注意的是 inpaint 和 outpaint 训练时的mask方式根据推理时mask的特点而有所不同，二者可以混合在一起训练。</p>
+<h4 id="2-2-6-图像内文字生成"><a href="#2-2-6-图像内文字生成" class="headerlink" title="2.2.6 图像内文字生成"></a>2.2.6 图像内文字生成</h4><p>有些时候需要图片中包含特定的文本内容，也可以以条件的形式输入。但是当前大部分文生图的模型直接生成文字效果都不太好 (Dalle3 生成文字比较准确，文字不易变形)</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/3f98ca6187b332eb475ee4ce532c6c5d.png" alt="3f98ca6187b332eb475ee4ce532c6c5d"></p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2309.15807">Meta的文生图模型Emu</a> 采用 channel数更大的VAE可以改善生成文字畸变的情况。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240125163857323.png" alt="image-20240125163857323"></p>
+<p>对于文字概念，需要训练数据中的caption描述更加准确和详细。</p>
+<h4 id="2-2-7-多种条件生成"><a href="#2-2-7-多种条件生成" class="headerlink" title="2.2.7 多种条件生成"></a>2.2.7 多种条件生成</h4><p>有些场景会包含多种条件，比如给定图像、文本等多种条件，模型综合考量这些条件才能生成满足要求的图像。如下图所示：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/237055b77e0004a0a54bc7fa67b8464d.png" alt="237055b77e0004a0a54bc7fa67b8464d"></p>
+<h2 id="三、评估指标"><a href="#三、评估指标" class="headerlink" title="三、评估指标"></a>三、评估指标</h2><p>公司内部模型迭代上线，一般采取人工评测的方式，从开源评测集以及真实用户输入数据中随机按一定比例挑选 prompt 生成图片后，由人工从多个维度如，图文相关性，美观度，合理性等角度进行评测。</p>
+<h3 id="3-1-IS-Inception-Score"><a href="#3-1-IS-Inception-Score" class="headerlink" title="3.1 IS (Inception Score)"></a>3.1 IS (Inception Score)</h3><p>IS（Inception Score）：用于评估生成图像质量和多样性的指标。它结合了两个方面的考量：</p>
+<ul>
+<li>生成图像的真实性（真实图像的概率，在对应类别上的概率应该尽量高）</li>
+<li>生成图像的多样性（类别分布的熵，生成不同类别图像应该尽量均匀）</li>
+</ul>
+<p>IS 的计算方法包含两个步骤：</p>
+<ul>
+<li>首先，通过分类模型提取生成图像在每个类别的概率分布</li>
+<li>然后，计算这些概率分布的 KL 散度，最终的 IS 是这些 KL 散度的指数平均值</li>
+</ul>
+<h3 id="3-2-FID-Frechet-Inception-Distance"><a href="#3-2-FID-Frechet-Inception-Distance" class="headerlink" title="3.2 FID (Frechet Inception Distance)"></a>3.2 FID (Frechet Inception Distance)</h3><p>FID（Frechet Inception Distance）：用于反映生成图片和真实图片之间的距离，数值越低越好。</p>
+<p>FID 的计算方法包含两个步骤：</p>
+<ul>
+<li>首先，通过模型提取真实图像和生成图像的特征向量。</li>
+<li>然后，计算这两个特征向量分布之间的 Frechet 距离，也就是均值和协方差的 Frechet 距离。</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640" alt="图片"></p>
+<p>在实际使用中，通常使用 IS 来评估真实性，使用 FID 来评估多样性。</p>
+<h3 id="3-3-CMMD"><a href="#3-3-CMMD" class="headerlink" title="3.3 CMMD"></a>3.3 CMMD</h3><p>谷歌在最新的文章 <strong><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.09603">Rethinking FID</a></strong> 中提出了一个新的图像生成评估指标，并指出 FID 的缺陷。</p>
+<p>code：<a target="_blank" rel="noopener" href="https://github.com/google-research/google-research/tree/master/cmmd">https://github.com/google-research/google-research/tree/master/cmmd</a></p>
+<p>FID 估计真实图像的 Inception-v3 特征分布与算法生成的图像的分布之间的距离。FID 的重要缺点：<strong>Inception 对现代文本到图像模型生成的丰富多样的内容的表示不佳、不正确的正态性假设以及样本复杂性较差。</strong></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240204155257324.png" alt="image-20240204155257324"></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240125175818071.png" alt="image-20240125175818071"></p>
+<h4 id="How-to-Calculate？"><a href="#How-to-Calculate？" class="headerlink" title="How to Calculate？"></a>How to Calculate？</h4><p>CMMD使用了 MMD 距离来计算真实图像分布和生成图像分布之间的距离。对于两个概率分布 $P\in R^d,Q\in R^d$, 相对于正定核 $k$ MMD距离定义如下：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240204160143429.png" alt="image-20240204160143429"></p>
+<p>其中 x 和 x’ 独立分布于 P，y 和 y’ 独立分布于 Q。</p>
+<p>下面是 官方Jax版本的 CMMD 距离的计算code</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;Memory-efficient MMD implementation in JAX.&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> jax</span><br><span class="line"><span class="keyword">import</span> jax.numpy <span class="keyword">as</span> jnp</span><br><span class="line"></span><br><span class="line">Array = jnp.ndarray</span><br><span class="line"></span><br><span class="line"><span class="comment"># The bandwidth parameter for the Gaussian RBF kernel. See the paper for more</span></span><br><span class="line"><span class="comment"># details.</span></span><br><span class="line">_SIGMA = <span class="number">10</span></span><br><span class="line"><span class="comment"># The following is used to make the metric more human readable. See the paper</span></span><br><span class="line"><span class="comment"># for more details.</span></span><br><span class="line">_SCALE = <span class="number">1000</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@jax.jit</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mmd</span>(<span class="params">x, y</span>):</span><br><span class="line">  <span class="string">&quot;&quot;&quot;Memory-efficient MMD implementation in JAX.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  Args:</span></span><br><span class="line"><span class="string">    x: The first set of embeddings of shape (n, embedding_dim).</span></span><br><span class="line"><span class="string">    y: The second set of embeddings of shape (n, embedding_dim).</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  Returns:</span></span><br><span class="line"><span class="string">    The MMD distance between x and y embedding sets.</span></span><br><span class="line"><span class="string">  &quot;&quot;&quot;</span></span><br><span class="line">  x = jnp.asarray(x)</span><br><span class="line">  y = jnp.asarray(y)</span><br><span class="line"></span><br><span class="line">  <span class="comment"># jnp.matmul(x, x.T) etc. are not cached to avoid OOM when x has many rows.</span></span><br><span class="line">  x_sqnorms = jnp.diag(jnp.matmul(x, x.T))</span><br><span class="line">  y_sqnorms = jnp.diag(jnp.matmul(y, y.T))</span><br><span class="line"></span><br><span class="line">  gamma = <span class="number">1</span> / (<span class="number">2</span> * _SIGMA**<span class="number">2</span>)</span><br><span class="line">  k_xx = jnp.mean(</span><br><span class="line">      jnp.exp(</span><br><span class="line">          -gamma</span><br><span class="line">          * (</span><br><span class="line">              -<span class="number">2</span> * jnp.matmul(x, x.T)</span><br><span class="line">              + jnp.expand_dims(x_sqnorms, <span class="number">1</span>)</span><br><span class="line">              + jnp.expand_dims(x_sqnorms, <span class="number">0</span>)</span><br><span class="line">          )</span><br><span class="line">      )</span><br><span class="line">  )</span><br><span class="line">  k_xy = jnp.mean(</span><br><span class="line">      jnp.exp(</span><br><span class="line">          -gamma</span><br><span class="line">          * (</span><br><span class="line">              -<span class="number">2</span> * jnp.matmul(x, y.T)</span><br><span class="line">              + jnp.expand_dims(x_sqnorms, <span class="number">1</span>)</span><br><span class="line">              + jnp.expand_dims(y_sqnorms, <span class="number">0</span>)</span><br><span class="line">          )</span><br><span class="line">      )</span><br><span class="line">  )</span><br><span class="line">  k_yy = jnp.mean(</span><br><span class="line">      jnp.exp(</span><br><span class="line">          -gamma</span><br><span class="line">          * (</span><br><span class="line">              -<span class="number">2</span> * jnp.matmul(y, y.T)</span><br><span class="line">              + jnp.expand_dims(y_sqnorms, <span class="number">1</span>)</span><br><span class="line">              + jnp.expand_dims(y_sqnorms, <span class="number">0</span>)</span><br><span class="line">          )</span><br><span class="line">      )</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> _SCALE * (k_xx + k_yy - <span class="number">2</span> * k_xy)</span><br></pre></td></tr></table></figure>
+<h3 id="3-4-CLIP-Score"><a href="#3-4-CLIP-Score" class="headerlink" title="3.4 CLIP Score"></a>3.4 CLIP Score</h3><p>CLIP 模型由 OpenAI 发布，其模型包含一个图像 encoder 和一个文本 encoder，训练的目的是实现图文特征的对齐。因此常用两个 encoder 分别提取文本和图像的 embedding，然后计算相似性得分，距离越大证明相似性越低，也就是图像和文本越不相关。常用于评估模型以文本作为条件生成的图像是否很好满足文本要求。</p>
+<h3 id="3-5-DrawBench"><a href="#3-5-DrawBench" class="headerlink" title="3.5 DrawBench"></a>3.5 DrawBench</h3><p>在 Imagen 中，Google 同步提出了 DrawBench，这是一个全面且具有挑战性的文本生成图片模型评测基准。</p>
+<p>如下图 Table A.1 所示，DrawBench 基准包含 11 个类别的 200 个文本提示：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/9d6bf15e3563d1b2bef2404e66382764.png" alt="9d6bf15e3563d1b2bef2404e66382764"></p>
+<p>针对这个基准的评估，会对每个类别进行独立的人工评估。对于每个提示，评分员都会看到两种图像，一组来自模型 A，一组来自模型 B。每组包含来自相应模型的 8 个随机生成结果，针对每组图像，评分员都会被问两个问题：</p>
+<ul>
+<li>哪个图像质量更高？</li>
+<li>哪个图像与文本描述更匹配？</li>
+</ul>
+<p>这些问题是为了评估生成图像的质量以及文本-图像匹配度。对于每个问题，评分员都有三种选择：</p>
+<ul>
+<li>更喜欢 A</li>
+<li>无法确定</li>
+<li>更喜欢 B</li>
+</ul>
+<h3 id="3-6-PartiPrompts"><a href="#3-6-PartiPrompts" class="headerlink" title="3.6 PartiPrompts"></a>3.6 PartiPrompts</h3><p>在 Parti 中，Google 作者构建了 PartiPrompts 评估基准，其包含 1600 个英文提示，并将其按照两个维度进行划分：Category 和 Challenge，具体的分布如下所示：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/7b6a1d9ee4ddf9cdc79c3bde46d80cd1.png" alt="7b6a1d9ee4ddf9cdc79c3bde46d80cd1"></p>
+<h2 id="四、常用模型"><a href="#四、常用模型" class="headerlink" title="四、常用模型"></a>四、常用模型</h2><h3 id="4-1-模型结构"><a href="#4-1-模型结构" class="headerlink" title="4.1 模型结构"></a>4.1 模型结构</h3><p>图像生成任务中通常会包含几个子模型，常见的结构有 CNN、AutoEncoder、U-net、Transformer 等。</p>
+<p>其中 AutoEncoder 模型和 U-Net 模型结构上非常相似，也通常是各种模型的主干。主要不同表现在：</p>
+<ul>
+<li>AutoEncoder 包含 Encoder 和 Decoder，它们训练完后可以单独使用：<ul>
+<li>Encoder 通常用于对输入进行编码（压缩），比如将图像 X 映射到隐空间（Latent Space）L。 </li>
+<li>Decoder 通常用于使用编码重构输入（解压缩），比如从隐空间 L 恢复出图像 X。</li>
+</ul>
+</li>
+<li>U-Net：U-Net 模型结构和 AutoEncoder 模型很类似，主要是在 Encoder 和 Decoder 的不同分辨率之间添加了 Skip Connection，如下图所示，也就是说，此时的 Decoder 不仅依赖 Latent code 还依赖输入，也就不能分开单独使用：</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/c249d790a2143bec2be8f4bc5cb9ad54.png" alt="c249d790a2143bec2be8f4bc5cb9ad54"></p>
+<h3 id="4-2-VAE"><a href="#4-2-VAE" class="headerlink" title="4.2 VAE"></a>4.2 VAE</h3><p>基于latent的图像生成模型都需要一个 vae 模型，将图片压缩，然后再压缩空间内进行扩散训练。autoencoder是一个基于encoder-decoder架构的图像压缩模型，对于一个大小为 $H\times W \times 3H$的输入图像，encoder模块将其编码为一个大小为 $h\times w \times c$ 的latent，其中$f=H/h=W/h$为下采样率（<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=downsampling factor&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;answer&quot;%2C&quot;sourceId&quot;%3A&quot;2954363993&quot;}">downsampling factor</a>）。在训练autoencoder过程中，除了采用<strong>L1重建损失</strong>外，还增加了<strong>感知损失</strong>（perceptual loss，即LPIPS，具体见论文<a href="https://link.zhihu.com/?target=https%3A//richzhang.github.io/PerceptualSimilarity/">The Unreasonable Effectiveness of Deep Features as a Perceptual Metric</a>）以及<strong>基于patch的对抗训练</strong>。辅助loss主要是为了确保重建的图像局部真实性以及避免模糊，具体损失函数见<a href="https://link.zhihu.com/?target=https%3A//github.com/CompVis/latent-diffusion/tree/main/ldm/modules/losses">latent diffusion的loss部分</a>。同时为了防止得到的latent的标准差过大，采用了两种正则化方法：第一种是<strong>KL-reg</strong>，类似VAE增加一个latent和标准正态分布的<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=KL loss&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;answer&quot;%2C&quot;sourceId&quot;%3A&quot;2954363993&quot;}">KL loss</a>，不过这里为了保证重建效果，采用比较小的权重（～10e-6）；第二种是<strong>VQ-reg</strong>，引入一个VQ （vector quantization）layer，此时的模型可以看成是一个VQ-GAN，不过VQ层是在decoder模块中，这里VQ的<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=codebook&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;answer&quot;%2C&quot;sourceId&quot;%3A&quot;2954363993&quot;}">codebook</a>采样较高的维度（8192）来降低正则化对重建效果的影响。</p>
+<h3 id="4-3-Text-Encoder"><a href="#4-3-Text-Encoder" class="headerlink" title="4.3 Text Encoder"></a>4.3 Text Encoder</h3><h4 id="4-3-1-CLIP模型"><a href="#4-3-1-CLIP模型" class="headerlink" title="4.3.1 CLIP模型"></a>4.3.1 CLIP模型</h4><p>CLIP 是 OpenAI 发布的在大规模图文数据对（4亿）上通过对比学习进行预训练的图文对齐模型。如下图左侧是其对比预训练过程，在一个 batch 中对应的图文特征作为正对，图片特征和其他文本特征作为负对。如下图右侧，可广泛用于 zero-shot 的图像分类等任务。由于其强大的表征能力，其 Text Encoder 和 Image Encoder 常被其他模型使用，用于对图像或文本编码。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/89e07698ff3038a219f065e5c61f9048.png" alt="89e07698ff3038a219f065e5c61f9048"></p>
+<h4 id="4-3-2-T5系列"><a href="#4-3-2-T5系列" class="headerlink" title="4.3.2 T5系列"></a>4.3.2 T5系列</h4><p>在 Imagen 中增加语言模型的大小比增加图像扩散模型的大小更能提高样本逼真度以及实现更好的图像-文本对齐。与此类似，Parti 中作者同样发现使用更大的 Text Encoder 可以实现更好的文本-图像对齐。后续的大规模训练的文生图模型通常都采用更大的 Text Encoder如，T5系列。</p>
+<p>如下图 Figure A.5 所示为 Imagen 中作者对比的不同大小 T5 模型的影响：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/903fac13d3f00a8f82a2ae9ba3a45307.png" alt="903fac13d3f00a8f82a2ae9ba3a45307"></p>
+<h2 id="五、模型类型"><a href="#五、模型类型" class="headerlink" title="五、模型类型"></a>五、模型类型</h2><h3 id="5-1-VAE-系列"><a href="#5-1-VAE-系列" class="headerlink" title="5.1 VAE 系列"></a>5.1 VAE 系列</h3><p>VAE 系列模型的发展大概分为几个阶段，首先是从 AE（AutoEncoder）发展到 VAE（Variational Autoencoder），然后依次出现了 VQ-VAE（Vector Quantised VAE）、VQ-VAE-2 以及 VQ-GAN、ViT-VQGAN 和 MaskGIT 等工作。然而这些工作往往用于无条件生成，或者简单的类别条件、图像条件等，其往往不支持文本输入，或者相关能力很弱。从 21 年初 DALL-E 的发布，文生图的模型开始大量出现，进一步出现 DALL-E mini、 CLIP-VQ-GAN、Parti、Muse 等模型。如下图所示，为这一系列模型的演进路径：</p>
+<p><img src="https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcZ5M5sLp9UDLEFDPNN51mibsHlHsLJdr15PawR6ibAvzNpT3EJhoKQPEw/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片"></p>
+<h4 id="5-1-1-AE"><a href="#5-1-1-AE" class="headerlink" title="5.1.1 AE"></a>5.1.1 AE</h4><p>AE（AutoEncoder，可以称作自编码器）是一种人工神经网络，可以用于学习无标签数据的有效编码。AE 的目的是：学习对高维度数据进行低维度表示（Representation），也就是压缩，因此常用于降维。</p>
+<p>AutoEncoder 有两个主要的部分组成：</p>
+<ul>
+<li>Encoder（编码器）：用于对输入进行编码（压缩）</li>
+<li>Decoder（解码器）：用于使用编码重构输入（解压缩）</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/fb9f488d416a381068984a8a3551c56a.png" alt="fb9f488d416a381068984a8a3551c56a"></p>
+<h4 id="5-1-2-VAE"><a href="#5-1-2-VAE" class="headerlink" title="5.1.2 VAE"></a>5.1.2 VAE</h4><p>VAE （Variational AutoEncoder，也称变分自编码器）主要是在 AE 的基础上引入概率生成模型的概念，通过在隐空间引入概率分布，使模型能够生成多样性的样本，并且在学习过程中可以更好地理解数据的分布。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/a8e276e9d7984e2b4aaf355354d453bb.png" alt="a8e276e9d7984e2b4aaf355354d453bb"></p>
+<h4 id="5-1-3-VQ-VAE"><a href="#5-1-3-VQ-VAE" class="headerlink" title="5.1.3 VQ-VAE"></a>5.1.3 VQ-VAE</h4><p>VQ-VAE（Vector Quantization）主要是在 VAE 的基础上引入离散的、可量化的隐空间表示，有助于模型更好地理解数据中的离散结构和语义信息，同时可以避免过拟合。VQ-VAE 与 VAE 的结构非常相似，只是中间部分不是学习概率分布，而是换成 VQ 来学习 Codebook。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/e482da18c0de663daae469b67e28630e.png" alt="e482da18c0de663daae469b67e28630e"></p>
+<h4 id="5-1-4-VQ-GAN"><a href="#5-1-4-VQ-GAN" class="headerlink" title="5.1.4 VQ-GAN"></a>5.1.4 VQ-GAN</h4><p>VQ-GAN 相比 VQ-VAE 的主要改变有以下几点：</p>
+<ul>
+<li>引入 GAN 的思想，将 VQ-VAE 当作生成器（Generator），并加入判别器（Discriminator），以对生成图像的质量进行判断、监督，以及加入感知重建损失（不只是约束像素的差异，还约束 feature map 的差异），以此来重建更具有保真度的图片，也就学习了更丰富的 codebook。</li>
+<li>将 PixelCNN 替换为性能更强大的自回归 GPT2 模型（针对不同的任务可以选择不同的规格）。</li>
+<li>引入滑动窗口自注意力机制，以降低计算负载，生成更大分辨率的图像。</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/2fd67a6c6cd150333e5b67a5e04dc10b.png" alt="2fd67a6c6cd150333e5b67a5e04dc10b"></p>
+<h4 id="5-1-5-ViT-VQGAN"><a href="#5-1-5-ViT-VQGAN" class="headerlink" title="5.1.5 ViT-VQGAN"></a>5.1.5 ViT-VQGAN</h4><p>如下图 Figure 1 所示，ViT-VQGAN 的模型结构与 VQGAN 基本一致，主要是将 Encoder 和 Decoder 从 CNN 结构替换为 ViT 模型。</p>
+<ul>
+<li>Encoder：对应 Patch 大小为 8x8，没有重叠，因此 256x256 的图像会生成 32x32=1024 个 Token 序列。推理阶段不再需要。</li>
+<li>Quantization：将 1024 个 Token 序列映射到 Codebook 空间，Codebook 的大小为 8192。</li>
+<li>Decoder：从 1024 个离散 Latent code 中恢复原始图像。</li>
+<li>Autoregressive Transformer：用于生成离散 Latent code。训练中可以直接利用 Encoder 生成好的离线 Latent code 作为 Target，计算交叉熵损失。</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/e3e2d7cf919d5203b5e624890552c6c4.png" alt="e3e2d7cf919d5203b5e624890552c6c4"></p>
+<h4 id="5-1-6-Parti"><a href="#5-1-6-Parti" class="headerlink" title="5.1.6 Parti"></a>5.1.6 Parti</h4><p>相比原始的 VQ-GAN 和 ViT-VQGAN 中使用 Decoder Only 的 Transformer 来生成离散 latent code，Parti 中作者将其扩展为 Encoder + Decoder 的 Transformer，这样可以使用 Encoder 来对文本编码，生成文本 embedding，然后文本 embedding 作为条件在 Transformer Decoder 中作为 K 和 V 通过 Cross Attention 与视觉 Token 交叉。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/f68c546ba8ba4a43d1c953b513831e8b.png" alt="f68c546ba8ba4a43d1c953b513831e8b"></p>
+<h4 id="5-1-7-MaskGIT"><a href="#5-1-7-MaskGIT" class="headerlink" title="5.1.7 MaskGIT"></a>5.1.7 MaskGIT</h4><p>MaskGIT 采用 VQGAN 的模型范式，与 VQGAN 不同的是，VQGAN 中的 Transformer 采用序列生成的方式，在推理阶段其图像 Token 要一个一个预测，性能比较差，而 MaskGIT 中，Transformer 生成模型采用 Masked Visual Token Modeling 方式来训练（采用类似 Bert 的双向 Transformer 模型），也就是随机遮挡部分图像 Token，模型训练的目标是预测这些遮挡的 Token。以此方式训练的 Transformer 可以充分利用并行解码（Parallel Decoding）方式加速生成效率。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/f5712e7c963de4f73185ac6d7e2be335.png" alt="f5712e7c963de4f73185ac6d7e2be335"></p>
+<h4 id="5-1-8-Muse"><a href="#5-1-8-Muse" class="headerlink" title="5.1.8 Muse"></a>5.1.8 Muse</h4><p>Muse 采用预训练的 LLM 提取文本 embedding，和 MaskGIT 一样，被训练用于预测随机 Mask 的图像 Token。作者发现，直接预测 512x512 分辨率的图像会导致模型更关注一些低级的细节，同时发现使用级联模型更有帮助。首先生成 16x16 的 latent map（对应 256x256 分辨率的图像），然后基于 16x16 的 latent map 使用超分模型上采样 64x64 的 latent map（对应 512x512 分辨率的图像）。</p>
+<p>如下图 Figure 3 所示为 Muse 模型的整体架构，可以看出，其包含多个组件，主要是三个部分：</p>
+<ul>
+<li>Text Encoder：用于提取文本 embedding</li>
+<li>256x256：低分辨率 Token 预测，包含 VQ Tokenizer 和 Base Transformer</li>
+<li>512x512：高分辨率 Token 预测，包含 VQ Tokenizer 和 SuperRes Transformer</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/5a36f94abe364e7042847dc4d2baa2dd.png" alt="5a36f94abe364e7042847dc4d2baa2dd"></p>
+<h4 id="5-1-9-DALL-E"><a href="#5-1-9-DALL-E" class="headerlink" title="5.1.9 DALL-E"></a>5.1.9 DALL-E</h4><p>与 VQ-GAN 类似，DALL-E 的训练也是分为两个阶段，第一阶段是训练 VAE，不过并没有使用 VQ-VAE，而是使用 Discrete VAE（dVAE），整体来说与 VQ-VAE 类似，主要的区别是引入 Gumbel Softmax 来训练，避免 VQ-VAE 训练中 ArgMin 不可导的问题。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/8b61b46863918fc922628bc78b04dd19.png" alt="8b61b46863918fc922628bc78b04dd19"></p>
+<h4 id="5-1-10-VQGAN-CLIP"><a href="#5-1-10-VQGAN-CLIP" class="headerlink" title="5.1.10 VQGAN-CLIP"></a>5.1.10 VQGAN-CLIP</h4><p>VQGAN-CLIP 的思路很简单：使用初始图像通过 VQ-GAN 生成一个图像，然后使用 CLIP 对生成图像和 Target Text 提取 embedding，然后计算相似性，并将其误差作为反馈对隐空间的 Z-vector 进行迭代更新，直到生成图像和 Target Text 对应的 embedding 很相似为止。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/f086b8acb2025280465b00e48c7388ea.png" alt="f086b8acb2025280465b00e48c7388ea"></p>
+<h3 id="5-2-Diffsion-系列"><a href="#5-2-Diffsion-系列" class="headerlink" title="5.2 Diffsion 系列"></a>5.2 Diffsion 系列</h3><p>Diffusion 模型的发展路径如下图所示，主要是 OpenAI 系列模型，Stable Diffusion 系列模型，和 Google 的 Imagen、Imagen 2。其他的开源模型有 kandinsky系列。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/e5b762a35bb56d73325c0d5669166902.png" alt="e5b762a35bb56d73325c0d5669166902"></p>
+<h4 id="5-2-1-DDPM"><a href="#5-2-1-DDPM" class="headerlink" title="5.2.1 DDPM"></a>5.2.1 DDPM</h4><p>扩散模型包含两个过程：前向过程（Forward Process，也称为扩散过程 Diffusion Process）和逆向过程（Reverse Process）。无论是前向还是逆向，都是一个马尔科夫链形式（Markov Chain），其中前向过程是不断地向图片中添加高斯噪声，逆向过程是不断地去除高斯噪声，重建图像。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/ff475021fcfb86dd901049005ef4e373.png" alt="ff475021fcfb86dd901049005ef4e373"></p>
+<h4 id="5-2-2-Diffusion-Model-Beat-GANS"><a href="#5-2-2-Diffusion-Model-Beat-GANS" class="headerlink" title="5.2.2 Diffusion Model Beat GANS"></a>5.2.2 Diffusion Model Beat GANS</h4><p>这也是 OpenAI 的工作，本文的工作主要有两点：</p>
+<ul>
+<li>验证了无条件图像生成中不同模型结构对效果的影响，进行了大量的消融实验。</li>
+<li>引入 classifier guidance 来提升生成质量。</li>
+</ul>
+<p>对模型结构的修改主要有以下几个方面：</p>
+<ul>
+<li>保持模型大小不变，增加深度，降低宽度</li>
+<li>增加 Attention 头的数量</li>
+<li>不只是在 16x16 分辨率使用 Attention，在 32x32 和 8x8 也使用</li>
+<li>在上采样和下采样激活时使用 BigGAN 的 residual block</li>
+<li>在 residual connection 中采用 1/sqrt(2) 的缩放</li>
+</ul>
+<p>如下图 Table 1 所示为不同配置的影响，可以看出，使用更多的 Attention 头、在多个分辨率使用 Attention 以及采用 BigGAN 的 residual block 获得了最好的结果，提出的模型称作 ADM（Ablate Diffusion Model），这个模型也为 OpenAI 后续的生成模型奠定了基础，Stable Diffusion 的模型也有参考：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/ee96a536861dd5c4b7085da4cb11ced6.png" alt="ee96a536861dd5c4b7085da4cb11ced6"></p>
+<h4 id="5-2-3-GLIDE"><a href="#5-2-3-GLIDE" class="headerlink" title="5.2.3 GLIDE"></a>5.2.3 GLIDE</h4><p>GLIDE 模型中作者将 Diffusion 模型应用于文本条件图像生成，GLIDE 主要包含两个子模型：</p>
+<ul>
+<li>文本条件+扩散模型（3.5B）<ul>
+<li>Text encoding Transformer（1.2B，24 个 residual block，width 2048）。</li>
+<li>扩散模型（64x64 分辨率，2.3B），采用 Diffusion Model Beat GANs 中的 ADM（Ablated Diffusion Model）， width 扩展到 512 channels，并在此基础上扩展了文本条件信息。</li>
+</ul>
+</li>
+<li>文本条件+上采样模型（1.5B）<ul>
+<li>和上一步类似的 Text Transformer 模型，不过 width 从 2048 降低到 1024</li>
+<li>上采样模型同样来自 ADM-U（分辨率从 64x64 扩展到 256x256，channel 从 192 扩展到 384）</li>
+</ul>
+</li>
+</ul>
+<h4 id="5-2-4-DALL-E-2"><a href="#5-2-4-DALL-E-2" class="headerlink" title="5.2.4 DALL-E 2"></a>5.2.4 DALL-E 2</h4><p>在 GLIDE 中尝试了文本引导图像生成，取得了不错的结果。在本文中，作者充分利用强大的 CLIP 模型，提出了一个两阶段图像生成模型，整体的模型结构如下图 Figure 2 所示：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/04493eedf06a325b6b037b1ad0ab65e4.png" alt="04493eedf06a325b6b037b1ad0ab65e4"></p>
+<ul>
+<li>img encoder：对应 CLIP 模型的 image encoder，给定图像，并生成图像 embedding zi，这个 embedding zi 在训练中用于 prior 生成的 target，也就是训练中 prior 生成的 embedding 要与 CLIP img encoder 生成的 embedding 尽量相似。训练中 img encoder 保持冻结，推理生成阶段不再需要 img encoder。</li>
+<li>text encoder：用于在训练阶段和图像生成阶段对文本进行编码，生成 embedding zt，作为 prior 的输入。训练和推理阶段都需要 text encoder，并且始终保持冻结。</li>
+<li>prior：用于从文本 embedding zt 生成图像 embedding zi。</li>
+<li>decoder：用于从图像 embedding zi 生成最终图像（文本条件为可选项）。</li>
+</ul>
+<h4 id="5-2-5-DALL-E-3"><a href="#5-2-5-DALL-E-3" class="headerlink" title="5.2.5 DALL-E 3"></a>5.2.5 DALL-E 3</h4><p>DALL-E 3 是 OpenAI 最新的文生图模型，作者发现<strong>传统的文生图模型难以遵循详细的图像描述，并且经常出现忽略单词或混淆提示的语义，作者猜测可能是训练集中的噪声或者不准确的图像描述导致的</strong>。因此，作者首先训练了一个图像描述器，然后生成了一系列高度描述性的图像描述，之后将其用于文生图模型训练，其大大提高了文生图的指令跟随能力。</p>
+<p>作者只在附录中用很小的篇幅介绍了 DALL-E 3 的部分模型组件，包括 Image decoder 和 latent decoder。</p>
+<p>如下图所示，其 image decoder 参考了 Stable Diffusion 的实现，采用 3 阶段的 latent diffusion 模型。</p>
+<ul>
+<li>其 VAE 和 Stable Diffusion 一样，都是 8x 的下采样，训练的图像分辨率为 256x256，会生成 32x32 的隐向量。</li>
+<li>时间步长条件：采用 GroupNorm，并学习了 scale 和 bias。</li>
+<li>文本条件：使用 T5 XXL 作为 text encoder，然后将输出的 embedding 和 xfnet 进行 Cross Attention。在 OpenAI 的 Paper 中并没有找到 xfnet 相关介绍，不过在 GLIDE 的开源代码里确实有 xf model。</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/a4d752cf60a335984ffbe6c9be91f277.png" alt="a4d752cf60a335984ffbe6c9be91f277"></p>
+<p>如下图所示，作者同样训练了一个 latent decoder，可以用来提升图像细节，比如文本和人脸。其同样是参考 Stable Diffusion 的实现。不过这个 diffusion decoder 采用的是 DDPM 中描述的空间卷积 U-Net，此外，也基于 [2303.01469] Consistency Models 的蒸馏策略将去噪步数降低到 2 步，极大降低推理代价。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/1102103845a6060740450931813e5325.png" alt="1102103845a6060740450931813e5325"></p>
+<h4 id="5-2-6-stable-diffusion"><a href="#5-2-6-stable-diffusion" class="headerlink" title="5.2.6 stable diffusion"></a>5.2.6 stable diffusion</h4><p>LDM 和其他扩散生成模型结构类似，整体来说包含三个组件：</p>
+<ul>
+<li>Auto Encoder：下图左侧部分，包含红框的 Encoder 和蓝框的 Decoder，其中 Encoder 主要用于训练中生成 target z，推理阶段不需要。而 Decoder 用于从隐空间编码（latent code）恢复出图像。</li>
+<li>Conditioning：下图右侧部分，用于对各种条件信息进行编码，生成的 embedding 会在扩散模型 U-Net 中使用。不同的条件可能会有不同的 Encoder 模型，也有不同的使用方式（对应下图中的 switch），比如：<ul>
+<li>对于文本类型条件，可以使用 Bert Encoder，也可以使用 CLIP 中的 Text Encoder 将文本编码为 embedding。</li>
+<li>对于图像类型条件，比如图像修复、分割条件，可以将其编码后与噪声 Concat 作为输入，而不是通过 Attention 机制交叉。</li>
+</ul>
+</li>
+<li>Denoising U-Net：下图中间部分，用于从随机噪声 zT 中通过几步迭代生成 latent code，然后使用 Decoder 恢复出图像。其中的各种条件信息都会通过 Cross Attention 进行交叉融合。需要说明的是，U-Net 生成的目标是 x 经 Encoder 编码后的 embedding，通常也称为隐向量，而不是直接生成图像像素，因此说 U-Net 是作用在隐空间（Latent Space）。</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/f301399b271b39302f3e911abacb87f9.png" alt="f301399b271b39302f3e911abacb87f9"></p>
+<h4 id="5-2-7-SDXL"><a href="#5-2-7-SDXL" class="headerlink" title="5.2.7 SDXL"></a>5.2.7 SDXL</h4><p>SDXL 相比 SD 主要的修改包括（模型总共 2.6B 参数量，其中 text encoder 817M 参数量）：</p>
+<ul>
+<li>增加一个 Refiner 模型，用于对图像进一步地精细化。</li>
+<li>使用 CLIP ViT-L 和 OpenCLIP ViT-bigG 两个 text encoder。</li>
+<li>基于 OpenCLIP 的 text embedding 增加了一个 pooled text embedding。</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/59522404e4b0979c96b20996ba69c164.png" alt="59522404e4b0979c96b20996ba69c164"></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/a5ab65454a275ac3437cf94401345379.png" alt="a5ab65454a275ac3437cf94401345379"></p>
+<h4 id="5-2-8-SDXL-Turbo"><a href="#5-2-8-SDXL-Turbo" class="headerlink" title="5.2.8 SDXL-Turbo"></a>5.2.8 SDXL-Turbo</h4><p>SDXL-Turbo 在模型上没有什么修改，主要是引入蒸馏技术，以便减少 LDM 的生成步数，提升生成速度。大致的流程为：</p>
+<ul>
+<li>从 Tstudent 中采样步长 s，对于原始图像 x0 进行 s 步的前向扩散过程，生成加噪图像 xs。</li>
+<li>使用学生模型 ADD-student 对 xs 进行去噪，生成去噪图像 xθ。</li>
+<li>基于原始图像 x0 和去噪图像 xθ 计算对抗损失（adversarial loss）。</li>
+<li>从 Tteacher 中采样步长 t，对去噪后的图像 xθ 进行 t 步的前向扩散过程，生成 xθ,t。</li>
+<li>使用教师模型 DM-student 对 xθ,t 进行去噪，生成去噪图像 xψ。</li>
+<li>基于学生模型去噪图像 xθ 和教师模型去噪图像 xψ 计算蒸馏损失（distillation）。</li>
+<li>根据损失进行反向传播（注意，教师模型不更新，因此会 stop 梯度）。</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/833e48d05789f1a87502b398912f276c.png" alt="833e48d05789f1a87502b398912f276c"></p>
+<h4 id="5-2-9-Imgen"><a href="#5-2-9-Imgen" class="headerlink" title="5.2.9 Imgen"></a>5.2.9 Imgen</h4><p>Imagen 是 Google 推出的基于扩散模型的文生图模型，其具有前所未有的逼真度和深层次的语言理解能力。Imagen 结合了大型 Transformer 语言模型的强大能力和扩散模型的高保真图像生成能力。</p>
+<p>整体来说，模型包含四个基础组件：</p>
+<ul>
+<li>Frozen Text Encoder：将文本编码为 embedding，作者对比了 T5 系列模型和 CLIP 的 text Encoder，最终选择 T5-XXL。</li>
+<li>Text-to-Image Diffusion Model：采用 U-Net 结构的 Diffusion 模型，并将步数 t 和上一步的文本 embedding 作为条件。共 2B 参数量。</li>
+<li>第一 Super-Resolution Diffusion Model：采用本文优化过的高效 U-Net，将 64x64 图像超分为 256x256 图像，同样使用文本 embedding 作为条件。共 600M 参数量。</li>
+<li>第二 Super-Resolution Diffusion Model：采用本文优化过的高效 U-Net，将 256x256 图像超分为 1024x1024 图像，同样使用文本 embedding 作为条件。共 400M 参数量。</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/e8c67004fbee80b979088cdf64836973.png" alt="e8c67004fbee80b979088cdf64836973"></p>
+<h4 id="5-2-10-wurschen"><a href="#5-2-10-wurschen" class="headerlink" title="5.2.10 wurschen"></a>5.2.10 wurschen</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240218140602925.png" alt="image-20240218140602925"></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240218142258132.png" alt="image-20240218142258132"></p>
+<p>wurschen 三阶段级联结构，目标的是为了降低训练和推理的计算要求和时间，并且保持生成图像的质量。核心是通过在非常低维的 latent space 上以 42:1 的高压缩比来训练扩散模型来实现。</p>
+<ul>
+<li>首先使用文本条件的 LDM（阶段 C）以强压缩比创建图像的低维潜在表示。</li>
+<li>随后，使用这个潜在表示和text-condition一起调节另一个 LDM（阶段B），产生在更高维度（较少压缩）的潜在空间中的潜在表示，该模型负责进行重建（阶段B）。</li>
+<li>最后，通过 VQGAN 解码器对中间分辨率的潜在表示解码，生成完整分辨率的输出图像（阶段A）。</li>
+</ul>
+<h4 id="5-2-11-stable-cascade"><a href="#5-2-11-stable-cascade" class="headerlink" title="5.2.11 stable cascade"></a>5.2.11 stable cascade</h4><p>stable cascade是基于<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/abs/2306.00637">Wuerstchen</a>架构包含三阶段的文生图扩散模型，相比Stable Diffusion XL，它不仅更快而且效果更好。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/%E6%88%AA%E5%9B%BE20240218144038.png" alt="截图20240218144038"></p>
+<p>最重要的一个阶段是Stage C，它是一个基于文本作为条件来生成图像的latents的<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=扩散模型&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">扩散模型</a>，只不过这里的latents和SD中的latents有些区别，之前的SD是采用一个VAE将图像编码成下采样8x的latents，而这里是采用一个<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=Semantic Compressor&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">Semantic Compressor</a>来将3×1024×1024的图像压缩成16×24×24的latents，空间下采样约42x，这比SD的VAE要狠的多（不过特征维度高了）。这里的Semantic Compressor采用的是<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=EfficientNetV2-S模型&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">EfficientNetV2-S模型</a>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">EfficientNetEncoder</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, c_latent=<span class="number">16</span></span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.backbone = torchvision.models.efficientnet_v2_s(weights=<span class="string">&#x27;DEFAULT&#x27;</span>).features.<span class="built_in">eval</span>()</span><br><span class="line">        self.mapper = nn.Sequential(</span><br><span class="line">            nn.Conv2d(<span class="number">1280</span>, c_latent, kernel_size=<span class="number">1</span>, bias=<span class="literal">False</span>),</span><br><span class="line">            nn.BatchNorm2d(c_latent, affine=<span class="literal">False</span>),  <span class="comment"># then normalize them to have mean 0 and std 1</span></span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="keyword">return</span> self.mapper(self.backbone(x))</span><br></pre></td></tr></table></figure>
+<p>对于3x1024x1024的图像，首先resize到3x768x768，然后经过EfficientNetV2-S后得到1280x24x24的特征，这里再额外加了一个Conv和BN层将特征映射为16x24x24。 Stage C的text encoder采用的是OpenCLIP ViT-G，这里是提取了token embeddings（77x1280）以及全局pooled embedding（1x1280），其中pooled embedding映射为4个token特征，和token embeddings拼接在一起送入Stage C的<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=UNet&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">UNet</a>作为条件，这里采用的条件机制还是通过<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=cross- attention&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">cross- attention</a>。此外，Stage C在训练过程中还引入CLIP image encoder的image embedding作为条件，这里是采用openai CLIP ViT-L提取的image embedding，然后映射为4个tokens和text tokens拼接在一起，不过训练过程中对image embedding采用比较大的drop比例（90%）。CLIP image embedding的引入可以让模型类似<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=DALLE-2&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">DALLE-2</a>那样支持image variation。 从本质上看，<strong>这里的Stage C其实就是想当于一个SD主模型（UNet），只不过采用了不同的autoencoder所提取的latents</strong>，相比较而言，Stage C采用了压缩率更大的latents，这也使得模型更高效。这里开源的Stage C也有两个不同大小的版本：一个是1B，一个是3.6B，但是肯定是3.6B的模型效果更好，也是主推模型。</p>
+<p>Stage C可以将文本转成图像的latents，要想生成最终的图像，还需要解码器，这就是Stage B和Stage A了。Stage B和Stage A和在一起，就是一个latent decoder，它是将16x24x24的latents解码为一个3x1024x1024的图像，从功能上就相当于SD中的VAE decoder。</p>
+<h3 id="5-3-其他开源系列"><a href="#5-3-其他开源系列" class="headerlink" title="5.3 其他开源系列"></a>5.3 其他开源系列</h3><p>kandinsky系列是俄罗斯一个团队开源的文生图模型，致力于多语言条件生成能力。</p>
+<h4 id="5-3-1-kandinsky-2-1"><a href="#5-3-1-kandinsky-2-1" class="headerlink" title="5.3.1 kandinsky 2.1"></a>5.3.1 kandinsky 2.1</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/73387ba47854844a67caf6a4003fcbe0.png" alt="img"></p>
+<p>如上图所示，kandinsky2.1 结合了 Dalle 和 stable diffusion 中比较有效的结构。</p>
+<p>整体来说模型包含五个组件：</p>
+<ul>
+<li>text-encoder：为了进行多语言生成，kandinsky使用了多语言的文本编码器, XLM-Roberta-Large-Vit-L-14, 参数约 560M。</li>
+<li>prior：prior模型采用了 DiT 结构，利用扩散生成的目标来对齐 CLIP文本和图像的embedding。参数约 1B。</li>
+<li>CLIP image encoder: 将图像编码成 embedding 作为 prior 训练的 groundtruth。</li>
+<li>latent diffusion Unet：此时训练的条件不仅是来自文本的 embedding，也包含以文本为条件通过prior模型产生的 image clip embedding。参数规模约 1.22B。</li>
+<li>MoVQ编码器/解码器：将图像编码到 latent space。</li>
+</ul>
+<h4 id="5-3-2-kandinsky2-2"><a href="#5-3-2-kandinsky2-2" class="headerlink" title="5.3.2 kandinsky2.2"></a>5.3.2 kandinsky2.2</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/dc999237d80ba9b3b6bb782a1012a0e5.png" alt="img"></p>
+<p>Kandinsky 2.2 对其前身 Kandinsky 2.1 进行了重大改进，引入了新的、更强大的图像编码器 - CLIP-ViT-G 和 ControlNet 支持。改用 CLIP-ViT-G 作为图像编码器显着提高了模型生成更美观的图片和更好地理解文本的能力，从而提高了模型的整体性能。</p>
+<p><strong>架构细节：</strong></p>
+<ul>
+<li>文本编码器 (XLM-Roberta-Large-Vit-L-14) - 560M</li>
+<li>扩散图像先验 — 1B</li>
+<li>CLIP 图像编码器 (ViT-bigG-14-laion2B-39B-b160k) - 1.8B</li>
+<li>潜在扩散 U-Net - 1.22B</li>
+<li>MoVQ编码器/解码器 - 67M</li>
+</ul>
+<p>另一个相较于 2.1 的重大改进是，<strong>训练 U-net的时候只用 image encoder产生的 embedding 作为条件。</strong></p>
+<h4 id="5-3-3-kandinsky-3-0"><a href="#5-3-3-kandinsky-3-0" class="headerlink" title="5.3.3 kandinsky 3.0"></a>5.3.3 kandinsky 3.0</h4><p>kandinksky 3.0 的pipeline包括一个 text encoder， unet，vae</p>
+<p>没有采用 kandinsky2.x 和 sdxl 的两段式结构。kandinsky3.0的整体参数量是 kandinsky2.2 的三倍，sdxl的3.6倍，采用一个更大的text encoder FLAN-UL2的encoder，光这部分的参数量就到了8.6B。unet的架构也提升到了3.0B。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20231211152627128.png" alt="image-20231211152627128"></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20231211153134797.png" alt="image-20231211153134797"></p>
+<p>作者通过大量实验得到以下两个 insight：</p>
+<ul>
+<li>在实践中，增加网络的深度，同时减少总的参数，可以在训练中获得更好的结果。</li>
+<li>在初始阶段，在高分辨率下，仅使用卷积块来处理图像，同时更多的压缩表示送到transformer层，确保图像元素的全局交互。</li>
+</ul>
+<h4 id="5-3-4-RAPHAEL"><a href="#5-3-4-RAPHAEL" class="headerlink" title="5.3.4 RAPHAEL"></a>5.3.4 RAPHAEL</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230704192147695.png" alt="image-20230704192147695"></p>
+<p>作者观察到不同的文本概念在生成过程中影响不同的图像区域，而传统的交叉注意层通常很难在图像中充分保留这些不同的概念。为了缓解这个问题，我们采用了一个扩散模型，堆叠了数十个专家混合 (MoE) 层 ，包括空间 MoE 层和时间 MoE 层。具体来说，空间 MoE 层负责描绘特定图像区域中的不同概念，而时间 MoE 层则专注于在不同的扩散时间步长上绘制这些概念。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230704195433571.png" alt="image-20230704195433571"></p>
+<p>另外，利用一个旁支的网络来根据注意力图预测输入图像的边缘图, 复杂的边界可以作为监督来指导模型保留各种风格的详细图像特征。</p>
+<p>RAPHAEL的损失函数包含两部分：$L = L_{denoise}+L_{edge}$</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240130114154739.png" alt="image-20240130114154739"></p>
+<h4 id="5-3-5-Muse"><a href="#5-3-5-Muse" class="headerlink" title="5.3.5 Muse"></a>5.3.5 Muse</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230609181214290.png" alt="image-20230609181214290"></p>
+<p>Muse是在离散 token 空间，通过 mask modeling 任务训练的：T5-XXL预训练的文本编码器生成文本embedding，用于 Base Transformer 和 SuperRes Transformer中，和 image token进行cross attention。Base model使用在低分辨率上256<em>256训练的VQGAN，并生成 16\</em>16的token，序列以每个样本的可变速率被mask，然后交叉熵损失学习预测mask的image token。一旦训练了 Base model，重建的较低分辨率token和 文本embedding  就被传递到超分辨率模型中，然后超分辨率模型学习以较高分辨率预测 masked tokens。</p>
+<h4 id="5-3-5-PixArt-alpha"><a href="#5-3-5-PixArt-alpha" class="headerlink" title="5.3.5 PixArt-alpha"></a>5.3.5 PixArt-alpha</h4><p>目前 sota 的文生图模型需要大量的训练成本，训练数据。$pixart-\alpha$正如题目中提到的 fast training，主打<strong>低成本训练</strong>。采用了 meta 提出的 <strong>DiT</strong> 架构。模型参数只有<strong>0.6B</strong>，它的训练时长只有SD 1.5的10.8%，而且只使用了 <strong>25M</strong> 数据进行训练。</p>
+<p>下面是和目前的主流模型的训练成本：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20231102171712747.png" alt="image-20231102171712747"></p>
+<p>为了实现降低训练的计算成本同时保持图像的生成质量， pixart-alpha提出了三个关键设计。</p>
+<ol>
+<li><strong>training strategy decomposition</strong> </li>
+</ol>
+<p>将复杂的文本到图像的任务分解成三个简化的子任务：(1) 学习自然图像的像素分布，（2）学习文本图像对齐，（3）增强图像的美学质量。对于第一个子任务，使用低成本的类条件模型初始化 T2I 模型，从而显着降低学习成本。对于第二个和第三个子任务，制定了由预训练和微调组成的训练范式：对信息密度丰富的文本图像对数据进行预训练，然后对具有优越美学质量的数据进行微调，提高训练效率。</p>
+<ol>
+<li><strong>Efficient T2I Transformer</strong></li>
+</ol>
+<p>结合了交叉注意模块来注入文本条件并简化计算密集型类条件分支以提高效率。此外，我们引入了一种重新参数化技术，允许调整后的文本到图像模型直接加载原始类条件模型的参数。因此，我们可以利用从 ImageNet 中学到的有关自然图像分布的先验知识，为 T2I Transformer 提供合理的初始化并加速其训练。</p>
+<ol>
+<li><strong>High-information data</strong></li>
+</ol>
+<p>目前的文本图像对数据集如 Laion 其中文本标题经常缺乏信息内容，并且严重的长尾效应（及大量名词以极低的频率出</p>
+<p>3现）。这些都影响模型的训练效率。pixart-alpha利用 LLaVA 在 SAM 数据集上生成 caption。</p>
+<h4 id="5-3-6-PanGu-Draw"><a href="#5-3-6-PanGu-Draw" class="headerlink" title="5.3.6 PanGu-Draw"></a>5.3.6 PanGu-Draw</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240130155824264.png" alt="image-20240130155824264"></p>
+<p>如上图所示，目前文生图的大多采用多阶段训练策略来提高生成图片的质量和分辨率。PanGu-Draw 提出的时间解耦训练策略在资源效率方面超越了级联训练和分辨率提升训练。</p>
+<p>作者从扩散过程的去噪轨迹中得到灵感，其中初始去噪阶段主要塑造图像的结构基础，而后期阶段则完善其纹理复杂性。基于以上事实，引入时间解耦训练策略，将综合文生图模型划分为在不同时间间隔上运行的专用子模型：结构生成器和纹理生成器，每个模型是原始模型的一半。每个子模型都是在不同的时间间隔下单独训练的。</p>
+<p>模型结构方面采用 ==SDXL 的VAE模型，并基于其 Unet 模型的架构构建结构和纹理生成器==，为了实现双语文本到图像的生成（中文和英文），在中文训练数据集上预训练中文文本编码器 。然后，我们将来自中文文本编码器的文本嵌入与来自预训练的英文文本编码器的文本嵌入连接起来，作为去噪模型的最终文本嵌入。对于多分辨率图像生成，我们选择 1024x1024 左右的图像分辨率范围，并进一步根据与图像分辨率索引相对应的正弦位置嵌入来调节去噪模型。</p>
+<p> <strong>promptenhancement</strong>：为了进一步提升生成质量，利用LLM将用户的简洁输入与模型所需的详细输入保持一致。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240130162205337.png" alt="image-20240130162205337"></p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240130162255805.png" alt="image-20240130162255805"></p>
+<p>从结果来看，pangu 模型训练数据 caption 应该也是通过 LLM 处理过的，类似于 Dalle3 和 pixart-alpha提到的。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://jiechu520.github.io/2024/01/20/%E5%8F%AF%E6%8E%A7%E7%94%9F%E6%88%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -855,396 +1245,6 @@
 <li>SDXL-refiner-1.0：基于 SDXL-refiner-0.9 改进。</li>
 </ul>
 <p>2023 年 11 月发表 SDXL-Trubo 版本，通过引入蒸馏技术来优化加速的版本。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://jiechu520.github.io/2023/08/19/%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Jie Chu">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CJ blog">
-      <meta itemprop="description" content="日常笔记">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | CJ blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023/08/19/%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0/" class="post-title-link" itemprop="url">图像生成模型综述</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2023-08-19 21:00:00" itemprop="dateCreated datePublished" datetime="2023-08-19T21:00:00+08:00">2023-08-19</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-12-19 23:08:00" itemprop="dateModified" datetime="2023-12-19T23:08:00+08:00">2023-12-19</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B/" itemprop="url" rel="index"><span itemprop="name">扩散模型</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>[toc]</p>
-<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>为了更好的理解图像生成模型的演化过程，在这里，对这一系列模型进行总结，包括任务场景、评估指标、模型类型、效率优化、局限性等方面分别总结，以便更好地对比和理解。</p>
-<h2 id="二、任务场景"><a href="#二、任务场景" class="headerlink" title="二、任务场景"></a>二、任务场景</h2><h3 id="2-1-无条件生成"><a href="#2-1-无条件生成" class="headerlink" title="2.1 无条件生成"></a>2.1 无条件生成</h3><p>生成模型在生成图像时不受<font color=red>任何额外条件或约束的影响</font>。模型从学习的数据分布中生成图像，而不需要关注输入条件。</p>
-<p>无条件适用于那些不需要额外信息或上下文的场景。例如，针对人脸数据训练，那么就可以输入随机噪声，然后生成逼真的人脸图像，而不用考虑任何特定属性或描述。</p>
-<p>CelebA-HQ（人脸）、FFHQ（人脸）、LSUN-Churches（教堂） 和 LSUN-Bedrooms（卧室） 都是常见的无条件评估任务。</p>
-<ul>
-<li>CelebA-HQ 包含 30,000 1024x1024 分辨率的高质量人脸图像。（<a target="_blank" rel="noopener" href="https://paperswithcode.com/dataset/celeba-hq）">https://paperswithcode.com/dataset/celeba-hq）</a></li>
-<li>FFHQ 同样是高质量的人脸数据集，包含 70,000 张 1024x1024 分辨率的高质量人脸图像，有不同的种族、肤色和背景等。（<a target="_blank" rel="noopener" href="https://github.com/NVlabs/ffhq-dataset）">https://github.com/NVlabs/ffhq-dataset）</a></li>
-<li>LSUN 数据集包含 10 个场景类别，包括卧室、厨房、教堂等等，每个图像的大小都为 256x256 分辨率，每个类别包含 120,000 到 3,000,000 张图像。</li>
-</ul>
-<p>如下图所示为分别基于以上数据集训练之后（4 个模型）生成的图像示例（来自 LDM）：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/9ad8b9515f0b4f5cf85f21ad37f9d01a.png" alt="9ad8b9515f0b4f5cf85f21ad37f9d01a"></p>
-<h3 id="2-2-有条件生成"><a href="#2-2-有条件生成" class="headerlink" title="2.2 有条件生成"></a>2.2 有条件生成</h3><p>有条件生成可以通过cross attention的方式引入各式各样的条件控制图像生成。</p>
-<h4 id="2-2-1-类别条件生成"><a href="#2-2-1-类别条件生成" class="headerlink" title="2.2.1 类别条件生成"></a>2.2.1 类别条件生成</h4><p>类别条件生成是非常常见的一种场景，也有许多相关的任务，其中 ImageNet 是最常见的一种，ImageNet 常用于图像分类任务，每个图像都有一个类别标签，总共有 1000 个类别。在图像生成领域，可以指定对应的类别标签，然后让模型按照类别生成图像。</p>
-<h4 id="2-2-2-文本条件生成"><a href="#2-2-2-文本条件生成" class="headerlink" title="2.2.2 文本条件生成"></a>2.2.2 文本条件生成</h4><p>当前最常见的图像生成范式，输入自然语言描述，模型即可生成相应的图像。</p>
-<h4 id="2-2-3-位置条件"><a href="#2-2-3-位置条件" class="headerlink" title="2.2.3 位置条件"></a>2.2.3 位置条件</h4><p>有些时候我们会对图像中物体的布局，或主体的位置有特殊的要求，此时可以结合上述的类别条件和文本条件来约束模型。</p>
-<p>如下图所示，左侧图中指定了图片中物体的位置关系（以边界框坐标表示），最终模型按要求生成了对应的图像（图片来自 LDM，模型基于 COCO 数据集训练）：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/6f2aa993ca449d9bc52dd72740e46ef6.png" alt="6f2aa993ca449d9bc52dd72740e46ef6"></p>
-<h4 id="2-2-4-图像扩充-Outpainting-and-图像内编辑-inpainting"><a href="#2-2-4-图像扩充-Outpainting-and-图像内编辑-inpainting" class="headerlink" title="2.2.4 图像扩充 (Outpainting) and 图像内编辑 (inpainting)"></a>2.2.4 图像扩充 (Outpainting) and 图像内编辑 (inpainting)</h4><p>给定图像，将其扩展为更大的图片；市面上比较火的应用，如 ai扩图，商品图背景生成，基本上都是基于outpainting 的方式。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image%20(9).png" alt="image (9)" style="zoom: 25%;" /><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/tmpi1mj8me6.png" alt="tmpi1mj8me6" style="zoom: 50%;" /></p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/c_raw.png" alt="c_raw" style="zoom: 25%;" /><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/tmpiliondnx.png" alt="tmpiliondnx" style="zoom:33%;" /></p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640.gif" alt="640"></p>
-<p>inpaint 和 outpaint 模型的训练方式基本相同，都是用文生图模型的权重进行初始化，然后改变 Unet 输入的 channels（5 additional input channels ，4 for the encoded masked-image and 1 for the mask itself）,新增的channels zero-initialized。</p>
-<p>但是需要注意的是 inpaint 和 outpaint 训练时的mask方式根据推理时mask的特点而有所不同，二者可以混合在一起训练。</p>
-<h4 id="2-2-6-图像内文字生成"><a href="#2-2-6-图像内文字生成" class="headerlink" title="2.2.6 图像内文字生成"></a>2.2.6 图像内文字生成</h4><p>有些时候需要图片中包含特定的文本内容，也可以以条件的形式输入。但是当前大部分文生图的模型直接生成文字效果都不太好 (Dalle3 生成文字比较准确，文字不易变形)</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/3f98ca6187b332eb475ee4ce532c6c5d.png" alt="3f98ca6187b332eb475ee4ce532c6c5d"></p>
-<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2309.15807">Meta的文生图模型Emu</a> 采用 channel数更大的VAE可以改善生成文字畸变的情况。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240125163857323.png" alt="image-20240125163857323"></p>
-<p>对于文字概念，需要训练数据中的caption描述更加准确和详细。</p>
-<h4 id="2-2-7-多种条件生成"><a href="#2-2-7-多种条件生成" class="headerlink" title="2.2.7 多种条件生成"></a>2.2.7 多种条件生成</h4><p>有些场景会包含多种条件，比如给定图像、文本等多种条件，模型综合考量这些条件才能生成满足要求的图像。如下图所示：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/237055b77e0004a0a54bc7fa67b8464d.png" alt="237055b77e0004a0a54bc7fa67b8464d"></p>
-<h2 id="三、评估指标"><a href="#三、评估指标" class="headerlink" title="三、评估指标"></a>三、评估指标</h2><p>公司内部模型迭代上线，一般采取人工评测的方式，从开源评测集以及真实用户输入数据中随机按一定比例挑选 prompt 生成图片后，由人工从多个维度如，图文相关性，美观度，合理性等角度进行评测。</p>
-<h3 id="3-1-IS-Inception-Score"><a href="#3-1-IS-Inception-Score" class="headerlink" title="3.1 IS (Inception Score)"></a>3.1 IS (Inception Score)</h3><p>IS（Inception Score）：用于评估生成图像质量和多样性的指标。它结合了两个方面的考量：</p>
-<ul>
-<li>生成图像的真实性（真实图像的概率，在对应类别上的概率应该尽量高）</li>
-<li>生成图像的多样性（类别分布的熵，生成不同类别图像应该尽量均匀）</li>
-</ul>
-<p>IS 的计算方法包含两个步骤：</p>
-<ul>
-<li>首先，通过分类模型提取生成图像在每个类别的概率分布</li>
-<li>然后，计算这些概率分布的 KL 散度，最终的 IS 是这些 KL 散度的指数平均值</li>
-</ul>
-<h3 id="3-2-FID-Frechet-Inception-Distance"><a href="#3-2-FID-Frechet-Inception-Distance" class="headerlink" title="3.2 FID (Frechet Inception Distance)"></a>3.2 FID (Frechet Inception Distance)</h3><p>FID（Frechet Inception Distance）：用于反映生成图片和真实图片之间的距离，数值越低越好。</p>
-<p>FID 的计算方法包含两个步骤：</p>
-<ul>
-<li>首先，通过模型提取真实图像和生成图像的特征向量。</li>
-<li>然后，计算这两个特征向量分布之间的 Frechet 距离，也就是均值和协方差的 Frechet 距离。</li>
-</ul>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640" alt="图片"></p>
-<p>在实际使用中，通常使用 IS 来评估真实性，使用 FID 来评估多样性。</p>
-<h3 id="3-3-CMMD"><a href="#3-3-CMMD" class="headerlink" title="3.3 CMMD"></a>3.3 CMMD</h3><p>谷歌在最新的文章 <strong><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.09603">Rethinking FID</a></strong> 中提出了一个新的图像生成评估指标，并指出 FID 的缺陷。</p>
-<p>code：<a target="_blank" rel="noopener" href="https://github.com/google-research/google-research/tree/master/cmmd">https://github.com/google-research/google-research/tree/master/cmmd</a></p>
-<p>FID 估计真实图像的 Inception-v3 特征分布与算法生成的图像的分布之间的距离。FID 的重要缺点：<strong>Inception 对现代文本到图像模型生成的丰富多样的内容的表示不佳、不正确的正态性假设以及样本复杂性较差。</strong></p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240204155257324.png" alt="image-20240204155257324"></p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240125175818071.png" alt="image-20240125175818071"></p>
-<h4 id="How-to-Calculate？"><a href="#How-to-Calculate？" class="headerlink" title="How to Calculate？"></a>How to Calculate？</h4><p>CMMD使用了 MMD 距离来计算真实图像分布和生成图像分布之间的距离。对于两个概率分布 $P\in R^d,Q\in R^d$, 相对于正定核 $k$ MMD距离定义如下：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240204160143429.png" alt="image-20240204160143429"></p>
-<p>其中 x 和 x’ 独立分布于 P，y 和 y’ 独立分布于 Q。</p>
-<p>下面是 官方Jax版本的 CMMD 距离的计算code</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;Memory-efficient MMD implementation in JAX.&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> jax</span><br><span class="line"><span class="keyword">import</span> jax.numpy <span class="keyword">as</span> jnp</span><br><span class="line"></span><br><span class="line">Array = jnp.ndarray</span><br><span class="line"></span><br><span class="line"><span class="comment"># The bandwidth parameter for the Gaussian RBF kernel. See the paper for more</span></span><br><span class="line"><span class="comment"># details.</span></span><br><span class="line">_SIGMA = <span class="number">10</span></span><br><span class="line"><span class="comment"># The following is used to make the metric more human readable. See the paper</span></span><br><span class="line"><span class="comment"># for more details.</span></span><br><span class="line">_SCALE = <span class="number">1000</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@jax.jit</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mmd</span>(<span class="params">x, y</span>):</span><br><span class="line">  <span class="string">&quot;&quot;&quot;Memory-efficient MMD implementation in JAX.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  Args:</span></span><br><span class="line"><span class="string">    x: The first set of embeddings of shape (n, embedding_dim).</span></span><br><span class="line"><span class="string">    y: The second set of embeddings of shape (n, embedding_dim).</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  Returns:</span></span><br><span class="line"><span class="string">    The MMD distance between x and y embedding sets.</span></span><br><span class="line"><span class="string">  &quot;&quot;&quot;</span></span><br><span class="line">  x = jnp.asarray(x)</span><br><span class="line">  y = jnp.asarray(y)</span><br><span class="line"></span><br><span class="line">  <span class="comment"># jnp.matmul(x, x.T) etc. are not cached to avoid OOM when x has many rows.</span></span><br><span class="line">  x_sqnorms = jnp.diag(jnp.matmul(x, x.T))</span><br><span class="line">  y_sqnorms = jnp.diag(jnp.matmul(y, y.T))</span><br><span class="line"></span><br><span class="line">  gamma = <span class="number">1</span> / (<span class="number">2</span> * _SIGMA**<span class="number">2</span>)</span><br><span class="line">  k_xx = jnp.mean(</span><br><span class="line">      jnp.exp(</span><br><span class="line">          -gamma</span><br><span class="line">          * (</span><br><span class="line">              -<span class="number">2</span> * jnp.matmul(x, x.T)</span><br><span class="line">              + jnp.expand_dims(x_sqnorms, <span class="number">1</span>)</span><br><span class="line">              + jnp.expand_dims(x_sqnorms, <span class="number">0</span>)</span><br><span class="line">          )</span><br><span class="line">      )</span><br><span class="line">  )</span><br><span class="line">  k_xy = jnp.mean(</span><br><span class="line">      jnp.exp(</span><br><span class="line">          -gamma</span><br><span class="line">          * (</span><br><span class="line">              -<span class="number">2</span> * jnp.matmul(x, y.T)</span><br><span class="line">              + jnp.expand_dims(x_sqnorms, <span class="number">1</span>)</span><br><span class="line">              + jnp.expand_dims(y_sqnorms, <span class="number">0</span>)</span><br><span class="line">          )</span><br><span class="line">      )</span><br><span class="line">  )</span><br><span class="line">  k_yy = jnp.mean(</span><br><span class="line">      jnp.exp(</span><br><span class="line">          -gamma</span><br><span class="line">          * (</span><br><span class="line">              -<span class="number">2</span> * jnp.matmul(y, y.T)</span><br><span class="line">              + jnp.expand_dims(y_sqnorms, <span class="number">1</span>)</span><br><span class="line">              + jnp.expand_dims(y_sqnorms, <span class="number">0</span>)</span><br><span class="line">          )</span><br><span class="line">      )</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> _SCALE * (k_xx + k_yy - <span class="number">2</span> * k_xy)</span><br></pre></td></tr></table></figure>
-<h3 id="3-4-CLIP-Score"><a href="#3-4-CLIP-Score" class="headerlink" title="3.4 CLIP Score"></a>3.4 CLIP Score</h3><p>CLIP 模型由 OpenAI 发布，其模型包含一个图像 encoder 和一个文本 encoder，训练的目的是实现图文特征的对齐。因此常用两个 encoder 分别提取文本和图像的 embedding，然后计算相似性得分，距离越大证明相似性越低，也就是图像和文本越不相关。常用于评估模型以文本作为条件生成的图像是否很好满足文本要求。</p>
-<h3 id="3-5-DrawBench"><a href="#3-5-DrawBench" class="headerlink" title="3.5 DrawBench"></a>3.5 DrawBench</h3><p>在 Imagen 中，Google 同步提出了 DrawBench，这是一个全面且具有挑战性的文本生成图片模型评测基准。</p>
-<p>如下图 Table A.1 所示，DrawBench 基准包含 11 个类别的 200 个文本提示：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/9d6bf15e3563d1b2bef2404e66382764.png" alt="9d6bf15e3563d1b2bef2404e66382764"></p>
-<p>针对这个基准的评估，会对每个类别进行独立的人工评估。对于每个提示，评分员都会看到两种图像，一组来自模型 A，一组来自模型 B。每组包含来自相应模型的 8 个随机生成结果，针对每组图像，评分员都会被问两个问题：</p>
-<ul>
-<li>哪个图像质量更高？</li>
-<li>哪个图像与文本描述更匹配？</li>
-</ul>
-<p>这些问题是为了评估生成图像的质量以及文本-图像匹配度。对于每个问题，评分员都有三种选择：</p>
-<ul>
-<li>更喜欢 A</li>
-<li>无法确定</li>
-<li>更喜欢 B</li>
-</ul>
-<h3 id="3-6-PartiPrompts"><a href="#3-6-PartiPrompts" class="headerlink" title="3.6 PartiPrompts"></a>3.6 PartiPrompts</h3><p>在 Parti 中，Google 作者构建了 PartiPrompts 评估基准，其包含 1600 个英文提示，并将其按照两个维度进行划分：Category 和 Challenge，具体的分布如下所示：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/7b6a1d9ee4ddf9cdc79c3bde46d80cd1.png" alt="7b6a1d9ee4ddf9cdc79c3bde46d80cd1"></p>
-<h2 id="四、常用模型"><a href="#四、常用模型" class="headerlink" title="四、常用模型"></a>四、常用模型</h2><h3 id="4-1-模型结构"><a href="#4-1-模型结构" class="headerlink" title="4.1 模型结构"></a>4.1 模型结构</h3><p>图像生成任务中通常会包含几个子模型，常见的结构有 CNN、AutoEncoder、U-net、Transformer 等。</p>
-<p>其中 AutoEncoder 模型和 U-Net 模型结构上非常相似，也通常是各种模型的主干。主要不同表现在：</p>
-<ul>
-<li>AutoEncoder 包含 Encoder 和 Decoder，它们训练完后可以单独使用：<ul>
-<li>Encoder 通常用于对输入进行编码（压缩），比如将图像 X 映射到隐空间（Latent Space）L。 </li>
-<li>Decoder 通常用于使用编码重构输入（解压缩），比如从隐空间 L 恢复出图像 X。</li>
-</ul>
-</li>
-<li>U-Net：U-Net 模型结构和 AutoEncoder 模型很类似，主要是在 Encoder 和 Decoder 的不同分辨率之间添加了 Skip Connection，如下图所示，也就是说，此时的 Decoder 不仅依赖 Latent code 还依赖输入，也就不能分开单独使用：</li>
-</ul>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/c249d790a2143bec2be8f4bc5cb9ad54.png" alt="c249d790a2143bec2be8f4bc5cb9ad54"></p>
-<h3 id="4-2-VAE"><a href="#4-2-VAE" class="headerlink" title="4.2 VAE"></a>4.2 VAE</h3><p>基于latent的图像生成模型都需要一个 vae 模型，将图片压缩，然后再压缩空间内进行扩散训练。autoencoder是一个基于encoder-decoder架构的图像压缩模型，对于一个大小为 $H\times W \times 3H$的输入图像，encoder模块将其编码为一个大小为 $h\times w \times c$ 的latent，其中$f=H/h=W/h$为下采样率（<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=downsampling factor&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;answer&quot;%2C&quot;sourceId&quot;%3A&quot;2954363993&quot;}">downsampling factor</a>）。在训练autoencoder过程中，除了采用<strong>L1重建损失</strong>外，还增加了<strong>感知损失</strong>（perceptual loss，即LPIPS，具体见论文<a href="https://link.zhihu.com/?target=https%3A//richzhang.github.io/PerceptualSimilarity/">The Unreasonable Effectiveness of Deep Features as a Perceptual Metric</a>）以及<strong>基于patch的对抗训练</strong>。辅助loss主要是为了确保重建的图像局部真实性以及避免模糊，具体损失函数见<a href="https://link.zhihu.com/?target=https%3A//github.com/CompVis/latent-diffusion/tree/main/ldm/modules/losses">latent diffusion的loss部分</a>。同时为了防止得到的latent的标准差过大，采用了两种正则化方法：第一种是<strong>KL-reg</strong>，类似VAE增加一个latent和标准正态分布的<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=KL loss&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;answer&quot;%2C&quot;sourceId&quot;%3A&quot;2954363993&quot;}">KL loss</a>，不过这里为了保证重建效果，采用比较小的权重（～10e-6）；第二种是<strong>VQ-reg</strong>，引入一个VQ （vector quantization）layer，此时的模型可以看成是一个VQ-GAN，不过VQ层是在decoder模块中，这里VQ的<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=codebook&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;answer&quot;%2C&quot;sourceId&quot;%3A&quot;2954363993&quot;}">codebook</a>采样较高的维度（8192）来降低正则化对重建效果的影响。</p>
-<h3 id="4-3-Text-Encoder"><a href="#4-3-Text-Encoder" class="headerlink" title="4.3 Text Encoder"></a>4.3 Text Encoder</h3><h4 id="4-3-1-CLIP模型"><a href="#4-3-1-CLIP模型" class="headerlink" title="4.3.1 CLIP模型"></a>4.3.1 CLIP模型</h4><p>CLIP 是 OpenAI 发布的在大规模图文数据对（4亿）上通过对比学习进行预训练的图文对齐模型。如下图左侧是其对比预训练过程，在一个 batch 中对应的图文特征作为正对，图片特征和其他文本特征作为负对。如下图右侧，可广泛用于 zero-shot 的图像分类等任务。由于其强大的表征能力，其 Text Encoder 和 Image Encoder 常被其他模型使用，用于对图像或文本编码。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/89e07698ff3038a219f065e5c61f9048.png" alt="89e07698ff3038a219f065e5c61f9048"></p>
-<h4 id="4-3-2-T5系列"><a href="#4-3-2-T5系列" class="headerlink" title="4.3.2 T5系列"></a>4.3.2 T5系列</h4><p>在 Imagen 中增加语言模型的大小比增加图像扩散模型的大小更能提高样本逼真度以及实现更好的图像-文本对齐。与此类似，Parti 中作者同样发现使用更大的 Text Encoder 可以实现更好的文本-图像对齐。后续的大规模训练的文生图模型通常都采用更大的 Text Encoder如，T5系列。</p>
-<p>如下图 Figure A.5 所示为 Imagen 中作者对比的不同大小 T5 模型的影响：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/903fac13d3f00a8f82a2ae9ba3a45307.png" alt="903fac13d3f00a8f82a2ae9ba3a45307"></p>
-<h2 id="五、模型类型"><a href="#五、模型类型" class="headerlink" title="五、模型类型"></a>五、模型类型</h2><h3 id="5-1-VAE-系列"><a href="#5-1-VAE-系列" class="headerlink" title="5.1 VAE 系列"></a>5.1 VAE 系列</h3><p>VAE 系列模型的发展大概分为几个阶段，首先是从 AE（AutoEncoder）发展到 VAE（Variational Autoencoder），然后依次出现了 VQ-VAE（Vector Quantised VAE）、VQ-VAE-2 以及 VQ-GAN、ViT-VQGAN 和 MaskGIT 等工作。然而这些工作往往用于无条件生成，或者简单的类别条件、图像条件等，其往往不支持文本输入，或者相关能力很弱。从 21 年初 DALL-E 的发布，文生图的模型开始大量出现，进一步出现 DALL-E mini、 CLIP-VQ-GAN、Parti、Muse 等模型。如下图所示，为这一系列模型的演进路径：</p>
-<p><img src="https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcZ5M5sLp9UDLEFDPNN51mibsHlHsLJdr15PawR6ibAvzNpT3EJhoKQPEw/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片"></p>
-<h4 id="5-1-1-AE"><a href="#5-1-1-AE" class="headerlink" title="5.1.1 AE"></a>5.1.1 AE</h4><p>AE（AutoEncoder，可以称作自编码器）是一种人工神经网络，可以用于学习无标签数据的有效编码。AE 的目的是：学习对高维度数据进行低维度表示（Representation），也就是压缩，因此常用于降维。</p>
-<p>AutoEncoder 有两个主要的部分组成：</p>
-<ul>
-<li>Encoder（编码器）：用于对输入进行编码（压缩）</li>
-<li>Decoder（解码器）：用于使用编码重构输入（解压缩）</li>
-</ul>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/fb9f488d416a381068984a8a3551c56a.png" alt="fb9f488d416a381068984a8a3551c56a"></p>
-<h4 id="5-1-2-VAE"><a href="#5-1-2-VAE" class="headerlink" title="5.1.2 VAE"></a>5.1.2 VAE</h4><p>VAE （Variational AutoEncoder，也称变分自编码器）主要是在 AE 的基础上引入概率生成模型的概念，通过在隐空间引入概率分布，使模型能够生成多样性的样本，并且在学习过程中可以更好地理解数据的分布。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/a8e276e9d7984e2b4aaf355354d453bb.png" alt="a8e276e9d7984e2b4aaf355354d453bb"></p>
-<h4 id="5-1-3-VQ-VAE"><a href="#5-1-3-VQ-VAE" class="headerlink" title="5.1.3 VQ-VAE"></a>5.1.3 VQ-VAE</h4><p>VQ-VAE（Vector Quantization）主要是在 VAE 的基础上引入离散的、可量化的隐空间表示，有助于模型更好地理解数据中的离散结构和语义信息，同时可以避免过拟合。VQ-VAE 与 VAE 的结构非常相似，只是中间部分不是学习概率分布，而是换成 VQ 来学习 Codebook。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/e482da18c0de663daae469b67e28630e.png" alt="e482da18c0de663daae469b67e28630e"></p>
-<h4 id="5-1-4-VQ-GAN"><a href="#5-1-4-VQ-GAN" class="headerlink" title="5.1.4 VQ-GAN"></a>5.1.4 VQ-GAN</h4><p>VQ-GAN 相比 VQ-VAE 的主要改变有以下几点：</p>
-<ul>
-<li>引入 GAN 的思想，将 VQ-VAE 当作生成器（Generator），并加入判别器（Discriminator），以对生成图像的质量进行判断、监督，以及加入感知重建损失（不只是约束像素的差异，还约束 feature map 的差异），以此来重建更具有保真度的图片，也就学习了更丰富的 codebook。</li>
-<li>将 PixelCNN 替换为性能更强大的自回归 GPT2 模型（针对不同的任务可以选择不同的规格）。</li>
-<li>引入滑动窗口自注意力机制，以降低计算负载，生成更大分辨率的图像。</li>
-</ul>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/2fd67a6c6cd150333e5b67a5e04dc10b.png" alt="2fd67a6c6cd150333e5b67a5e04dc10b"></p>
-<h4 id="5-1-5-ViT-VQGAN"><a href="#5-1-5-ViT-VQGAN" class="headerlink" title="5.1.5 ViT-VQGAN"></a>5.1.5 ViT-VQGAN</h4><p>如下图 Figure 1 所示，ViT-VQGAN 的模型结构与 VQGAN 基本一致，主要是将 Encoder 和 Decoder 从 CNN 结构替换为 ViT 模型。</p>
-<ul>
-<li>Encoder：对应 Patch 大小为 8x8，没有重叠，因此 256x256 的图像会生成 32x32=1024 个 Token 序列。推理阶段不再需要。</li>
-<li>Quantization：将 1024 个 Token 序列映射到 Codebook 空间，Codebook 的大小为 8192。</li>
-<li>Decoder：从 1024 个离散 Latent code 中恢复原始图像。</li>
-<li>Autoregressive Transformer：用于生成离散 Latent code。训练中可以直接利用 Encoder 生成好的离线 Latent code 作为 Target，计算交叉熵损失。</li>
-</ul>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/e3e2d7cf919d5203b5e624890552c6c4.png" alt="e3e2d7cf919d5203b5e624890552c6c4"></p>
-<h4 id="5-1-6-Parti"><a href="#5-1-6-Parti" class="headerlink" title="5.1.6 Parti"></a>5.1.6 Parti</h4><p>相比原始的 VQ-GAN 和 ViT-VQGAN 中使用 Decoder Only 的 Transformer 来生成离散 latent code，Parti 中作者将其扩展为 Encoder + Decoder 的 Transformer，这样可以使用 Encoder 来对文本编码，生成文本 embedding，然后文本 embedding 作为条件在 Transformer Decoder 中作为 K 和 V 通过 Cross Attention 与视觉 Token 交叉。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/f68c546ba8ba4a43d1c953b513831e8b.png" alt="f68c546ba8ba4a43d1c953b513831e8b"></p>
-<h4 id="5-1-7-MaskGIT"><a href="#5-1-7-MaskGIT" class="headerlink" title="5.1.7 MaskGIT"></a>5.1.7 MaskGIT</h4><p>MaskGIT 采用 VQGAN 的模型范式，与 VQGAN 不同的是，VQGAN 中的 Transformer 采用序列生成的方式，在推理阶段其图像 Token 要一个一个预测，性能比较差，而 MaskGIT 中，Transformer 生成模型采用 Masked Visual Token Modeling 方式来训练（采用类似 Bert 的双向 Transformer 模型），也就是随机遮挡部分图像 Token，模型训练的目标是预测这些遮挡的 Token。以此方式训练的 Transformer 可以充分利用并行解码（Parallel Decoding）方式加速生成效率。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/f5712e7c963de4f73185ac6d7e2be335.png" alt="f5712e7c963de4f73185ac6d7e2be335"></p>
-<h4 id="5-1-8-Muse"><a href="#5-1-8-Muse" class="headerlink" title="5.1.8 Muse"></a>5.1.8 Muse</h4><p>Muse 采用预训练的 LLM 提取文本 embedding，和 MaskGIT 一样，被训练用于预测随机 Mask 的图像 Token。作者发现，直接预测 512x512 分辨率的图像会导致模型更关注一些低级的细节，同时发现使用级联模型更有帮助。首先生成 16x16 的 latent map（对应 256x256 分辨率的图像），然后基于 16x16 的 latent map 使用超分模型上采样 64x64 的 latent map（对应 512x512 分辨率的图像）。</p>
-<p>如下图 Figure 3 所示为 Muse 模型的整体架构，可以看出，其包含多个组件，主要是三个部分：</p>
-<ul>
-<li>Text Encoder：用于提取文本 embedding</li>
-<li>256x256：低分辨率 Token 预测，包含 VQ Tokenizer 和 Base Transformer</li>
-<li>512x512：高分辨率 Token 预测，包含 VQ Tokenizer 和 SuperRes Transformer</li>
-</ul>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/5a36f94abe364e7042847dc4d2baa2dd.png" alt="5a36f94abe364e7042847dc4d2baa2dd"></p>
-<h4 id="5-1-9-DALL-E"><a href="#5-1-9-DALL-E" class="headerlink" title="5.1.9 DALL-E"></a>5.1.9 DALL-E</h4><p>与 VQ-GAN 类似，DALL-E 的训练也是分为两个阶段，第一阶段是训练 VAE，不过并没有使用 VQ-VAE，而是使用 Discrete VAE（dVAE），整体来说与 VQ-VAE 类似，主要的区别是引入 Gumbel Softmax 来训练，避免 VQ-VAE 训练中 ArgMin 不可导的问题。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/8b61b46863918fc922628bc78b04dd19.png" alt="8b61b46863918fc922628bc78b04dd19"></p>
-<h4 id="5-1-10-VQGAN-CLIP"><a href="#5-1-10-VQGAN-CLIP" class="headerlink" title="5.1.10 VQGAN-CLIP"></a>5.1.10 VQGAN-CLIP</h4><p>VQGAN-CLIP 的思路很简单：使用初始图像通过 VQ-GAN 生成一个图像，然后使用 CLIP 对生成图像和 Target Text 提取 embedding，然后计算相似性，并将其误差作为反馈对隐空间的 Z-vector 进行迭代更新，直到生成图像和 Target Text 对应的 embedding 很相似为止。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/f086b8acb2025280465b00e48c7388ea.png" alt="f086b8acb2025280465b00e48c7388ea"></p>
-<h3 id="5-2-Diffsion-系列"><a href="#5-2-Diffsion-系列" class="headerlink" title="5.2 Diffsion 系列"></a>5.2 Diffsion 系列</h3><p>Diffusion 模型的发展路径如下图所示，主要是 OpenAI 系列模型，Stable Diffusion 系列模型，和 Google 的 Imagen、Imagen 2。其他的开源模型有 kandinsky系列。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/e5b762a35bb56d73325c0d5669166902.png" alt="e5b762a35bb56d73325c0d5669166902"></p>
-<h4 id="5-2-1-DDPM"><a href="#5-2-1-DDPM" class="headerlink" title="5.2.1 DDPM"></a>5.2.1 DDPM</h4><p>扩散模型包含两个过程：前向过程（Forward Process，也称为扩散过程 Diffusion Process）和逆向过程（Reverse Process）。无论是前向还是逆向，都是一个马尔科夫链形式（Markov Chain），其中前向过程是不断地向图片中添加高斯噪声，逆向过程是不断地去除高斯噪声，重建图像。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/ff475021fcfb86dd901049005ef4e373.png" alt="ff475021fcfb86dd901049005ef4e373"></p>
-<h4 id="5-2-2-Diffusion-Model-Beat-GANS"><a href="#5-2-2-Diffusion-Model-Beat-GANS" class="headerlink" title="5.2.2 Diffusion Model Beat GANS"></a>5.2.2 Diffusion Model Beat GANS</h4><p>这也是 OpenAI 的工作，本文的工作主要有两点：</p>
-<ul>
-<li>验证了无条件图像生成中不同模型结构对效果的影响，进行了大量的消融实验。</li>
-<li>引入 classifier guidance 来提升生成质量。</li>
-</ul>
-<p>对模型结构的修改主要有以下几个方面：</p>
-<ul>
-<li>保持模型大小不变，增加深度，降低宽度</li>
-<li>增加 Attention 头的数量</li>
-<li>不只是在 16x16 分辨率使用 Attention，在 32x32 和 8x8 也使用</li>
-<li>在上采样和下采样激活时使用 BigGAN 的 residual block</li>
-<li>在 residual connection 中采用 1/sqrt(2) 的缩放</li>
-</ul>
-<p>如下图 Table 1 所示为不同配置的影响，可以看出，使用更多的 Attention 头、在多个分辨率使用 Attention 以及采用 BigGAN 的 residual block 获得了最好的结果，提出的模型称作 ADM（Ablate Diffusion Model），这个模型也为 OpenAI 后续的生成模型奠定了基础，Stable Diffusion 的模型也有参考：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/ee96a536861dd5c4b7085da4cb11ced6.png" alt="ee96a536861dd5c4b7085da4cb11ced6"></p>
-<h4 id="5-2-3-GLIDE"><a href="#5-2-3-GLIDE" class="headerlink" title="5.2.3 GLIDE"></a>5.2.3 GLIDE</h4><p>GLIDE 模型中作者将 Diffusion 模型应用于文本条件图像生成，GLIDE 主要包含两个子模型：</p>
-<ul>
-<li>文本条件+扩散模型（3.5B）<ul>
-<li>Text encoding Transformer（1.2B，24 个 residual block，width 2048）。</li>
-<li>扩散模型（64x64 分辨率，2.3B），采用 Diffusion Model Beat GANs 中的 ADM（Ablated Diffusion Model）， width 扩展到 512 channels，并在此基础上扩展了文本条件信息。</li>
-</ul>
-</li>
-<li>文本条件+上采样模型（1.5B）<ul>
-<li>和上一步类似的 Text Transformer 模型，不过 width 从 2048 降低到 1024</li>
-<li>上采样模型同样来自 ADM-U（分辨率从 64x64 扩展到 256x256，channel 从 192 扩展到 384）</li>
-</ul>
-</li>
-</ul>
-<h4 id="5-2-4-DALL-E-2"><a href="#5-2-4-DALL-E-2" class="headerlink" title="5.2.4 DALL-E 2"></a>5.2.4 DALL-E 2</h4><p>在 GLIDE 中尝试了文本引导图像生成，取得了不错的结果。在本文中，作者充分利用强大的 CLIP 模型，提出了一个两阶段图像生成模型，整体的模型结构如下图 Figure 2 所示：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/04493eedf06a325b6b037b1ad0ab65e4.png" alt="04493eedf06a325b6b037b1ad0ab65e4"></p>
-<ul>
-<li>img encoder：对应 CLIP 模型的 image encoder，给定图像，并生成图像 embedding zi，这个 embedding zi 在训练中用于 prior 生成的 target，也就是训练中 prior 生成的 embedding 要与 CLIP img encoder 生成的 embedding 尽量相似。训练中 img encoder 保持冻结，推理生成阶段不再需要 img encoder。</li>
-<li>text encoder：用于在训练阶段和图像生成阶段对文本进行编码，生成 embedding zt，作为 prior 的输入。训练和推理阶段都需要 text encoder，并且始终保持冻结。</li>
-<li>prior：用于从文本 embedding zt 生成图像 embedding zi。</li>
-<li>decoder：用于从图像 embedding zi 生成最终图像（文本条件为可选项）。</li>
-</ul>
-<h4 id="5-2-5-DALL-E-3"><a href="#5-2-5-DALL-E-3" class="headerlink" title="5.2.5 DALL-E 3"></a>5.2.5 DALL-E 3</h4><p>DALL-E 3 是 OpenAI 最新的文生图模型，作者发现<strong>传统的文生图模型难以遵循详细的图像描述，并且经常出现忽略单词或混淆提示的语义，作者猜测可能是训练集中的噪声或者不准确的图像描述导致的</strong>。因此，作者首先训练了一个图像描述器，然后生成了一系列高度描述性的图像描述，之后将其用于文生图模型训练，其大大提高了文生图的指令跟随能力。</p>
-<p>作者只在附录中用很小的篇幅介绍了 DALL-E 3 的部分模型组件，包括 Image decoder 和 latent decoder。</p>
-<p>如下图所示，其 image decoder 参考了 Stable Diffusion 的实现，采用 3 阶段的 latent diffusion 模型。</p>
-<ul>
-<li>其 VAE 和 Stable Diffusion 一样，都是 8x 的下采样，训练的图像分辨率为 256x256，会生成 32x32 的隐向量。</li>
-<li>时间步长条件：采用 GroupNorm，并学习了 scale 和 bias。</li>
-<li>文本条件：使用 T5 XXL 作为 text encoder，然后将输出的 embedding 和 xfnet 进行 Cross Attention。在 OpenAI 的 Paper 中并没有找到 xfnet 相关介绍，不过在 GLIDE 的开源代码里确实有 xf model。</li>
-</ul>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/a4d752cf60a335984ffbe6c9be91f277.png" alt="a4d752cf60a335984ffbe6c9be91f277"></p>
-<p>如下图所示，作者同样训练了一个 latent decoder，可以用来提升图像细节，比如文本和人脸。其同样是参考 Stable Diffusion 的实现。不过这个 diffusion decoder 采用的是 DDPM 中描述的空间卷积 U-Net，此外，也基于 [2303.01469] Consistency Models 的蒸馏策略将去噪步数降低到 2 步，极大降低推理代价。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/1102103845a6060740450931813e5325.png" alt="1102103845a6060740450931813e5325"></p>
-<h4 id="5-2-6-stable-diffusion"><a href="#5-2-6-stable-diffusion" class="headerlink" title="5.2.6 stable diffusion"></a>5.2.6 stable diffusion</h4><p>LDM 和其他扩散生成模型结构类似，整体来说包含三个组件：</p>
-<ul>
-<li>Auto Encoder：下图左侧部分，包含红框的 Encoder 和蓝框的 Decoder，其中 Encoder 主要用于训练中生成 target z，推理阶段不需要。而 Decoder 用于从隐空间编码（latent code）恢复出图像。</li>
-<li>Conditioning：下图右侧部分，用于对各种条件信息进行编码，生成的 embedding 会在扩散模型 U-Net 中使用。不同的条件可能会有不同的 Encoder 模型，也有不同的使用方式（对应下图中的 switch），比如：<ul>
-<li>对于文本类型条件，可以使用 Bert Encoder，也可以使用 CLIP 中的 Text Encoder 将文本编码为 embedding。</li>
-<li>对于图像类型条件，比如图像修复、分割条件，可以将其编码后与噪声 Concat 作为输入，而不是通过 Attention 机制交叉。</li>
-</ul>
-</li>
-<li>Denoising U-Net：下图中间部分，用于从随机噪声 zT 中通过几步迭代生成 latent code，然后使用 Decoder 恢复出图像。其中的各种条件信息都会通过 Cross Attention 进行交叉融合。需要说明的是，U-Net 生成的目标是 x 经 Encoder 编码后的 embedding，通常也称为隐向量，而不是直接生成图像像素，因此说 U-Net 是作用在隐空间（Latent Space）。</li>
-</ul>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/f301399b271b39302f3e911abacb87f9.png" alt="f301399b271b39302f3e911abacb87f9"></p>
-<h4 id="5-2-7-SDXL"><a href="#5-2-7-SDXL" class="headerlink" title="5.2.7 SDXL"></a>5.2.7 SDXL</h4><p>SDXL 相比 SD 主要的修改包括（模型总共 2.6B 参数量，其中 text encoder 817M 参数量）：</p>
-<ul>
-<li>增加一个 Refiner 模型，用于对图像进一步地精细化。</li>
-<li>使用 CLIP ViT-L 和 OpenCLIP ViT-bigG 两个 text encoder。</li>
-<li>基于 OpenCLIP 的 text embedding 增加了一个 pooled text embedding。</li>
-</ul>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/59522404e4b0979c96b20996ba69c164.png" alt="59522404e4b0979c96b20996ba69c164"></p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/a5ab65454a275ac3437cf94401345379.png" alt="a5ab65454a275ac3437cf94401345379"></p>
-<h4 id="5-2-8-SDXL-Turbo"><a href="#5-2-8-SDXL-Turbo" class="headerlink" title="5.2.8 SDXL-Turbo"></a>5.2.8 SDXL-Turbo</h4><p>SDXL-Turbo 在模型上没有什么修改，主要是引入蒸馏技术，以便减少 LDM 的生成步数，提升生成速度。大致的流程为：</p>
-<ul>
-<li>从 Tstudent 中采样步长 s，对于原始图像 x0 进行 s 步的前向扩散过程，生成加噪图像 xs。</li>
-<li>使用学生模型 ADD-student 对 xs 进行去噪，生成去噪图像 xθ。</li>
-<li>基于原始图像 x0 和去噪图像 xθ 计算对抗损失（adversarial loss）。</li>
-<li>从 Tteacher 中采样步长 t，对去噪后的图像 xθ 进行 t 步的前向扩散过程，生成 xθ,t。</li>
-<li>使用教师模型 DM-student 对 xθ,t 进行去噪，生成去噪图像 xψ。</li>
-<li>基于学生模型去噪图像 xθ 和教师模型去噪图像 xψ 计算蒸馏损失（distillation）。</li>
-<li>根据损失进行反向传播（注意，教师模型不更新，因此会 stop 梯度）。</li>
-</ul>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/833e48d05789f1a87502b398912f276c.png" alt="833e48d05789f1a87502b398912f276c"></p>
-<h4 id="5-2-9-Imgen"><a href="#5-2-9-Imgen" class="headerlink" title="5.2.9 Imgen"></a>5.2.9 Imgen</h4><p>Imagen 是 Google 推出的基于扩散模型的文生图模型，其具有前所未有的逼真度和深层次的语言理解能力。Imagen 结合了大型 Transformer 语言模型的强大能力和扩散模型的高保真图像生成能力。</p>
-<p>整体来说，模型包含四个基础组件：</p>
-<ul>
-<li>Frozen Text Encoder：将文本编码为 embedding，作者对比了 T5 系列模型和 CLIP 的 text Encoder，最终选择 T5-XXL。</li>
-<li>Text-to-Image Diffusion Model：采用 U-Net 结构的 Diffusion 模型，并将步数 t 和上一步的文本 embedding 作为条件。共 2B 参数量。</li>
-<li>第一 Super-Resolution Diffusion Model：采用本文优化过的高效 U-Net，将 64x64 图像超分为 256x256 图像，同样使用文本 embedding 作为条件。共 600M 参数量。</li>
-<li>第二 Super-Resolution Diffusion Model：采用本文优化过的高效 U-Net，将 256x256 图像超分为 1024x1024 图像，同样使用文本 embedding 作为条件。共 400M 参数量。</li>
-</ul>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/e8c67004fbee80b979088cdf64836973.png" alt="e8c67004fbee80b979088cdf64836973"></p>
-<h4 id="5-2-10-wurschen"><a href="#5-2-10-wurschen" class="headerlink" title="5.2.10 wurschen"></a>5.2.10 wurschen</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240218140602925.png" alt="image-20240218140602925"></p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240218142258132.png" alt="image-20240218142258132"></p>
-<p>wurschen 三阶段级联结构，目标的是为了降低训练和推理的计算要求和时间，并且保持生成图像的质量。核心是通过在非常低维的 latent space 上以 42:1 的高压缩比来训练扩散模型来实现。</p>
-<ul>
-<li>首先使用文本条件的 LDM（阶段 C）以强压缩比创建图像的低维潜在表示。</li>
-<li>随后，使用这个潜在表示和text-condition一起调节另一个 LDM（阶段B），产生在更高维度（较少压缩）的潜在空间中的潜在表示，该模型负责进行重建（阶段B）。</li>
-<li>最后，通过 VQGAN 解码器对中间分辨率的潜在表示解码，生成完整分辨率的输出图像（阶段A）。</li>
-</ul>
-<h4 id="5-2-11-stable-cascade"><a href="#5-2-11-stable-cascade" class="headerlink" title="5.2.11 stable cascade"></a>5.2.11 stable cascade</h4><p>stable cascade是基于<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/abs/2306.00637">Wuerstchen</a>架构包含三阶段的文生图扩散模型，相比Stable Diffusion XL，它不仅更快而且效果更好。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/%E6%88%AA%E5%9B%BE20240218144038.png" alt="截图20240218144038"></p>
-<p>最重要的一个阶段是Stage C，它是一个基于文本作为条件来生成图像的latents的<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=扩散模型&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">扩散模型</a>，只不过这里的latents和SD中的latents有些区别，之前的SD是采用一个VAE将图像编码成下采样8x的latents，而这里是采用一个<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=Semantic Compressor&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">Semantic Compressor</a>来将3×1024×1024的图像压缩成16×24×24的latents，空间下采样约42x，这比SD的VAE要狠的多（不过特征维度高了）。这里的Semantic Compressor采用的是<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=EfficientNetV2-S模型&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">EfficientNetV2-S模型</a>：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">EfficientNetEncoder</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, c_latent=<span class="number">16</span></span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.backbone = torchvision.models.efficientnet_v2_s(weights=<span class="string">&#x27;DEFAULT&#x27;</span>).features.<span class="built_in">eval</span>()</span><br><span class="line">        self.mapper = nn.Sequential(</span><br><span class="line">            nn.Conv2d(<span class="number">1280</span>, c_latent, kernel_size=<span class="number">1</span>, bias=<span class="literal">False</span>),</span><br><span class="line">            nn.BatchNorm2d(c_latent, affine=<span class="literal">False</span>),  <span class="comment"># then normalize them to have mean 0 and std 1</span></span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="keyword">return</span> self.mapper(self.backbone(x))</span><br></pre></td></tr></table></figure>
-<p>对于3x1024x1024的图像，首先resize到3x768x768，然后经过EfficientNetV2-S后得到1280x24x24的特征，这里再额外加了一个Conv和BN层将特征映射为16x24x24。 Stage C的text encoder采用的是OpenCLIP ViT-G，这里是提取了token embeddings（77x1280）以及全局pooled embedding（1x1280），其中pooled embedding映射为4个token特征，和token embeddings拼接在一起送入Stage C的<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=UNet&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">UNet</a>作为条件，这里采用的条件机制还是通过<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=cross- attention&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">cross- attention</a>。此外，Stage C在训练过程中还引入CLIP image encoder的image embedding作为条件，这里是采用openai CLIP ViT-L提取的image embedding，然后映射为4个tokens和text tokens拼接在一起，不过训练过程中对image embedding采用比较大的drop比例（90%）。CLIP image embedding的引入可以让模型类似<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=DALLE-2&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">DALLE-2</a>那样支持image variation。 从本质上看，<strong>这里的Stage C其实就是想当于一个SD主模型（UNet），只不过采用了不同的autoencoder所提取的latents</strong>，相比较而言，Stage C采用了压缩率更大的latents，这也使得模型更高效。这里开源的Stage C也有两个不同大小的版本：一个是1B，一个是3.6B，但是肯定是3.6B的模型效果更好，也是主推模型。</p>
-<p>Stage C可以将文本转成图像的latents，要想生成最终的图像，还需要解码器，这就是Stage B和Stage A了。Stage B和Stage A和在一起，就是一个latent decoder，它是将16x24x24的latents解码为一个3x1024x1024的图像，从功能上就相当于SD中的VAE decoder。</p>
-<h3 id="5-3-其他开源系列"><a href="#5-3-其他开源系列" class="headerlink" title="5.3 其他开源系列"></a>5.3 其他开源系列</h3><p>kandinsky系列是俄罗斯一个团队开源的文生图模型，致力于多语言条件生成能力。</p>
-<h4 id="5-3-1-kandinsky-2-1"><a href="#5-3-1-kandinsky-2-1" class="headerlink" title="5.3.1 kandinsky 2.1"></a>5.3.1 kandinsky 2.1</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/73387ba47854844a67caf6a4003fcbe0.png" alt="img"></p>
-<p>如上图所示，kandinsky2.1 结合了 Dalle 和 stable diffusion 中比较有效的结构。</p>
-<p>整体来说模型包含五个组件：</p>
-<ul>
-<li>text-encoder：为了进行多语言生成，kandinsky使用了多语言的文本编码器, XLM-Roberta-Large-Vit-L-14, 参数约 560M。</li>
-<li>prior：prior模型采用了 DiT 结构，利用扩散生成的目标来对齐 CLIP文本和图像的embedding。参数约 1B。</li>
-<li>CLIP image encoder: 将图像编码成 embedding 作为 prior 训练的 groundtruth。</li>
-<li>latent diffusion Unet：此时训练的条件不仅是来自文本的 embedding，也包含以文本为条件通过prior模型产生的 image clip embedding。参数规模约 1.22B。</li>
-<li>MoVQ编码器/解码器：将图像编码到 latent space。</li>
-</ul>
-<h4 id="5-3-2-kandinsky2-2"><a href="#5-3-2-kandinsky2-2" class="headerlink" title="5.3.2 kandinsky2.2"></a>5.3.2 kandinsky2.2</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/dc999237d80ba9b3b6bb782a1012a0e5.png" alt="img"></p>
-<p>Kandinsky 2.2 对其前身 Kandinsky 2.1 进行了重大改进，引入了新的、更强大的图像编码器 - CLIP-ViT-G 和 ControlNet 支持。改用 CLIP-ViT-G 作为图像编码器显着提高了模型生成更美观的图片和更好地理解文本的能力，从而提高了模型的整体性能。</p>
-<p><strong>架构细节：</strong></p>
-<ul>
-<li>文本编码器 (XLM-Roberta-Large-Vit-L-14) - 560M</li>
-<li>扩散图像先验 — 1B</li>
-<li>CLIP 图像编码器 (ViT-bigG-14-laion2B-39B-b160k) - 1.8B</li>
-<li>潜在扩散 U-Net - 1.22B</li>
-<li>MoVQ编码器/解码器 - 67M</li>
-</ul>
-<p>另一个相较于 2.1 的重大改进是，<strong>训练 U-net的时候只用 image encoder产生的 embedding 作为条件。</strong></p>
-<h4 id="5-3-3-kandinsky-3-0"><a href="#5-3-3-kandinsky-3-0" class="headerlink" title="5.3.3 kandinsky 3.0"></a>5.3.3 kandinsky 3.0</h4><p>kandinksky 3.0 的pipeline包括一个 text encoder， unet，vae</p>
-<p>没有采用 kandinsky2.x 和 sdxl 的两段式结构。kandinsky3.0的整体参数量是 kandinsky2.2 的三倍，sdxl的3.6倍，采用一个更大的text encoder FLAN-UL2的encoder，光这部分的参数量就到了8.6B。unet的架构也提升到了3.0B。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20231211152627128.png" alt="image-20231211152627128"></p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20231211153134797.png" alt="image-20231211153134797"></p>
-<p>作者通过大量实验得到以下两个 insight：</p>
-<ul>
-<li>在实践中，增加网络的深度，同时减少总的参数，可以在训练中获得更好的结果。</li>
-<li>在初始阶段，在高分辨率下，仅使用卷积块来处理图像，同时更多的压缩表示送到transformer层，确保图像元素的全局交互。</li>
-</ul>
-<h4 id="5-3-4-RAPHAEL"><a href="#5-3-4-RAPHAEL" class="headerlink" title="5.3.4 RAPHAEL"></a>5.3.4 RAPHAEL</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230704192147695.png" alt="image-20230704192147695"></p>
-<p>作者观察到不同的文本概念在生成过程中影响不同的图像区域，而传统的交叉注意层通常很难在图像中充分保留这些不同的概念。为了缓解这个问题，我们采用了一个扩散模型，堆叠了数十个专家混合 (MoE) 层 ，包括空间 MoE 层和时间 MoE 层。具体来说，空间 MoE 层负责描绘特定图像区域中的不同概念，而时间 MoE 层则专注于在不同的扩散时间步长上绘制这些概念。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230704195433571.png" alt="image-20230704195433571"></p>
-<p>另外，利用一个旁支的网络来根据注意力图预测输入图像的边缘图, 复杂的边界可以作为监督来指导模型保留各种风格的详细图像特征。</p>
-<p>RAPHAEL的损失函数包含两部分：$L = L_{denoise}+L_{edge}$</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240130114154739.png" alt="image-20240130114154739"></p>
-<h4 id="5-3-5-Muse"><a href="#5-3-5-Muse" class="headerlink" title="5.3.5 Muse"></a>5.3.5 Muse</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230609181214290.png" alt="image-20230609181214290"></p>
-<p>Muse是在离散 token 空间，通过 mask modeling 任务训练的：T5-XXL预训练的文本编码器生成文本embedding，用于 Base Transformer 和 SuperRes Transformer中，和 image token进行cross attention。Base model使用在低分辨率上256<em>256训练的VQGAN，并生成 16\</em>16的token，序列以每个样本的可变速率被mask，然后交叉熵损失学习预测mask的image token。一旦训练了 Base model，重建的较低分辨率token和 文本embedding  就被传递到超分辨率模型中，然后超分辨率模型学习以较高分辨率预测 masked tokens。</p>
-<h4 id="5-3-5-PixArt-alpha"><a href="#5-3-5-PixArt-alpha" class="headerlink" title="5.3.5 PixArt-alpha"></a>5.3.5 PixArt-alpha</h4><p>目前 sota 的文生图模型需要大量的训练成本，训练数据。$pixart-\alpha$正如题目中提到的 fast training，主打<strong>低成本训练</strong>。采用了 meta 提出的 <strong>DiT</strong> 架构。模型参数只有<strong>0.6B</strong>，它的训练时长只有SD 1.5的10.8%，而且只使用了 <strong>25M</strong> 数据进行训练。</p>
-<p>下面是和目前的主流模型的训练成本：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20231102171712747.png" alt="image-20231102171712747"></p>
-<p>为了实现降低训练的计算成本同时保持图像的生成质量， pixart-alpha提出了三个关键设计。</p>
-<ol>
-<li><strong>training strategy decomposition</strong> </li>
-</ol>
-<p>将复杂的文本到图像的任务分解成三个简化的子任务：(1) 学习自然图像的像素分布，（2）学习文本图像对齐，（3）增强图像的美学质量。对于第一个子任务，使用低成本的类条件模型初始化 T2I 模型，从而显着降低学习成本。对于第二个和第三个子任务，制定了由预训练和微调组成的训练范式：对信息密度丰富的文本图像对数据进行预训练，然后对具有优越美学质量的数据进行微调，提高训练效率。</p>
-<ol>
-<li><strong>Efficient T2I Transformer</strong></li>
-</ol>
-<p>结合了交叉注意模块来注入文本条件并简化计算密集型类条件分支以提高效率。此外，我们引入了一种重新参数化技术，允许调整后的文本到图像模型直接加载原始类条件模型的参数。因此，我们可以利用从 ImageNet 中学到的有关自然图像分布的先验知识，为 T2I Transformer 提供合理的初始化并加速其训练。</p>
-<ol>
-<li><strong>High-information data</strong></li>
-</ol>
-<p>目前的文本图像对数据集如 Laion 其中文本标题经常缺乏信息内容，并且严重的长尾效应（及大量名词以极低的频率出</p>
-<p>3现）。这些都影响模型的训练效率。pixart-alpha利用 LLaVA 在 SAM 数据集上生成 caption。</p>
-<h4 id="5-3-6-PanGu-Draw"><a href="#5-3-6-PanGu-Draw" class="headerlink" title="5.3.6 PanGu-Draw"></a>5.3.6 PanGu-Draw</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240130155824264.png" alt="image-20240130155824264"></p>
-<p>如上图所示，目前文生图的大多采用多阶段训练策略来提高生成图片的质量和分辨率。PanGu-Draw 提出的时间解耦训练策略在资源效率方面超越了级联训练和分辨率提升训练。</p>
-<p>作者从扩散过程的去噪轨迹中得到灵感，其中初始去噪阶段主要塑造图像的结构基础，而后期阶段则完善其纹理复杂性。基于以上事实，引入时间解耦训练策略，将综合文生图模型划分为在不同时间间隔上运行的专用子模型：结构生成器和纹理生成器，每个模型是原始模型的一半。每个子模型都是在不同的时间间隔下单独训练的。</p>
-<p>模型结构方面采用 ==SDXL 的VAE模型，并基于其 Unet 模型的架构构建结构和纹理生成器==，为了实现双语文本到图像的生成（中文和英文），在中文训练数据集上预训练中文文本编码器 。然后，我们将来自中文文本编码器的文本嵌入与来自预训练的英文文本编码器的文本嵌入连接起来，作为去噪模型的最终文本嵌入。对于多分辨率图像生成，我们选择 1024x1024 左右的图像分辨率范围，并进一步根据与图像分辨率索引相对应的正弦位置嵌入来调节去噪模型。</p>
-<p> <strong>promptenhancement</strong>：为了进一步提升生成质量，利用LLM将用户的简洁输入与模型所需的详细输入保持一致。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240130162205337.png" alt="image-20240130162205337"></p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240130162255805.png" alt="image-20240130162255805"></p>
-<p>从结果来看，pangu 模型训练数据 caption 应该也是通过 LLM 处理过的，类似于 Dalle3 和 pixart-alpha提到的。</p>
 
       
     </div>
