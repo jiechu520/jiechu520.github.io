@@ -439,7 +439,33 @@
 <li>第二 Super-Resolution Diffusion Model：采用本文优化过的高效 U-Net，将 256x256 图像超分为 1024x1024 图像，同样使用文本 embedding 作为条件。共 400M 参数量。</li>
 </ul>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/e8c67004fbee80b979088cdf64836973.png" alt="e8c67004fbee80b979088cdf64836973"></p>
-<h4 id="5-2-10-wurschen"><a href="#5-2-10-wurschen" class="headerlink" title="5.2.10 wurschen"></a>5.2.10 wurschen</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240218140602925.png" alt="image-20240218140602925"></p>
+<h4 id="5-2-10-Instruct-Imagen"><a href="#5-2-10-Instruct-Imagen" class="headerlink" title="5.2.10 Instruct Imagen"></a>5.2.10 Instruct Imagen</h4><p>Instruct-Imagen 是一个图像生成模型，其可以处理多种图像生成任务，并泛化到之前没有见过的任务中。作者引入用于图像生成的多模态指令，其使用自然语言来合并不同的模态（例如，文本、边缘、风格、主题等），以便以统一的格式标准化不同的生成意图。</p>
+<p>作者通过两阶段来训练 Instruct-Imagen 模型（并非从 0 开始）：</p>
+<ul>
+<li><strong>使用检索增强训练方法（Re-Imagen）来训练模型，以增强模型基于额外的多模态上下文来生成图像的能力。</strong></li>
+<li><strong>使用各种需要视觉-语言理解的生成任务来微调模型。每个任务都有对应的多模态指令模板。</strong></li>
+</ul>
+<p>基于各种图像生成数据集的人工评估表明，Instruct-Imagen 达到或超过了之前针对特定任务的模型，并在未见过任务和更复杂任务上展示了良好的泛化能力。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240226231701321.png" alt="image-20240226231701321"></p>
+<p>如下图所示为本文的 Instruct-Imagen 模型，其相比 Imagen 模型主要有以下几点变化：</p>
+<ul>
+<li><strong>Frozen Text Encoder</strong>：和 Imagen 一样，同样采用预训练的 T5-XXL 模型，并且在整个训练过程中保持冻结。</li>
+<li>Text-to-Image Diffusion Model（<strong>Image Encoder</strong> + Image decoder）：同样采用 U-Net 结构的 Diffusion 模型，不过生成图像分辨率变为 128x128，而 Imagen 为 64x64。</li>
+<li>Super-Resolution Diffusion Model：Imagen 有两个超分模型，而 Instruct-Imagen 只有一个超分模型，分辨率从 128x128 -&gt; 1024x1024。</li>
+<li>Multimodal Context：新增的多模态上下文模块，这里复用上述的子模型，只增加额外的 Cross-Atten 模块（每个文本-图像对都会编码为一个多模态 Embedding）：<ul>
+<li><strong>Frozen Text Encoder</strong>：用于对文本指令进行编码，获得文本 Embedding。</li>
+<li><strong>Image Encoder</strong>：对图片条件进行编码，并且会与文本 Embedding 进行交叉融合，输出融合后的多模态 Embedding。</li>
+<li>Cross-Atten：唯一新增的模块，添加在 image decoder 之前，用于融入多模态上下文。模型参数量增加很少，从 2.51B 增加到 2.76B，只增加 10%。</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240226231955572.png" alt=""></p>
+<p>相比 Imagen 中的 Text-to-Image Diffusion 模型，作者将分辨率从 64x64 提升到 128x128，并只保留一个超分模型。除此之外，作者还对基础的 U-Net 结构进行了升级，主要是更新其中的 DBlock 和 UBlock：</p>
+<ul>
+<li>在 Imagen 中，每个分辨率下只有一个 DBlock 和一个 UBlock，在每个 Block 中都有多个 ResNet Block。</li>
+<li>在 Instruct-Imagen 中，每个分辨率下有多个 DBlock 和多个 UBlock，每个 Block 中只有一个 ResNet Block。这样就可以插入更多的 Attention 层。</li>
+</ul>
+<h4 id="5-2-11-wurschen"><a href="#5-2-11-wurschen" class="headerlink" title="5.2.11 wurschen"></a>5.2.11 wurschen</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240218140602925.png" alt="image-20240218140602925"></p>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240218142258132.png" alt="image-20240218142258132"></p>
 <p>wurschen 三阶段级联结构，目标的是为了降低训练和推理的计算要求和时间，并且保持生成图像的质量。核心是通过在非常低维的 latent space 上以 42:1 的高压缩比来训练扩散模型来实现。</p>
 <ul>
@@ -447,7 +473,7 @@
 <li>随后，使用这个潜在表示和text-condition一起调节另一个 LDM（阶段B），产生在更高维度（较少压缩）的潜在空间中的潜在表示，该模型负责进行重建（阶段B）。</li>
 <li>最后，通过 VQGAN 解码器对中间分辨率的潜在表示解码，生成完整分辨率的输出图像（阶段A）。</li>
 </ul>
-<h4 id="5-2-11-stable-cascade"><a href="#5-2-11-stable-cascade" class="headerlink" title="5.2.11 stable cascade"></a>5.2.11 stable cascade</h4><p>stable cascade是基于<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/abs/2306.00637">Wuerstchen</a>架构包含三阶段的文生图扩散模型，相比Stable Diffusion XL，它不仅更快而且效果更好。</p>
+<h4 id="5-2-12-stable-cascade"><a href="#5-2-12-stable-cascade" class="headerlink" title="5.2.12 stable cascade"></a>5.2.12 stable cascade</h4><p>stable cascade是基于<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/abs/2306.00637">Wuerstchen</a>架构包含三阶段的文生图扩散模型，相比Stable Diffusion XL，它不仅更快而且效果更好。</p>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/%E6%88%AA%E5%9B%BE20240218144038.png" alt="截图20240218144038"></p>
 <p>最重要的一个阶段是Stage C，它是一个基于文本作为条件来生成图像的latents的<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=扩散模型&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">扩散模型</a>，只不过这里的latents和SD中的latents有些区别，之前的SD是采用一个VAE将图像编码成下采样8x的latents，而这里是采用一个<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=Semantic Compressor&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">Semantic Compressor</a>来将3×1024×1024的图像压缩成16×24×24的latents，空间下采样约42x，这比SD的VAE要狠的多（不过特征维度高了）。这里的Semantic Compressor采用的是<a target="_blank" rel="noopener" href="https://www.zhihu.com/search?q=EfficientNetV2-S模型&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra={&quot;sourceType&quot;%3A&quot;article&quot;%2C&quot;sourceId&quot;%3A&quot;682257045&quot;}">EfficientNetV2-S模型</a>：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">EfficientNetEncoder</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, c_latent=<span class="number">16</span></span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.backbone = torchvision.models.efficientnet_v2_s(weights=<span class="string">&#x27;DEFAULT&#x27;</span>).features.<span class="built_in">eval</span>()</span><br><span class="line">        self.mapper = nn.Sequential(</span><br><span class="line">            nn.Conv2d(<span class="number">1280</span>, c_latent, kernel_size=<span class="number">1</span>, bias=<span class="literal">False</span>),</span><br><span class="line">            nn.BatchNorm2d(c_latent, affine=<span class="literal">False</span>),  <span class="comment"># then normalize them to have mean 0 and std 1</span></span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="keyword">return</span> self.mapper(self.backbone(x))</span><br></pre></td></tr></table></figure>
