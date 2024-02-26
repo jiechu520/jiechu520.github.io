@@ -153,6 +153,101 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://jiechu520.github.io/2023/01/21/dali%E9%A2%84%E5%A4%84%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jie Chu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CJ blog">
+      <meta itemprop="description" content="日常笔记">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | CJ blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/01/21/dali%E9%A2%84%E5%A4%84%E7%90%86/" class="post-title-link" itemprop="url">DALI加速图像数据预处理</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-01-21 23:03:00" itemprop="dateCreated datePublished" datetime="2023-01-21T23:03:00+08:00">2023-01-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%AD%E7%BB%83%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">训练技术</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="DALI预处理加速"><a href="#DALI预处理加速" class="headerlink" title="DALI预处理加速"></a>DALI预处理加速</h1><p>NVIDIA DALI 文档：<a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/dali/user-guide/docs/examples/general/data_loading/external_input.html">https://docs.nvidia.com/deeplearning/dali/user-guide/docs/examples/general/data_loading/external_input.html</a></p>
+<p>安装：<a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/dali/user-guide/docs/installation.html#pip-official-releases">https://docs.nvidia.com/deeplearning/dali/user-guide/docs/installation.html#pip-official-releases</a></p>
+<h2 id="1、DALI-pipeline"><a href="#1、DALI-pipeline" class="headerlink" title="1、DALI pipeline"></a>1、DALI pipeline</h2><p>DALI可以选择纯CPU加载和预处理或者CPU&amp;GPU混合加载，GPU加载。</p>
+<p>在DALI中，任何数据处理任务都有一个称为 Pipeline 的对象， Pipeline 对象是类的实例<a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/dali/user-guide/docs/pipeline.html#nvidia.dali.Pipeline"><code>nvidia.dali.Pipeline</code></a>或派生类。</p>
+<p>可以通过以下方式定义DALI Pipeline</p>
+<ol>
+<li>通过实现内部使用 DALI 运算符的函数并使用<a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/dali/user-guide/docs/pipeline.html#nvidia.dali.pipeline_def"><code>pipeline_def()</code></a>装饰器对其进行装饰。</li>
+<li>通过<a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/dali/user-guide/docs/pipeline.html#nvidia.dali.Pipeline"><code>Pipeline</code></a>直接实例化对象、构建图形并使用<a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/dali/user-guide/docs/pipeline.html#nvidia.dali.Pipeline.set_outputs"><code>Pipeline.set_outputs()</code></a>.</li>
+<li>通过从<a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/dali/user-guide/docs/pipeline.html#nvidia.dali.Pipeline"><code>Pipeline</code></a>类继承并覆盖<a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/dali/user-guide/docs/pipeline.html#nvidia.dali.Pipeline.define_graph"><code>Pipeline.define_graph()</code></a>（这是定义 DALI Pipelines 的传统方式）</li>
+</ol>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/%E6%88%AA%E5%9B%BE20230907195707.png" alt="截图20230907195707"></p>
+<h2 id="2、图像分类的pipeline示例"><a href="#2、图像分类的pipeline示例" class="headerlink" title="2、图像分类的pipeline示例"></a>2、图像分类的pipeline示例</h2><p>所有操作均在GPU上，note：<strong>使用gpu进行预处理，会占用显存，模型越大占用越多，但是GPU利用率会一直保持在100%</strong>。模型较大不推荐使用GPU加载。</p>
+<p><strong>使用纯CPU操作，数据处理的速度也比 torchvision快</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">TrainPipeline</span>(<span class="title class_ inherited__">Pipeline</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, batch_size, num_threads, device_id, data_root, img_size, n_holes, length, custom_cutout=<span class="literal">False</span></span>):</span><br><span class="line">         </span><br><span class="line">        <span class="built_in">super</span>(TrainPipeline, self).__init__(batch_size, num_threads, device_id, prefetch_queue_depth=<span class="number">4</span>)</span><br><span class="line">        mode = <span class="string">&#x27;gpu&#x27;</span></span><br><span class="line">        self.decode = ops.decoders.Image(device=<span class="string">&#x27;mixed&#x27;</span>)</span><br><span class="line"> </span><br><span class="line">        self.img_size = img_size</span><br><span class="line"> </span><br><span class="line">        <span class="comment"># readers.File类似torchvision.datasets.ImageFolder，dali还有其他高阶API，可自行研究使用</span></span><br><span class="line">        self.<span class="built_in">input</span> = ops.readers.File(file_root=data_root, random_shuffle=<span class="literal">True</span>)</span><br><span class="line">        <span class="comment"># Resize</span></span><br><span class="line">        self.resize = ops.Resize(device=mode, resize_x=<span class="built_in">int</span>(img_size*<span class="number">1.2</span>), resize_y=<span class="built_in">int</span>(img_size*<span class="number">1.2</span>))</span><br><span class="line">        <span class="comment"># Randomcrop，类似于torchvision.transforms.RandomCrop</span></span><br><span class="line">        self.randomcrop = ops.RandomResizedCrop(device=mode, size=img_size, random_area=[<span class="number">0.3</span>, <span class="number">1.0</span>])</span><br><span class="line">        <span class="comment"># CropMirrorNormalize可以实现normalize和随机水平翻转，类似于torchvision.transforms.Normalize &amp; RandomHorizontalFlip</span></span><br><span class="line">        self.normalize = ops.CropMirrorNormalize(device=mode, mean=[<span class="number">0.5</span>*<span class="number">255</span>, <span class="number">0.5</span>*<span class="number">255</span>, <span class="number">0.5</span>*<span class="number">255</span>],</span><br><span class="line">                                                 std=[<span class="number">0.5</span>*<span class="number">255</span>, <span class="number">0.5</span>*<span class="number">255</span>, <span class="number">0.5</span>*<span class="number">255</span>])</span><br><span class="line">        <span class="comment"># 获取随机数</span></span><br><span class="line">        self.rng1 = ops.random.Uniform()</span><br><span class="line">        self.rng2 = ops.random.CoinFlip()</span><br><span class="line">        <span class="comment"># 实例化改变图片色彩的类，类似于torchvision.transforms.ColorJitter</span></span><br><span class="line">        self.colortwist = ops.ColorTwist(device=mode)</span><br><span class="line">        <span class="comment"># 实例化旋转图像的类，类似于torchvision.transforms.RandomRotation</span></span><br><span class="line">        self.rotate = ops.Rotate(device=mode, fill_value=<span class="number">0</span>)</span><br><span class="line">        <span class="comment"># gridmask，类似于cutout这种随机遮挡块操作</span></span><br><span class="line">        self.gridmask = ops.GridMask(device=mode)</span><br><span class="line">       </span><br></pre></td></tr></table></figure>
+<p>如果需要自定义数据处理的函数，可参考一下方式。以cutout为例：cutout使用的是cpu处理了，如果是gpu处理的话，<strong>需要将numpy改成cupy，DALI原生支持的操作和数据增强挺丰富的。</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">CUTOUT</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, n_holes, length</span>):</span><br><span class="line">        self.n_holes = n_holes</span><br><span class="line">        self.length = length</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__call__</span>(<span class="params">self, imgs</span>):</span><br><span class="line">        c, h, w = imgs.shape</span><br><span class="line">        mask = np.ones((h, w), np.float32)</span><br><span class="line">        <span class="keyword">for</span> n <span class="keyword">in</span> <span class="built_in">range</span>(self.n_holes):</span><br><span class="line">            y = np.random.randint(h)</span><br><span class="line">            x = np.random.randint(w)</span><br><span class="line">            y1 = np.clip(y - self.length // <span class="number">2</span>, <span class="number">0</span>, h)</span><br><span class="line">            y2 = np.clip(y + self.length // <span class="number">2</span>, <span class="number">0</span>, h)</span><br><span class="line">            x1 = np.clip(x - self.length // <span class="number">2</span>, <span class="number">0</span>, w)</span><br><span class="line">            x2 = np.clip(x + self.length // <span class="number">2</span>, <span class="number">0</span>, w)</span><br><span class="line">            mask[y1: y2, x1: x2] = <span class="number">0.</span></span><br><span class="line">        mask = np.expand_dims(mask, <span class="number">0</span>).repeat(c, axis=<span class="number">0</span>)</span><br><span class="line">        imgs = imgs * mask</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">return</span> imgs</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 然后在上面的 TrainPipeline上加上下面这行,model 是 “cpu”</span></span><br><span class="line">    self.mask = ops.PythonFunction(device=<span class="string">&quot;cpu&quot;</span>, function=CUTOUT(n_holes, length), num_outputs=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>图像分类数据加载的时候的调用方式：其他的Iterator可以参考 <a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/dali/user-guide/docs/plugins/pytorch_tutorials.html">https://docs.nvidia.com/deeplearning/dali/user-guide/docs/plugins/pytorch_tutorials.html</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> nvidia.dali.plugin.pytorch <span class="keyword">import</span> DALIClassificationIterator</span><br><span class="line"><span class="keyword">from</span> nvidia.dali.plugin.base_iterator <span class="keyword">import</span> LastBatchPolicy</span><br><span class="line"> </span><br><span class="line">pipe_train = TrainPipeline(batch_size, num_threads, device_id, data_root, img_size, n_holes, length,custom_cutout=custom_cutout)</span><br><span class="line">pipe_train.build()</span><br><span class="line">         </span><br><span class="line"><span class="comment"># DALIClassificationIterator: 返回pytorch tensor 形式是 (data and label) , 即DataLoader</span></span><br><span class="line">train_loader = DALIClassificationIterator(pipe_train, size=pipe_train.epoch_size(<span class="string">&#x27;Reader&#x27;</span>),last_batch_policy=LastBatchPolicy.PARTIAL, auto_reset=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://jiechu520.github.io/2023/01/09/MAE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -589,178 +684,6 @@ p_{i}^{j}=\displaystyle \int^{b_j}_{b_{j-1}}N(x;\Delta u_i,\Delta \sigma_i)dx</s
 <h3 id="3-MLP"><a href="#3-MLP" class="headerlink" title="3.MLP"></a>3.MLP</h3><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/MLP.png" alt="图7 多层感知机"></p>
 <h3 id="4-DropPath"><a href="#4-DropPath" class="headerlink" title="4.DropPath"></a>4.DropPath</h3><p>除了以上重要模块意外，代码实现过程中还使用了DropPath（Stochastic Depth）来代替传统的Dropout结构，DropPath可以理解为一种特殊的 Dropout。其作用是在训练过程中随机丢弃子图层（randomly drop a subset of layers），而在预测时正常使用完整的 Graph。</p>
 <p><strong>参考文献</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2010.11929">An Image is Worth 16x16 Words:Transformers for Image Recognition at Scale</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://jiechu520.github.io/2022/04/19/%E5%A4%9A%E6%A8%A1%E6%80%81%E8%AE%BA%E6%96%87%E7%BB%BC%E8%BF%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Jie Chu">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CJ blog">
-      <meta itemprop="description" content="日常笔记">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | CJ blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/04/19/%E5%A4%9A%E6%A8%A1%E6%80%81%E8%AE%BA%E6%96%87%E7%BB%BC%E8%BF%B0/" class="post-title-link" itemprop="url">多模态论文综述</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2022-04-19 21:00:00 / Modified: 23:08:00" itemprop="dateCreated datePublished" datetime="2022-04-19T21:00:00+08:00">2022-04-19</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%A4%9A%E6%A8%A1%E6%80%81/" itemprop="url" rel="index"><span itemprop="name">多模态</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="多模态论文综述"><a href="#多模态论文综述" class="headerlink" title="多模态论文综述"></a>多模态论文综述</h1><p>持续更新中。。。</p>
-<h2 id="1-ALBEF"><a href="#1-ALBEF" class="headerlink" title="1. ALBEF"></a>1. ALBEF</h2><h3 id="1-1-背景"><a href="#1-1-背景" class="headerlink" title="1.1 背景"></a>1.1 背景</h3><p>在Vision-and-Language Pre-training (VLP) 已有工作中，主要是靠一个预训练的图像检测器来提取图像特征，并用多模态的encoder编码器将图像特征和文本特征融合，然后使用“完形填空、图文匹配”等下游任务来训练多模态encoder。</p>
-<p>但是这些工作存在着一下问题：</p>
-<ol>
-<li>用于抽取图像特征和文本特征的模型是分别单独训练的，也就是说他们的特征不在一个空间内，这就是使得多模态encoder不能有效的学习如何去融合两种特征；</li>
-<li>使用目标检测模型作为图像特征的抽取器是一件很“昂贵”的事情，在预训练阶段，需要标注物体的box位置，在预测阶段需要有高分辨率的图片；</li>
-<li>目前被广泛使用的图像-文本数据集存在着固有的噪声，这些噪声会影响模型性能。</li>
-</ol>
-<p>基于这些问题，这篇文章提出了ALBEF模型。</p>
-<h3 id="1-2-方法"><a href="#1-2-方法" class="headerlink" title="1.2 方法"></a>1.2 方法</h3><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/%E6%88%AA%E5%B1%8F2024-01-29%2023.26.57.png" alt="截屏2024-01-29 23.26.57"></p>
-<p>如上图所示，ALBEF使用ViT-B/16（12层的transformer）作为图像输入的编码器，并用ImageNet-1k上预训练的权重初始化它；使用6层的transfomer作为文本输入的编码器，并用 $Bert_{base}$ 的前6层作为初始化；使用  $Bert_{base}$  的后6层权重作为模态融合层的初始化。通过多模态编码器各层的交叉注意，实现图像特征与文本特征的融合。</p>
-<p>预训练的任务：</p>
-<p><strong>ITC</strong>：ITC任务想要解决“研究动机”中提出的第一个问题，通过该任务使得图像编码器的向量空间与文本编码器的向量空间做对齐。</p>
-<p><strong>ITM</strong>：构建负样本的时候用到了ITC任务，在一个batch里，通过计算特征相似度，寻找一张图片除它本身对应的文本之外相似度最高的文本作为负样本。这样就能构建一批hard negatives，从而提升训练难度。</p>
-<p><strong>MLM</strong>：完形填空</p>
-<h3 id="1-3-总结"><a href="#1-3-总结" class="headerlink" title="1.3 总结"></a>1.3 总结</h3><ol>
-<li>通过ITC任务实现了图像向量和文本向量的对齐；</li>
-<li>使用VIT代替了图像检测模块，抽取图像特征，减少了图像的标注成本；</li>
-<li>通过Momentum Distillation的方式，降低了训练数据中噪声的影响。</li>
-</ol>
-<h2 id="2-VLMO"><a href="#2-VLMO" class="headerlink" title="2. VLMO"></a>2. VLMO</h2><h3 id="2-1-背景"><a href="#2-1-背景" class="headerlink" title="2.1 背景"></a>2.1 背景</h3><p>第一个动机是<strong>多模态的模型呈现了两个不同的发展方向，但都有各自的缺点。</strong>一种是CLIP，在图文检索上效果比较好，推理速度快，但是这种方法在视觉推理类任务上表现不理想。一个可能的原因是双编码器的结构在编码阶段缺乏模态之间的交互，这样模型在编码阶段并不能充分利用另一个模态的信息。另一种是以ViL-BERT为代表的融合类模型，它们一般会通过一个融合模块来融合文本模态和图像模态编码的特征。但是这类算法在进行视觉推理时的速度却非常慢。</p>
-<p>第二个动机是：多模态的数据集不够用，但是分开来看，视觉和NLP各自都有比较大的数据集。</p>
-<p>考虑到以上的原因，VLMO提出了一个混合模态专家 Transformer （Mixture-of-Modality-Experts Transformer)。另一个贡献是多模态数据的预训练策略。</p>
-<h3 id="2-2-方法"><a href="#2-2-方法" class="headerlink" title="2.2 方法"></a>2.2 方法</h3><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/%E6%88%AA%E5%B1%8F2024-01-30%2023.58.45.png" alt="截屏2024-01-30 23.58.45"></p>
-<p>我们从下向上看这个图，首先它的输入是一个多模态的输入。接着是个一个共享的多头自注意力层，这一部分主要的作用是供不同模特的输入特征进行交互。再往上是一个模态混合专家（Swithcing Modality Expert，SME），SME的作用是根据输入数据的类型选择训练不同的由前馈神经网络（Feed Forward Network，FFN）。根据输入数据的三种类型，SME也是由三个不同的专家组成，分别是视觉专家（V-FFN），语言专家（L-FFN），视觉-语言专家（VL-FFN）。</p>
-<p>因为涉及了多个模态的数据和专家，VLMo的预训练任务也分成了几种不同的类型：对纯图像数据的训练，对纯文本数据的训练，以及混合模态数据的训练，包括对比学习、图像-文本对匹配、掩码语言模型三个任务，如上图右边所示。</p>
-<p><strong>分阶段预训练的策略</strong></p>
-<p>因为MoME-Transformer中使用了参数共享的MSA以及参数独立的三个专家，并且VLMo中也引入了三种不同输入数据的预训练任务，因此我们需要一个合适的调度算法来训练模型，VLMo将其命名为阶段预训练（Stagewise Pre-training）。</p>
-<p>在进行模型预训练时，一个常见的策略是先使用易获得的海量数据进行训练，使模型优化到一个比较好的参数值后，再在比较难获得的数据上进行微调，从而使得模型在样本数较少的数据上也能获得不错的泛化能力。基于这个思想，VLMo提出的阶段预训练如下图所示。它首先冻结语言专家和视觉-语言专家的参数，通过MIM预训练任务在纯图像数据上训练视觉专家。然后再冻结共享的MSA以及视觉专家和视觉-语言专家的参数，通过MLM预训练任务在纯文本数据上训练语言专家。最后它再解冻所有参数，通过图文数据集的三个任务训练所有的参数。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/%E6%88%AA%E5%B1%8F2024-01-31%2000.01.45.png" alt="截屏2024-01-31 00.01.45"></p>
-<p><strong>可以看到在视觉数据上训练的self-attention直接拿来做文本训练，且不需要再 finetune</strong></p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/%E6%88%AA%E5%B1%8F2024-01-31%2000.04.25.png" alt="截屏2024-01-31 00.04.25"></p>
-<p>从实验结果来看，效果也是比较好的。</p>
-<h3 id="2-3-总结"><a href="#2-3-总结" class="headerlink" title="2.3 总结"></a>2.3 总结</h3><p>VLMO 提出了一个可切换不同结果的名为 MoME-Transformer的结构，解决了双编码器结构模型以及特征融合结构模型的问题，并在VQA，VR任务达到了主流效果。</p>
-<h2 id="3-BLIP"><a href="#3-BLIP" class="headerlink" title="3. BLIP"></a>3. BLIP</h2><h3 id="3-1-背景"><a href="#3-1-背景" class="headerlink" title="3.1 背景"></a>3.1 背景</h3><p>从模型的角度，最近的一些方法，只使用 encoder-only的模型无法直接运用到 text generaton的任务中如 image captioning；使用 encoder-decoder 结构的模型又无法直接适用于 image-text retrieval 任务。</p>
-<p>从数据的角度，大部分方法的数据都是比较 noise的。</p>
-<p>BLIP 引入了 encoder-decoder的多模态混合结构 MED（Multimodal mixture of Encoder-Decoder），能够有效地进行多任务雨训练和迁移学习。</p>
-<h3 id="3-2-方法"><a href="#3-2-方法" class="headerlink" title="3.2 方法"></a>3.2 方法</h3><p>MED包括两个单模态编码器（lmage Encoder，Text Encoder），一个以图像为基础的编码器（image-grounded text encoder）和一个以图像为基础的解码器（image-grounded text decoder）。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/%E6%88%AA%E5%B1%8F2024-01-31%2023.30.15.png" alt="截屏2024-01-31 23.30.15"></p>
-<p><em>通过三个损失函数联合进行预训练：*</em></p>
-<p><strong>(i)图像-文本对比损失 ITC</strong>（Image-Text Contrastive Loss）：针对图像编码器和文本编码器，通过正负图文对的对比学习，<strong>来对齐图像和文本的潜在特征空间。</strong></p>
-<p><strong>(ii)图像-文本匹配损失 ITM</strong>（Image-Text Matching Loss）：针对以图像为基础的文本编码器，通过对图文匹配性进行二分类，<strong>建模图文多模态信息的相关性。</strong></p>
-<p><strong>(iii)语言建模损失 LM</strong>（Language Modeling Loss ）：针对以图像为基础的文本解码器，通过交叉熵损失进行优化，<strong>训练模型以自回归的方式生成目标caption。</strong></p>
-<p>网络上获得的大量图文对，通常包含许多不准确甚至错误的信息，为了有效利用这种形态的数据，BLIP提出caption生成和过滤模块<strong>CapFilt</strong>（Captioning and Filtering），首先从噪声图文对中学习，然后生成和过滤产生新的数据集，再去迭代优化原模型。</p>
-<p><strong>CapFilt包含</strong>两个模块：<strong>一个是captioner</strong>，给网络图像生成caption，<strong>另一个是Filter</strong>，过滤原始网络文本和合成文本中的噪声caption。实验结果表明，通过captioner和filter的协作，<strong>BLIP模型能够在各种下游任务上取得了稳定的性能提升</strong>，包括图像-文本检索、图像标题、视觉问答、视觉推理和视觉对话。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/%E6%88%AA%E5%B1%8F2024-01-31%2023.33.55.png" alt="截屏2024-01-31 23.33.55"></p>
-<p>Captioner和Filter都是从预训练的模型初始化的，并在人工标注数据集上单独进行微调。</p>
-<p><strong>（i）Captioner是image-grounded text decoder，</strong>它在人工标注数据集上以LM为目标进行微调，对给定的图像进行文本解码，这里给定网络图片，Captioner生成合成caption 。</p>
-<p><strong>（ii）Filter是image-grounded text encoder</strong>，它根据<strong>ITC</strong>和<strong>ITM</strong>的目标进行微调，以学习文本是否与图像匹配，去除原始网络文本和合成文本中的噪音文本。</p>
-<p><strong>（iii）Bootstrap过程，</strong>Captioner生成的图文对与Filter过滤后的网络图文，再加上人工标注的图文对结合起来，形成一个新的数据集，重新预训练一个新模型。</p>
-<h3 id="3-3-总结"><a href="#3-3-总结" class="headerlink" title="3.3 总结"></a>3.3 总结</h3><p>BLIP提出了一个encoder-decoder结构，统一了理解和生成的任务，并且提出了一个用训练好的模型去清洗数据反过来再去迭代原模型的方法。</p>
-<h2 id="4-CoCa"><a href="#4-CoCa" class="headerlink" title="4. CoCa"></a>4. CoCa</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/%E6%88%AA%E5%B1%8F2024-02-01%2000.13.24.png" alt="截屏2024-02-01 00.13.24"></p>
-<p>CoCa结构与ALBEF类似，但是将 encoder换成了 decoder，并且通过 ITC和LM 的任务进行预训练。</p>
-<blockquote>
-<p>（1）Autoregressive decoder 的设计可以在几乎不增加计算量的前提下结合 full</p>
-<p>sentence 的对比loss和 subword-level 的 LM loss。（2）CoCa的另一个动机是simVLM证明了 生成任务可以简单高效地训练多模态模型且具备 zero-shot的能力。</p>
-</blockquote>
-<p>CoCa构建在encoder-decoder基础上，不过这里将text decoder均分成两个部分：unimodal text decoder和multimodal text decoder。然后增加一个cls token在文本的最后，unimodal text decoder不参与对图像特征的cross-attention，这样cls token经过unimodal text decoder之后就能够得到整个句子的全局特征。同时采用attention pooling对image encoder得到特征提取图像的全局特征，两个全局特征就可以实现图像-文本的对比学习，这里的attention pooling其实就是一个multi-head attention，只不过key和value是image encoder得到的特征，而query是预先定义的一个可训练的embedding，由于我们只需要提取一个全局特征，所以只需要定义一个query就好了。</p>
-<p>multimodal text decoder将用来执行生成任务，这里也通过一个attention pooling对image encoder得到的特征进行提取，不过这里query数量定义为256，这样attention pooling可以得到256个特征，它作为multimodal text decoder的cross-attention的输入。</p>
-<p>CoCa训练使用的数据比较大，最后得到的效果也刷新的当时很多项多模态任务的榜单。</p>
-<h2 id="5-BEiT-V3"><a href="#5-BEiT-V3" class="headerlink" title="5 BEiT V3"></a>5 BEiT V3</h2><h3 id="5-1-背景"><a href="#5-1-背景" class="headerlink" title="5.1 背景"></a>5.1 背景</h3><p>无论是 NLP，CV 还是 多模态领域，模型大一统是大势所趋，也就是在超大的数据集上做大规模预训练，一旦模型训练好了之后，就可以直接应用到下游任务中，成为一个通用的 Foundation Model。Beit V3正是朝着这个目标，对之前的工作进行总结和改进之后实现的。</p>
-<p>主要亮点是 Beit v3 直接将图像和文本以相同的方式处理，并通过一个预训练任务进行训练，也就是 mask data modeling。</p>
-<h3 id="5-2-方法"><a href="#5-2-方法" class="headerlink" title="5.2 方法"></a>5.2 方法</h3><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/1928412-20230319083441947-1188926581.png" alt=""></p>
-<p>模型结构采用和 VLMO 相同的 MOME，训练目标是 mask data modeling，可能是遮住了图像，可能是遮住了文本，模型训练学习如何去恢复它就可以。</p>
-<p>下游任务实现框架：</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/1928412-20230319083441599-652241990.png" alt=""></p>
-<h3 id="5-3-总结"><a href="#5-3-总结" class="headerlink" title="5.3 总结"></a>5.3 总结</h3><p>目标函数不是越多越好，要看目标函数是否有互补的特性。数据的质量也很关键。</p>
-<h2 id="6-BLIP2"><a href="#6-BLIP2" class="headerlink" title="6 BLIP2"></a>6 BLIP2</h2><h3 id="6-1-背景"><a href="#6-1-背景" class="headerlink" title="6.1 背景"></a>6.1 背景</h3><p>使用大规模模型和数据集进行端到端训练需要<strong>较高的计算成本。</strong></p>
-<p>为了利用预先训练好的单模态模型进行视觉语言预训练，促进<strong>跨模态对齐是关键</strong>。然而，由于 LLM 在单模态预训练期间没有看到图像，因此冻结它们使视觉-语言对齐特别有挑战。现有方法诉诸于图像到文本的生成损失，作者表明这不足以弥补模态间的差距。</p>
-<p>为了实现与冻结的单模态模型的有效视觉-语言对齐，作者提出了一种通过<strong>两阶段预训练策略</strong>进行预训练的 Query Transformer（Q-Former）。如下图 Figure 1 所示，Q-Former 是一个轻量级的 Transformer，它使用一组可学习的Query 向量来从冻结的 image encoder 中提取视觉特征。它充当了冻结的 image encoder 和冻结的 LLM 之间的信息屏障（bottleneck），为 LLM 提供最有用的视觉特征，以输出所需的文本。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240221232233626.png" alt="image-20240221232233626"></p>
-<h3 id="6-2-方法"><a href="#6-2-方法" class="headerlink" title="6.2 方法"></a>6.2 方法</h3><h4 id="6-2-1-模型结构"><a href="#6-2-1-模型结构" class="headerlink" title="6.2.1 模型结构"></a>6.2.1 模型结构</h4><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240221232331395.png" alt="image-20240221232331395"></p>
-<p>模型中唯一可训练的模块就是提出的 Q-Former，它能够从图像编码器中提取<strong>固定数量的输出特征</strong>，<strong>与输入图像分辨率无关</strong>。Q-Former 的结构如上图所示，其由两个共享 Self Attention的 Transformer 子模块组成（也就是说，图中橙色的 Self Attention 是共享的，灰色的 Cross Attention、紫色的 Feed Forward 和绿色的 Feed Forward 都是独立的）：</p>
-<ul>
-<li>Q-Former 左侧为 image transformer：与冻结的 image encoder 交互以进行视觉特征提取</li>
-<li>Q-Former 右侧为 text transformer：可以用文本 encoder 和 文本 decoder</li>
-</ul>
-<p>在 Q-Former 中，作者额外创建了一组可学习的 Query embedding 作为 image transformer 的输入。这些 Query embedding 在 Self Attention 层相互交叉，并通过 Cross attention 层（每隔一个 transformer block 有一个 Cross attention）与冻结的 image encoder 输出的 image embedding 进行交叉。此外，这些 Query embedding 还通过相同的 Self Attention 与 text embedding 相交叉。作者使用 Bert Base 的预训练权重来初始化 Q-Former，其中的 Cross Attention 是随机初始化的，Q-Former 总共包含 188M 个参数（包括 Query embedding）。</p>
-<p>根据预训练任务不同，作者会使用不同的 Self Attention Mask 来控制 Query embedding 和 text embedding 的交互。</p>
-<h4 id="6-2-2-第一阶段-表征学习阶段"><a href="#6-2-2-第一阶段-表征学习阶段" class="headerlink" title="6.2.2 第一阶段-表征学习阶段"></a>6.2.2 第一阶段-表征学习阶段</h4><p>作者将 Q-Former 连接到冻结的 Image encoder 上，使用图像文本对进行预训练。目标是训练 Q-Former，以便 Query 可以学习提取对文本信息量最大的视觉表征。受 BLIP 的启发，作者联合了三个具有相同输入格式和模型参数的预训练目标。每个目标在 Query 和 Text 之间采用不同的 Attention Mask 策略来控制它们之间的交互。分别是：</p>
-<h5 id="6-2-2-1-ITC-图像文本对比学习"><a href="#6-2-2-1-ITC-图像文本对比学习" class="headerlink" title="6.2.2.1 ITC 图像文本对比学习"></a>6.2.2.1 ITC 图像文本对比学习</h5><p>ITC 的目的是使图像表征和文本表征对齐，以便最大化它们之间的交互信息。作者使用对比损失，通过对比正对和负对的相似性来实现这一点（正对的距离尽量近，负对的距离尽量远）。具体来说，作者将 image transformer 的输出 Query 表征 Z 与 text transformer 输出的文本表征 t 对齐，其中 t 对应 [CLS] Token 的输出 embedding。由于 Z 包含多个输出 embedding（32 个 Query，对应 32 个 embedding 向量），因此作者首先计算每个 Query 表征与 t 之间的成对相似度（32 个），然后选择最高的一个作为图像-文本相似度。为了避免信息泄露，作者采用了单模态的 Self-Attention Mask，也就是如下图红框所示 Mask，其不允许 Query 和 Text 相互看到。其中的负例都从 batch 数据中选择（图像-文本是成对存在的，每个图像都有 1 个正对，其余图像对应的文本都可以作为负对，也就是每个图像有 batch size - 1 个负样本），而不是 BLIP 中的动量队列.</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240222000314502.png" alt="image-20240222000314502"></p>
-<h5 id="6-2-2-2-ITG-基于图像文本生成"><a href="#6-2-2-2-ITG-基于图像文本生成" class="headerlink" title="6.2.2.2 ITG 基于图像文本生成"></a>6.2.2.2 ITG 基于图像文本生成</h5><p>ITG 的目的是以给定输入图像作为条件来训练 Q-Former 生成文本。由于 Q-Former 的架构不允许 Text Token 与 image encoder 之间直接交互，因此必须先由 Query 和 image encoder 交互提取生成文本所需的信息，然后通过 Self-Attention 传递给 Text Token。也就是说，Query 被强制提取有关文本的所有信息的视觉特征。作者采用多模态因果自注意力掩码（Multi-modal Causal Self-Attention Mask）来控制 Query-Text 之间的交互。如下图红框内所示，类似于 UniLM 中使用的 Mask，Query 可以相互关注到，但不能关注到 Text。每个 Text Token 都可以关注到所有 Query Token，以及之前的 Text Token。此外作者还将 [CLS] Token 换成了 [DEC] Token，作为发出解码任务信息的第一个 Text Token。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640.png" alt="图片"></p>
-<h5 id="6-2-2-3-ITM-图像文本匹配"><a href="#6-2-2-3-ITM-图像文本匹配" class="headerlink" title="6.2.2.3 ITM 图像文本匹配"></a>6.2.2.3 ITM 图像文本匹配</h5><p>ITM 的目的是学习图像和文本之间的细粒度对齐。这是一个二元分类任务，要求模型预测图像-文本对是正（匹配）还是负（不匹配）。此时作者使用双向自注意力掩码（Bi-directional Self-Attention Mask），如下图红框内所示，也就是 Query 和 Text 都可以相互看到。因此 Query 表征 Z 可以捕获到多模态信息。之后，作者将 Z 中的每个 embedding（32）都输入到二元分类 Linear 层以获得 logit，并将所有 Query 的 logit 平均输出为匹配分数。作者采用了 [2107.07651] Align before Fuse: Vision and Language Representation Learning with Momentum Distillation 中的 hard 负样本挖掘策略来创建信息丰富的负对。</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/640-20240222000447400.png" alt="图片"></p>
-<h4 id="6-2-3-第二阶段"><a href="#6-2-3-第二阶段" class="headerlink" title="6.2.3 第二阶段"></a>6.2.3 第二阶段</h4><p>在第二阶段的预训练阶段，作者将 Q-Former（带有冻结的 image encoder）连接到冻结的 LLM，以获得 LLM 强大的语言生成能力。如下图 Figure 3 所示，作者将 Q-former 的输出 Z 通过全连接（FC）投影到与 LLM 的 text embedding 相同的维度中（类似 LLaVA-1.5 中直接将 image encoder 的输出通过一个 MLP 投影到 text embedding 相同维度，并实现模态对齐）。然后，将投影的 Query embedding 附加到输入的 text embedding 之前。它们可以充当 soft visual prompts，也就是使 LLM 以 Q-Former 提取的视觉表征为条件。由于 Q-Former 已经经过预训练以提取语言相关（language-informative）的视觉表征，因此它有效的充当了信息瓶颈（bottleneck），将最有用的信息提供给 LLM，同时删除不相关的视觉信息。这减轻了 LLM 学习视觉-语言对齐的负担，从而减轻了灾难性遗忘问题。</p>
-<p>作者尝试了两种类型的 LLM：</p>
-<ul>
-<li>Decoder-Only 的 LLM：使用语言建模损失进行预训练，其中冻结的 LLM 的任务是生成基于 Q-Former 的视觉表征的文本。</li>
-<li>Encoder + Decoder 的 LLM：使用 prefix 语言建模损失进行预训练，将文本分成两部分，prefix 文本与视觉表征连接在一起作为 LLM Eecoder 的输入，suffix 文本用作 LLM Decoder 的生成目标。</li>
-<li><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240222000603115.png" alt="image-20240222000603115"></li>
-</ul>
-<h3 id="6-3-总结"><a href="#6-3-总结" class="headerlink" title="6.3 总结"></a>6.3 总结</h3><p>本文中作者提出了 BLIP-2，这是一种通用且计算高效的视觉-语言预训练方法，它利用了冻结的预训练 image encoder 和 LLM。BLIP-2 在各种视觉语言任务上实现了 SOTA，同时在预训练期间具有很少的可训练参数。BLIP-2 还展示了 zero-shot 指示图像到文本生成的能力。作者认为 BLIP-2 是构建多模态对话式 AI 代理的重要一步。</p>
 
       
     </div>
