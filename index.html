@@ -116,7 +116,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -127,7 +127,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -144,6 +144,130 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://jiechu520.github.io/2024/03/04/%E5%B8%B8%E8%A7%81%E7%9A%84%E5%A4%9A%E6%A8%A1%E6%80%81%E5%AF%B9%E9%BD%90%E6%96%B9%E6%A1%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jie Chu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CJ blog">
+      <meta itemprop="description" content="日常笔记">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | CJ blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/03/04/%E5%B8%B8%E8%A7%81%E7%9A%84%E5%A4%9A%E6%A8%A1%E6%80%81%E5%AF%B9%E9%BD%90%E6%96%B9%E6%A1%88/" class="post-title-link" itemprop="url">常见的多模态对齐方案</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2024-03-04 21:00:00 / Modified: 23:08:00" itemprop="dateCreated datePublished" datetime="2024-03-04T21:00:00+08:00">2024-03-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%9A%E6%A8%A1%E6%80%81/" itemprop="url" rel="index"><span itemprop="name">多模态</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="常见的多模态对齐方案"><a href="#常见的多模态对齐方案" class="headerlink" title="常见的多模态对齐方案"></a>常见的多模态对齐方案</h1><h2 id="1、背景"><a href="#1、背景" class="headerlink" title="1、背景"></a>1、背景</h2><p>LLM 只具备处理文本的能力，需要弥补自然语言和图像模态之间的差距。通过端到端的方式训练 LMM 代价非常高，并且可能会带来灾难性遗忘的风险。目前，通常的做法是基于预训练的视觉编码器和 LLM 来构建 VLM。图像生成领域，也通过类似模态对齐的结构来引入额外的信息控制生成。常见的模态对齐方案，主要分为以下两类：</p>
+<ul>
+<li>基于 Learnable Query 的方案，包括：<ul>
+<li>Perceiver Resampler</li>
+<li>Q-Former</li>
+<li>Cross-attention</li>
+</ul>
+</li>
+<li>基于 Projection 的方案：<ul>
+<li>单层 Linear 投影</li>
+<li>两层 MLP</li>
+</ul>
+</li>
+</ul>
+<h2 id="2、模态对齐的方案"><a href="#2、模态对齐的方案" class="headerlink" title="2、模态对齐的方案"></a>2、模态对齐的方案</h2><h3 id="2-1-Cross-attention"><a href="#2-1-Cross-attention" class="headerlink" title="2.1 Cross attention"></a>2.1 Cross attention</h3><p>很多常见的模块的使用了 Cross attention，大多数文生图模型，text embedding 就是通过 cross attention 引入到 Unet 结构里面。</p>
+<p>假设输入的 Query embedding 维度 32 x 768，输入的 image embedding 维度 257 x 1024 为例，如下所示，可以看出 Cross Attention 的过程，K 和 V 的维度为 1024 x 768，Q 的维度为 768 x 768，所以对应的 Attention Score 的维度为 32 x 257，最终也可以保持 Query embedding 维度不变，依然为 32 x 768（红框）：</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20240303234925136.png" alt="image-20240303234925136"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">CrossAttention</span>(nn.Module):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    A cross attention layer.</span></span><br><span class="line"><span class="string">    Parameters:</span></span><br><span class="line"><span class="string">        query_dim (`int`): The number of channels in the query.</span></span><br><span class="line"><span class="string">        cross_attention_dim (`int`, *optional*):</span></span><br><span class="line"><span class="string">            The number of channels in the encoder_hidden_states. If not given, defaults to `query_dim`.</span></span><br><span class="line"><span class="string">        heads (`int`,  *optional*, defaults to 8): The number of heads to use for multi-head attention.</span></span><br><span class="line"><span class="string">        dim_head (`int`,  *optional*, defaults to 64): The number of channels in each head.</span></span><br><span class="line"><span class="string">        dropout (`float`, *optional*, defaults to 0.0): The dropout probability to use.</span></span><br><span class="line"><span class="string">        bias (`bool`, *optional*, defaults to False):</span></span><br><span class="line"><span class="string">            Set to `True` for the query, key, and value linear layers to contain a bias parameter.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    query = attn.to_q(hidden_states)</span><br><span class="line">    query = attn.head_to_batch_dim(query)</span><br><span class="line"></span><br><span class="line">    encoder_hidden_states = encoder_hidden_states <span class="keyword">if</span> encoder_hidden_states <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">else</span> hidden_states</span><br><span class="line">    key = attn.to_k(encoder_hidden_states)</span><br><span class="line">    value = attn.to_v(encoder_hidden_states)</span><br><span class="line">    key = attn.head_to_batch_dim(key)</span><br><span class="line">    value = attn.head_to_batch_dim(value)</span><br><span class="line"></span><br><span class="line">    attention_probs = attn.get_attention_scores(query, key, attention_mask)</span><br><span class="line">    hidden_states = torch.bmm(attention_probs, value)</span><br></pre></td></tr></table></figure>
+<p>使用 Cross attention 作为模态间对齐结构的 VLM 有：</p>
+<ul>
+<li>Qwen-VL</li>
+<li>各种文生图模型</li>
+</ul>
+<h3 id="2-2-Percevier-Resampler"><a href="#2-2-Percevier-Resampler" class="headerlink" title="2.2 Percevier Resampler"></a>2.2 Percevier Resampler</h3><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/v2-85dfc577f695db6f8432cc7b4f114448_r.jpg" alt="img"></p>
+<p>Resampler 的结构如上图所示，可以看出它是一个常规的 transformer block， 其中 attention 使用 Cross attention，拿 Flamingo 举例，具体来说：</p>
+<ul>
+<li>每个图像经 Vision Encoder 会生成一个 [S, d] 的视觉特征，T 个图像对应 x_f 的维度为 [T, S, d]</li>
+<li>x_f 加上维度为 [T, 1, d] 的 time_embeddings</li>
+<li>将时间和空间维度拉平，x_f -&gt; [T*S, d]</li>
+<li>将 x_f 作为 transformer block 的 Key 和 Value 输入</li>
+<li>自定义的 R 个可学习的 Query Token，对应维度为 [R, d]</li>
+<li>然后经过 num_layers 层 transformer block 得到对应的新的视觉特征 x，维度为 [R, d]，和可学习的 Query 维度一致。</li>
+</ul>
+<p>使用 Resampler 结构的常见 VLM 模型有：</p>
+<ul>
+<li>Flamingo</li>
+<li>mPLUG-Owl</li>
+</ul>
+<h3 id="2-3-Q-former"><a href="#2-3-Q-former" class="headerlink" title="2.3 Q-former"></a>2.3 Q-former</h3><p>Q-former 结构由 BLIP2 模型提出来的，在 Q-Former 中，作者额外创建了一组可学习的 Query embedding 作为输入（这与 Flamingo 中R 个可学习的 Query Token 作用一样）。这些 Query embedding 在 Self Attention 层相互交叉，并通过 Cross attention 层（每隔一个 transformer block 有一个 Cross attention）与冻结的 image encoder 输出的 image embedding 进行交叉。</p>
+<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/%E6%88%AA%E5%B1%8F2024-03-04%2000.07.50.png" alt="截屏2024-03-04 00.07.50"></p>
+<p>使用 Q-former 结构的 VLM 模型有：</p>
+<ul>
+<li>BLIP2</li>
+<li>MiniGPT- v1</li>
+<li>InstructBILP</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1640,96 +1764,6 @@
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230307191607861.png" alt="image-20230307191607861"></p>
 <p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/image-20230307191620727.png" alt="image-20230307191620727"></p>
 <h3 id="Pytorch实现"><a href="#Pytorch实现" class="headerlink" title="Pytorch实现"></a>Pytorch实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">EMA</span>():</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, model, decay</span>):</span><br><span class="line">        self.model = model</span><br><span class="line">        self.decay = decay</span><br><span class="line">        self.shadow = &#123;&#125;</span><br><span class="line">        self.backup = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">register</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">                self.shadow[name] = param.data.clone()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">                <span class="keyword">assert</span> name <span class="keyword">in</span> self.shadow</span><br><span class="line">                new_average = (<span class="number">1.0</span> - self.decay) * param.data + self.decay * self.shadow[name]</span><br><span class="line">                self.shadow[name] = new_average.clone()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">apply_shadow</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">                <span class="keyword">assert</span> name <span class="keyword">in</span> self.shadow</span><br><span class="line">                self.backup[name] = param.data</span><br><span class="line">                param.data = self.shadow[name]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">restore</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">                <span class="keyword">assert</span> name <span class="keyword">in</span> self.backup</span><br><span class="line">                param.data = self.backup[name]</span><br><span class="line">        self.backup = &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化</span></span><br><span class="line">ema = EMA(model, <span class="number">0.999</span>)</span><br><span class="line">ema.register()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练过程中，更新完参数后，同步update shadow weights</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">train</span>():</span><br><span class="line">    optimizer.step()</span><br><span class="line">    ema.update()</span><br><span class="line"></span><br><span class="line"><span class="comment"># eval前，apply shadow weights；eval之后，恢复原来模型的参数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">evaluate</span>():</span><br><span class="line">    ema.apply_shadow()</span><br><span class="line">    <span class="comment"># evaluate</span></span><br><span class="line">    ema.restore()</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://jiechu520.github.io/2023/02/24/lora/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Jie Chu">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CJ blog">
-      <meta itemprop="description" content="日常笔记">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | CJ blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023/02/24/lora/" class="post-title-link" itemprop="url">Lora</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2023-02-24 23:00:00 / Modified: 23:53:00" itemprop="dateCreated datePublished" datetime="2023-02-24T23:00:00+08:00">2023-02-24</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%AE%AD%E7%BB%83%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">训练技术</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="LoRA"><a href="#LoRA" class="headerlink" title="LoRA"></a>LoRA</h1><p>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.09685">https://arxiv.org/abs/2106.09685</a><br>代码链接：<a target="_blank" rel="noopener" href="https://github.com/microsoft/LoRA">https://github.com/microsoft/LoRA</a></p>
-<p>LoRA是一种finetune扩散模型的训练技术。通过对标准的checkpoint模型微小的修改，可以比checkpoint模型小10到100倍。LoRA的原理比较简单，原始全量的finetune其实就是在原始模型参数基础上加入增量$W=W_0+\Delta W$，那么我们可以通过冻结原始参数 $W_0$，并且把增量部分通过低秩分解方式进一步降低参数量级$\Delta W = A*B^T$, 原始参数的维度是 $d*d$, 则低秩分解后的参数量级是 $2*r*d$, 这里 $r&lt;&lt;d$， 因此可以起到大幅降低微调参数量级的效果。</p>
-<p>和textula inversion一样，不能直接使用LoRA模型，需要和checkpoint文件一起使用。</p>
-<h2 id="How-does-LoRA-work-in-Stable-diffusion？"><a href="#How-does-LoRA-work-in-Stable-diffusion？" class="headerlink" title="How does LoRA work in Stable diffusion？"></a>How does LoRA work in Stable diffusion？</h2><p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/45f7e2ce00c48b8c96e938c9fe8ed3d4.png" alt="image"></p>
-<p>LoRA通过在checkpoint上做小的修改替换风格，具体而言修改的地方是UNet中的cross-attention层。该层是图像和文本prompt交界的层。LORA的作者们发现微调该部分足以实现良好的性能。</p>
-<p>cross attention层的权重是一个矩阵，LoRA fine tune这些权重来微调模型。那么LoRA是怎么做到模型文件如此小？LoRA的做法是将一个权重矩阵分解为两个矩阵存储，能起到的作用可以用下图表示，参数量由(1000<em> 2000)减少到(1000</em> 2+2000*2), 大概300多倍！</p>
-<p><img src="https://vino-1316924433.cos.ap-beijing.myqcloud.com/10bbf49b2e9042779941c600a692d74dtplv-k3u1fbpfcp-zoom-in-crop-mark1512000.webp" alt="img"></p>
-<p><strong>核心代码</strong></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 初始化低秩矩阵A和B</span></span><br><span class="line">self.lora_A.update(nn.ModuleDict(&#123;adapter_name: nn.Linear(self.in_features, r, bias=<span class="literal">False</span>)&#125;))</span><br><span class="line">self.lora_B.update(nn.ModuleDict(&#123;adapter_name: nn.Linear(r, self.out_features, bias=<span class="literal">False</span>)&#125;))</span><br><span class="line">self.scaling[adapter_name] = lora_alpha / r</span><br><span class="line"></span><br><span class="line"><span class="comment">## 向前计算</span></span><br><span class="line">result = F.linear(x, transpose(self.weight, self.fan_in_fan_out), bias=self.bias)</span><br><span class="line">result += (</span><br><span class="line">    self.lora_B[self.active_adapter](</span><br><span class="line">        self.lora_A[self.active_adapter](self.lora_dropout[self.active_adapter](x))</span><br><span class="line">    )</span><br><span class="line">    * self.scaling[self.active_adapter]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<p>alpha参数：alpha其实是个缩放参数，本质和learning rate相同。</p>
-<h2 id="cross-attention"><a href="#cross-attention" class="headerlink" title="cross attention"></a>cross attention</h2><p>cross-attention是扩散模型中关键的技术之一，在LoRA中通过微调该模块，即可微调生成图片的样式，而在Hypernetwork中使用两个带有dropout和激活函数的全链接层，分别修改cross attention中的key和value，也可以定制想要的生成风格。可见cross attention的重要性。</p>
-<p>在讲cross-attention之前，先看看经典的transformer中attention的含义，attnetion实际上用了三个QKV矩阵，来计算不同token之间的彼此的依赖关系，Q和K可以用来计算当前token和其他token的相似度，这个相似度作为权值对V进行加权求和，可以作为下一层的token。更通俗点说，Q和k的作用是用来在token之间搬运信息，而value本身就是从当前token当中提取出来的信息. 比较常见的是self-attention，该注意力是一个sequence内部不同token间产生注意力，而cross-attention的区别是在不同的sequence之间产生注意力。</p>
 
       
     </div>
